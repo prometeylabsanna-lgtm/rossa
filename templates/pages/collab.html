@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n rossa %}
+{% block body_class %}page--inner{% endblock %}
+{% block content %}
+  {% include "includes/breadcrumbs.html" %}
+  <div class="split">
+    <div class="split__copy">
+      <h1>{{ page.title }}</h1>
+      <p>{{ page.sub }}</p>
+    </div>
+    {% if page.hero_image %}
+      <div class="split__media">
+        <img src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="900" height="600">
+      </div>
+    {% endif %}
+  </div>
+  <div class="collab-grid">
+    <div>
+      {% for b in page.benefits %}
+        <article class="benefit">
+          <div class="benefit__num">{{ b.num }}</div>
+          <h2 class="benefit__title">{{ b|loc:'title' }}</h2>
+          <p class="benefit__body">{{ b|loc:'body' }}</p>
+        </article>
+      {% endfor %}
+    </div>
+    <div>
+      {% include "leads/partnership_form.html" %}
+    </div>
+  </div>
+{% endblock %}

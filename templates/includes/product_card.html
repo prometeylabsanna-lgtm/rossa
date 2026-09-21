@@ -1,0 +1,30 @@
+{% load i18n rossa %}
+<article class="card" data-product-card data-qa="product-card">
+  <a href="{{ product.get_absolute_url }}">
+    <div class="card__media">
+      {% if product.badge %}
+        <span class="card__badge">{{ product.get_badge_display }}</span>
+      {% endif %}
+      {% with shades=product.preview_shades %}
+        {% if shades %}
+          {% for item in shades %}
+            <img data-card-image="{{ item.shade.id }}" src="{{ item.image.url }}" alt="{{ product.name }}" width="640" height="360" {% if not forloop.first %}hidden{% endif %} {% if not forloop.first %}loading="lazy"{% endif %}>
+          {% endfor %}
+        {% elif product.default_image %}
+          <img src="{{ product.default_image.url }}" alt="{{ product.name }}" width="640" height="360" loading="lazy">
+        {% endif %}
+      {% endwith %}
+    </div>
+  </a>
+  <div class="card__body">
+    <div class="card__cat">{{ product.category.parent.name|default:product.category.name }}</div>
+    <a href="{{ product.get_absolute_url }}"><h3 class="card__name">{{ product.name }}</h3></a>
+    <div class="card__type">{{ product.type_label }}</div>
+    <div class="card__price">{% trans "від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
+    <div class="swatches">
+      {% for item in product.preview_shades %}
+        <button type="button" class="swatch{% if forloop.first %} is-active{% endif %}" data-swatch="{{ item.shade.id }}" data-hex="{{ item.shade.hex_color }}" aria-label="{{ item.shade.name }}"></button>
+      {% endfor %}
+    </div>
+  </div>
+</article>

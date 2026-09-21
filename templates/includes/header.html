@@ -1,0 +1,87 @@
+{% load i18n static %}
+<header class="header" data-header>
+  <div class="header__bar">
+    <div class="header__start">
+      <button class="burger" type="button" data-burger data-qa="menu-open" aria-expanded="false" aria-label="{% trans 'Меню' %}">
+        <span class="burger__line"></span>
+        <span class="burger__line"></span>
+        <span class="burger__line"></span>
+      </button>
+      <nav class="nav nav--left" aria-label="{% trans 'Основна навігація' %}">
+        <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+        <div class="nav__item" data-mega>
+          <a href="{% url 'catalog:index' %}">{% trans "Каталог" %} <span class="nav__caret">▾</span></a>
+          <div class="mega">
+            <div class="mega__list">
+              {% for cat in nav_categories %}
+                <a class="mega__link{% if forloop.first %} is-current{% endif %}" href="{{ cat.get_absolute_url }}" data-mega-cat data-preview="{% if cat.image %}{{ cat.image.url }}{% endif %}">{{ cat.name }}</a>
+                {% for child in cat.children.all %}
+                  {% if child.is_active %}
+                    <a class="mega__sub" href="{{ child.get_absolute_url }}">{{ child.name }}</a>
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            </div>
+            {% with first=nav_categories.0 %}
+              {% if first and first.image %}
+                <img class="mega__preview" data-mega-preview src="{{ first.image.url }}" alt="">
+              {% endif %}
+            {% endwith %}
+          </div>
+        </div>
+        <a href="{% url 'core:collab' %}">{% trans "Співпраця" %}</a>
+      </nav>
+    </div>
+
+    <a class="header__logo" href="{% url 'core:home' %}">
+      {% if site_settings.logo %}
+        <img src="{{ site_settings.logo.url }}" alt="ROSSA" width="240" height="96">
+      {% else %}
+        <img src="{% static 'images/logo/rossa-logo.png' %}" alt="ROSSA" width="240" height="96">
+      {% endif %}
+    </a>
+
+    <div class="header__end">
+      <nav class="nav nav--right" aria-label="{% trans 'Основне меню' %}">
+        <a href="{% url 'core:about' %}">{% trans "Про нас" %}</a>
+        <a href="{% url 'core:contacts' %}">{% trans "Контакти" %}</a>
+      </nav>
+      <div class="header__tools">
+        <button class="icon-btn search-toggle" type="button" data-search-toggle data-qa="search" aria-label="{% trans 'Пошук' %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M20 20L16.5 16.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <form action="{% url 'catalog:search' %}" method="get">
+            <input type="search" name="q" placeholder="{% trans 'Введіть назву моделі...' %}" autocomplete="off">
+          </form>
+          <a href="{% url 'catalog:search' %}">{% trans "Відкрити сторінку пошуку" %}</a>
+        </div>
+        <a class="icon-btn header__phone" href="tel:{{ site_settings.phone|cut:' ' }}" aria-label="{{ site_settings.phone }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <form action="{% url 'set_language' %}" method="post" class="lang" data-qa="lang-switch">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" name="language" value="uk" class="{% if LANGUAGE_CODE == 'uk' %}is-active{% endif %}">UA</button>
+          <span aria-hidden="true">/</span>
+          <button type="submit" name="language" value="ru" class="{% if LANGUAGE_CODE == 'ru' %}is-active{% endif %}">RU</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <nav class="mobile-nav" data-mobile-nav>
+    <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+    <a href="{% url 'catalog:index' %}">{% trans "Каталог" %}</a>
+    {% for cat in nav_categories %}
+      <a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+    {% endfor %}
+    <a href="{% url 'core:collab' %}">{% trans "Співпраця" %}</a>
+    <a href="{% url 'core:about' %}">{% trans "Про нас" %}</a>
+    <a href="{% url 'core:contacts' %}">{% trans "Контакти" %}</a>
+  </nav>
+</header>

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+  <section class="not-found">
+    <h1>{% trans "Сторінку не знайдено" %}</h1>
+    <p class="page-intro">{% trans "Перейдіть до каталогу або на головну." %}</p>
+    <a class="btn btn--ghost" href="{% url 'core:home' %}">{% trans "На головну" %}</a>
+    <a class="btn btn--outline" href="{% url 'catalog:index' %}">{% trans "До продукції" %}</a>
+  </section>
+{% endblock %}

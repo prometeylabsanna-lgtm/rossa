@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block body_class %}page--home{% endblock %}
+
+{% block content %}
+  <div class="hero-media">
+    {% if page.hero_video %}
+      <video autoplay muted loop playsinline poster="{% if page.hero_poster %}{{ page.hero_poster.url }}{% endif %}">
+        <source src="{{ page.hero_video.url }}">
+      </video>
+    {% elif page.hero_poster %}
+      <img src="{{ page.hero_poster.url }}" alt="{{ page.hero_title }}" width="1920" height="1080">
+    {% endif %}
+  </div>
+  <section class="hero-copy">
+    <h1>{{ page.hero_title }}</h1>
+    <p>{{ page.hero_sub }}</p>
+    <a class="btn btn--ghost" href="{% url 'catalog:index' %}">{{ page.cta_catalog }}</a>
+  </section>
+
+  <section class="props">
+    {% for v in value_props %}
+      <article class="prop">
+        <div class="prop__num">{{ v.number }}</div>
+        <h2 class="prop__title">{{ v.title }}</h2>
+        <p class="prop__body">{{ v.body }}</p>
+      </article>
+    {% endfor %}
+  </section>
+
+  <section class="section wrap">
+    <h2 class="section__title">{{ page.section_categories }}</h2>
+    <div class="grid-3">
+      {% for cat in featured_categories %}
+        <a class="cat-tile" href="{{ cat.get_absolute_url }}">
+          <div class="cat-tile__media">
+            {% if cat.image %}<img src="{{ cat.image.url }}" alt="{{ cat.name }}" width="600" height="800" loading="lazy">{% endif %}
+          </div>
+          <div class="cat-tile__label">{{ cat.name }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="section__head">
+      <h2 class="section__title">{{ page.section_bestsellers }}</h2>
+      <a class="link-more" href="{% url 'catalog:index' %}">{% trans "Весь каталог" %} →</a>
+    </div>
+    <div class="product-grid" data-qa="product-grid">
+      {% for product in bestsellers %}
+        {% include "includes/product_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="craft">
+    {% if page.craft_image %}
+      <img class="craft__bg" src="{{ page.craft_image.url }}" alt="" width="1600" height="900" loading="lazy">
+    {% endif %}
+    <div class="craft__panel">
+      <h2 class="craft__title">{{ page.craft_title }}</h2>
+      <p class="craft__body">{{ page.craft_body }}</p>
+      <a class="craft__link" href="{% url 'core:about' %}">{{ page.craft_link }}</a>
+      <div class="craft__cta">
+        <p>{{ page.cta_banner_title }}</p>
+        <a class="btn btn--light" href="{% url 'core:contacts' %}">{% trans "Контакти" %}</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

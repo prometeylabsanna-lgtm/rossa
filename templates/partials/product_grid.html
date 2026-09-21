@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="product-grid" data-qa="product-grid" id="product-grid">
+  {% include "partials/product_cards.html" %}
+</div>
+<div id="catalog-more">
+  {% if has_more %}
+    <div class="more">
+      <a class="btn btn--ghost"
+         href="?sort={{ sort }}&offset={{ next_offset }}"
+         hx-get="?sort={{ sort }}&offset={{ next_offset }}"
+         hx-target="#product-grid"
+         hx-swap="beforeend"
+         hx-indicator="this">
+        {% trans "Показати ще" %}
+      </a>
+    </div>
+  {% endif %}
+</div>

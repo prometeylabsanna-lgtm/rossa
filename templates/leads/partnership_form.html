@@ -1,0 +1,27 @@
+{% load i18n %}
+<form class="form"
+      method="post"
+      action="{% url 'leads:partnership' %}"
+      data-qa="lead-form"
+      hx-post="{% url 'leads:partnership' %}"
+      hx-swap="outerHTML">
+  {% csrf_token %}
+  <h2 class="section__title">{% if page %}{{ page.form_title }}{% endif %}</h2>
+  {{ form.non_field_errors }}
+  {{ form.company }}
+  {{ form.company.errors }}
+  {{ form.name }}
+  {{ form.phone }}
+  {{ form.phone.errors }}
+  {{ form.email }}
+  {{ form.email.errors }}
+  {{ form.city }}
+  {{ form.collab_type }}
+  {{ form.message }}
+  <label class="form__check">
+    {{ form.consent }}
+    <span>{{ form.consent.label }}</span>
+  </label>
+  {{ form.consent.errors }}
+  <button class="btn btn--solid" type="submit">{% trans "Надіслати" %}</button>
+</form>

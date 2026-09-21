@@ -1,0 +1,36 @@
+{% load i18n %}
+<form id="order-form"
+      class="form"
+      method="post"
+      action="{% url 'leads:order' %}"
+      data-qa="lead-form"
+      hx-post="{% url 'leads:order' %}"
+      hx-swap="outerHTML">
+  {% csrf_token %}
+  <h2 class="modal__title">{{ product.name }}</h2>
+  <p class="modal__price">{{ price }} {% trans "грн" %}</p>
+  {{ form.non_field_errors }}
+  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+  <label class="visually-hidden" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+  {{ form.name }}
+  {{ form.name.errors }}
+  <label class="visually-hidden" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+  {{ form.phone }}
+  {{ form.phone.errors }}
+  <label class="visually-hidden" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+  {{ form.email }}
+  {{ form.email.errors }}
+  <label class="visually-hidden" for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
+  {{ form.comment }}
+  <fieldset class="radios">
+    <legend>{{ form.fulfillment.label }}</legend>
+    {{ form.fulfillment }}
+    {{ form.fulfillment.errors }}
+  </fieldset>
+  <label class="form__check">
+    {{ form.consent }}
+    <span>{{ form.consent.label }}</span>
+  </label>
+  {{ form.consent.errors }}
+  <button class="btn btn--solid" type="submit">{% trans "Надіслати замовлення" %}</button>
+</form>

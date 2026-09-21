@@ -1,0 +1,13 @@
+# docker-compose.yml
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.DS_Store
+media
+staticfiles
+.env
+Design prototype for Rossa
+docs
+*.sqlite3

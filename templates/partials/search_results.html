@@ -1,0 +1,12 @@
+{% load i18n %}
+{% if not q %}
+  <p class="search-page__hint">{% trans "Введіть назву моделі або категорію, щоб почати пошук." %}</p>
+{% elif not products %}
+  <p class="search-page__hint">{% trans "Нічого не знайдено. Спробуйте інший запит." %} <a href="{% url 'catalog:index' %}">{% trans "До каталогу" %}</a></p>
+{% else %}
+  <div class="product-grid" data-qa="product-grid">
+    {% for product in products %}
+      {% include "includes/product_card.html" %}
+    {% endfor %}
+  </div>
+{% endif %}

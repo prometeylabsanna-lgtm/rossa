@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#EDEBE8; }
+    a { color:#B83C3C; }
+    a:hover { color:#903838; }
+  </style>
+</helmet>
+
+<section style="padding:32px 32px 80px; display:flex; flex-wrap:wrap; gap:32px; align-items:flex-start; font-family:'Montserrat',sans-serif;">
+
+  <!-- 1a -->
+  <div id="1a" style="width:460px; background:#FFFFFF; box-shadow:0 4px 24px rgba(0,0,0,0.08); position:relative;">
+    <div style="position:absolute; top:12px; left:12px; background:#313131; color:#F6F2F7; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1a — Split hero</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr;">
+      <div style="padding:40px 28px; display:flex; flex-direction:column; justify-content:center;">
+        <div style="font-family:'Cormorant',serif; font-size:32px; color:#313131;">Співпраця з ROSSA</div>
+        <div style="font-size:13px; color:#6b6b6b; margin-top:10px; line-height:1.6;">Оптові умови для дизайнерів інтер'єру, дилерів та готельного бізнесу.</div>
+        <div style="margin-top:20px; background:#B83C3C; color:#fff; font-size:12px; font-weight:600; padding:11px 20px; border-radius:6px; width:fit-content; cursor:pointer;">Залишити заявку</div>
+      </div>
+      <div style="background:#D9D4CE; min-height:220px;"></div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid #eee;">
+      <div style="padding:20px 18px; border-right:1px solid #eee;">
+        <div style="font-size:12px; color:#B83C3C; font-weight:700;">01</div>
+        <div style="font-size:14px; color:#313131; margin-top:6px; font-weight:600;">Дилерські ціни</div>
+        <div style="font-size:11.5px; color:#7a7a7a; margin-top:4px;">Умови від обсягу закупівлі.</div>
+      </div>
+      <div style="padding:20px 18px; border-right:1px solid #eee;">
+        <div style="font-size:12px; color:#B83C3C; font-weight:700;">02</div>
+        <div style="font-size:14px; color:#313131; margin-top:6px; font-weight:600;">Каталог для дизайнерів</div>
+        <div style="font-size:11.5px; color:#7a7a7a; margin-top:4px;">Креслення та зразки тканин.</div>
+      </div>
+      <div style="padding:20px 18px;">
+        <div style="font-size:12px; color:#B83C3C; font-weight:700;">03</div>
+        <div style="font-size:14px; color:#313131; margin-top:6px; font-weight:600;">Персональний менеджер</div>
+        <div style="font-size:11.5px; color:#7a7a7a; margin-top:4px;">Супровід від замовлення до монтажу.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1b -->
+  <div id="1b" style="width:460px; background:#313131; color:#F6F2F7; position:relative;">
+    <div style="position:absolute; top:12px; left:12px; background:#F6F2F7; color:#313131; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1b — Bold dark, inline strip</div>
+    <div style="padding:56px 32px 32px;">
+      <div style="font-family:'Cormorant',serif; font-size:40px; line-height:1.1;">Співпраця<br>з ROSSA</div>
+      <div style="font-size:13px; opacity:0.75; margin-top:14px; max-width:340px; line-height:1.6;">Оптові умови для дизайнерів інтер'єру, дилерів та готельного бізнесу.</div>
+    </div>
+    <div style="display:flex; gap:0; border-top:1px solid rgba(246,242,247,0.15); border-bottom:1px solid rgba(246,242,247,0.15); padding:18px 32px; font-size:12px; flex-wrap:wrap; gap:24px;">
+      <div>Дилерські ціни</div>
+      <div style="opacity:0.4;">/</div>
+      <div>Каталог для дизайнерів</div>
+      <div style="opacity:0.4;">/</div>
+      <div>Персональний менеджер</div>
+    </div>
+    <div style="padding:28px 32px 40px; display:flex; gap:12px; align-items:center;">
+      <div style="font-size:13px; opacity:0.8;">Готові почати?</div>
+      <div style="background:#B83C3C; color:#fff; font-size:12px; font-weight:600; padding:10px 20px; border-radius:6px; cursor:pointer;">Залишити заявку</div>
+    </div>
+  </div>
+
+  <!-- 1c -->
+  <div id="1c" style="width:460px; background:#FFFFFF; box-shadow:0 4px 24px rgba(0,0,0,0.08); position:relative; display:flex;">
+    <div style="position:absolute; top:12px; left:12px; background:#313131; color:#F6F2F7; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1c — Sidebar list</div>
+    <div style="width:38%; background:#F1EFEC; padding:44px 20px 20px 24px;">
+      <div style="font-family:'Cormorant',serif; font-size:26px; color:#313131; line-height:1.15;">Співпраця з ROSSA</div>
+      <div style="margin-top:24px; display:flex; flex-direction:column; gap:16px;">
+        <div style="font-size:12.5px; color:#313131; padding-left:12px; border-left:2px solid #B83C3C;">Дилерські ціни</div>
+        <div style="font-size:12.5px; color:#8a8a8a; padding-left:12px; border-left:2px solid transparent;">Каталог для дизайнерів</div>
+        <div style="font-size:12.5px; color:#8a8a8a; padding-left:12px; border-left:2px solid transparent;">Персональний менеджер</div>
+      </div>
+    </div>
+    <div style="width:62%; padding:44px 24px 24px;">
+      <div style="font-size:11px; color:#B83C3C; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">Дилерські ціни</div>
+      <div style="font-size:13px; color:#5a5a5a; margin-top:10px; line-height:1.6;">Спеціальні умови від обсягу закупівлі — знижки для оптових партнерів.</div>
+      <div style="margin-top:26px; background:#B83C3C; color:#fff; font-size:12px; font-weight:600; padding:11px 20px; border-radius:6px; width:fit-content; cursor:pointer;">Залишити заявку</div>
+    </div>
+  </div>
+
+  <!-- 1d -->
+  <div id="1d" style="width:460px; background:#F6F2F7; position:relative; padding-bottom:8px;">
+    <div style="position:absolute; top:12px; left:12px; background:#313131; color:#F6F2F7; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1d — Card stack</div>
+    <div style="padding:44px 28px 8px;">
+      <div style="font-family:'Cormorant',serif; font-size:30px; color:#313131;">Співпраця з ROSSA</div>
+      <div style="font-size:13px; color:#6b6b6b; margin-top:8px;">Оптові умови для дизайнерів, дилерів та готельного бізнесу.</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; padding:20px 28px;">
+      <div style="background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.06); padding:16px 18px; display:flex; justify-content:space-between; align-items:center;">
+        <div><div style="font-size:14px; color:#313131; font-weight:600;">Дилерські ціни</div><div style="font-size:11.5px; color:#8a8a8a; margin-top:3px;">Умови від обсягу закупівлі</div></div>
+        <div style="color:#B83C3C; font-size:18px;">→</div>
+      </div>
+      <div style="background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.06); padding:16px 18px; display:flex; justify-content:space-between; align-items:center;">
+        <div><div style="font-size:14px; color:#313131; font-weight:600;">Каталог для дизайнерів</div><div style="font-size:11.5px; color:#8a8a8a; margin-top:3px;">Креслення та зразки тканин</div></div>
+        <div style="color:#B83C3C; font-size:18px;">→</div>
+      </div>
+      <div style="background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.06); padding:16px 18px; display:flex; justify-content:space-between; align-items:center;">
+        <div><div style="font-size:14px; color:#313131; font-weight:600;">Персональний менеджер</div><div style="font-size:11.5px; color:#8a8a8a; margin-top:3px;">Супровід до монтажу</div></div>
+        <div style="color:#B83C3C; font-size:18px;">→</div>
+      </div>
+    </div>
+    <div style="padding:8px 28px 24px;">
+      <div style="background:#313131; color:#fff; font-size:12px; font-weight:600; padding:12px 0; text-align:center; border-radius:6px; cursor:pointer;">Залишити заявку на співпрацю</div>
+    </div>
+  </div>
+
+  <!-- 1e -->
+  <div id="1e" style="width:460px; background:#FFFFFF; box-shadow:0 4px 24px rgba(0,0,0,0.08); position:relative;">
+    <div style="position:absolute; top:12px; left:12px; background:#313131; color:#F6F2F7; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1e — Stat tiles</div>
+    <div style="padding:40px 28px 24px;">
+      <div style="font-family:'Cormorant',serif; font-size:30px; color:#313131;">Співпраця з ROSSA</div>
+      <div style="font-size:13px; color:#6b6b6b; margin-top:8px; max-width:360px;">Оптові умови для дизайнерів інтер'єру, дилерів та готельного бізнесу.</div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#eee;">
+      <div style="background:#F1EFEC; padding:26px 16px; text-align:center;">
+        <div style="font-family:'Cormorant',serif; font-size:30px; color:#B83C3C;">−25%</div>
+        <div style="font-size:11.5px; color:#5a5a5a; margin-top:6px;">дилерська знижка</div>
+      </div>
+      <div style="background:#F1EFEC; padding:26px 16px; text-align:center;">
+        <div style="font-family:'Cormorant',serif; font-size:30px; color:#B83C3C;">1000+</div>
+        <div style="font-size:11.5px; color:#5a5a5a; margin-top:6px;">моделей у каталозі</div>
+      </div>
+      <div style="background:#F1EFEC; padding:26px 16px; text-align:center;">
+        <div style="font-family:'Cormorant',serif; font-size:30px; color:#B83C3C;">24/7</div>
+        <div style="font-size:11.5px; color:#5a5a5a; margin-top:6px;">персональна підтримка</div>
+      </div>
+    </div>
+    <div style="padding:24px 28px 32px;">
+      <div style="background:#B83C3C; color:#fff; font-size:12px; font-weight:600; padding:12px 0; text-align:center; border-radius:6px; cursor:pointer;">Залишити заявку</div>
+    </div>
+  </div>
+
+  <!-- 1f -->
+  <div id="1f" style="width:460px; background:#FFFFFF; box-shadow:0 4px 24px rgba(0,0,0,0.08); position:relative;">
+    <div style="position:absolute; top:12px; left:12px; background:#313131; color:#F6F2F7; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1f — Timeline steps</div>
+    <div style="padding:40px 28px 8px;">
+      <div style="font-family:'Cormorant',serif; font-size:30px; color:#313131;">Як почати співпрацю</div>
+    </div>
+    <div style="padding:16px 28px 28px; display:flex; flex-direction:column; gap:0;">
+      <div style="display:flex; gap:16px;">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div style="width:26px; height:26px; border-radius:50%; background:#B83C3C; color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:700;">1</div>
+          <div style="width:1px; flex:1; background:#e2e2e2;"></div>
+        </div>
+        <div style="padding-bottom:22px;">
+          <div style="font-size:14px; color:#313131; font-weight:600;">Дилерські ціни</div>
+          <div style="font-size:11.5px; color:#8a8a8a; margin-top:3px;">Спеціальні умови від обсягу закупівлі.</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:16px;">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div style="width:26px; height:26px; border-radius:50%; background:#B83C3C; color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:700;">2</div>
+          <div style="width:1px; flex:1; background:#e2e2e2;"></div>
+        </div>
+        <div style="padding-bottom:22px;">
+          <div style="font-size:14px; color:#313131; font-weight:600;">Каталог для дизайнерів</div>
+          <div style="font-size:11.5px; color:#8a8a8a; margin-top:3px;">Технічні креслення та зразки тканин на запит.</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:16px;">
+        <div style="width:26px; height:26px; border-radius:50%; background:#B83C3C; color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:700;">3</div>
+        <div>
+          <div style="font-size:14px; color:#313131; font-weight:600;">Персональний менеджер</div>
+          <div style="font-size:11.5px; color:#8a8a8a; margin-top:3px;">Супровід проєкту від замовлення до монтажу.</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 28px 28px;">
+      <div style="background:#313131; color:#fff; font-size:12px; font-weight:600; padding:12px 0; text-align:center; border-radius:6px; cursor:pointer;">Залишити заявку</div>
+    </div>
+  </div>
+
+  <!-- 1g -->
+  <div id="1g" style="width:460px; background:#FFFFFF; box-shadow:0 4px 24px rgba(0,0,0,0.08); position:relative;">
+    <div style="position:absolute; top:12px; left:12px; background:#313131; color:#F6F2F7; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1g — Minimal narrative</div>
+    <div style="padding:52px 32px 28px;">
+      <div style="font-family:'Cormorant',serif; font-size:30px; color:#313131;">Співпраця з ROSSA</div>
+      <div style="font-size:13.5px; color:#5a5a5a; margin-top:16px; line-height:1.75; max-width:380px;">
+        Оптові умови для дизайнерів інтер'єру, дилерів та готельного бізнесу: <span style="color:#313131; font-weight:600;">дилерські ціни</span> від обсягу закупівлі, <span style="color:#313131; font-weight:600;">каталог для дизайнерів</span> з кресленнями та зразками тканин, і <span style="color:#313131; font-weight:600;">персональний менеджер</span> на весь час проєкту.
+      </div>
+      <div style="margin-top:22px; font-size:13px; text-decoration:underline; color:#B83C3C; cursor:pointer; width:fit-content;">Залишити заявку на співпрацю →</div>
+    </div>
+  </div>
+
+  <!-- 1h -->
+  <div id="1h" style="width:460px; background:#EDEBE8; position:relative;">
+    <div style="position:absolute; top:12px; left:12px; background:#313131; color:#F6F2F7; font-size:11px; padding:3px 9px; border-radius:4px; z-index:2;">1h — Split form+info</div>
+    <div style="padding:40px 28px 20px;">
+      <div style="font-family:'Cormorant',serif; font-size:28px; color:#313131;">Співпраця з ROSSA</div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+      <div style="padding:0 28px 28px; display:flex; flex-direction:column; gap:14px;">
+        <div style="font-size:12px; color:#5a5a5a;">Оптові умови для дизайнерів, дилерів та готельного бізнесу.</div>
+        <div style="font-size:13px; color:#313131; font-weight:600; margin-top:6px;">Дилерські ціни</div>
+        <div style="font-size:13px; color:#313131; font-weight:600;">Каталог для дизайнерів</div>
+        <div style="font-size:13px; color:#313131; font-weight:600;">Персональний менеджер</div>
+      </div>
+      <div style="background:#fff; padding:20px 20px 24px; display:flex; flex-direction:column; gap:8px;">
+        <div style="height:26px; background:#F1EFEC; border-radius:4px;"></div>
+        <div style="height:26px; background:#F1EFEC; border-radius:4px;"></div>
+        <div style="height:26px; background:#F1EFEC; border-radius:4px;"></div>
+        <div style="background:#B83C3C; color:#fff; font-size:12px; font-weight:600; padding:10px 0; text-align:center; border-radius:6px; margin-top:6px; cursor:pointer;">Надіслати</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+</x-dc>
+</body>
+</html>

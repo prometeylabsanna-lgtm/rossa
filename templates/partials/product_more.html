@@ -1,0 +1,19 @@
+{% load i18n %}
+{% for product in products %}
+  {% include "includes/product_card.html" %}
+{% endfor %}
+{% if has_more %}
+  <div id="catalog-more" hx-swap-oob="true">
+    <div class="more">
+      <a class="btn btn--ghost"
+         href="?sort={{ sort }}&offset={{ next_offset }}"
+         hx-get="?sort={{ sort }}&offset={{ next_offset }}"
+         hx-target="#product-grid"
+         hx-swap="beforeend">
+        {% trans "Показати ще" %}
+      </a>
+    </div>
+  </div>
+{% else %}
+  <div id="catalog-more" hx-swap-oob="true"></div>
+{% endif %}

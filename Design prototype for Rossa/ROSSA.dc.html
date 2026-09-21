@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Lobster+Two:wght@400;700&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  body { margin:0; box-sizing:border-box; }
+  * { box-sizing:border-box; }
+  a { color:#4C4C4C; }
+  a:hover { color:#6B6B6B; }
+</style>
+</helmet>
+<div style="width:100%; min-height:100vh; background:#F8F8F8; font-family:'Montserrat',sans-serif; color:#4C4C4C;">
+
+  <div style="{{ headerWrapStyle }}">
+    <div style="background:transparent; color:#313131; padding:8px 40px; display:flex; justify-content:space-between; align-items:center; font-size:12px; letter-spacing:0.03em;">
+      <div style="color:#C9A24B;">{{ t.phone }}</div>
+      <div style="display:flex; gap:8px; align-items:center; color:#C9A24B;">
+        <span style="cursor:pointer; opacity:{{ uaOpacity }}; font-weight:600;" onClick="{{ setLangUa }}">UA</span>
+        <span style="opacity:0.4;">/</span>
+        <span style="cursor:pointer; opacity:{{ ruOpacity }}; font-weight:600;" onClick="{{ setLangRu }}">RU</span>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:20px 40px; background:transparent; color:#313131; border-bottom:1px solid rgba(49,49,49,0.14); position:relative;">
+      <img src="./assets/rossa-logo.png" alt="ROSSA" style="height:72px; width:auto; margin-top:-14px; cursor:pointer;" onClick="{{ goHome }}">
+      <sc-if value="{{ showDesktopNav }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; align-items:center; gap:36px; font-size:17px; font-family:'Montserrat',sans-serif; font-weight:400; color:{{ navTextColor }};">
+          <div style="position:relative; cursor:pointer; display:flex; align-items:center; gap:6px;" onClick="{{ toggleMega }}">
+            <span>{{ t.nav_product }}</span><span style="font-size:9px;">▾</span>
+            <sc-if value="{{ megaOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; top:26px; left:-48px; background:#FFFFFF; display:grid; grid-template-columns:260px 1fr; box-shadow:0 20px 44px rgba(0,0,0,0.2); z-index:60;">
+                <div style="padding:26px 24px; color:#313131; border-right:1px solid rgba(49,49,49,0.12);">
+                  <div style="font-family:'Montserrat',sans-serif; font-size:15px; border-bottom:{{ megaSofasUnderline }}; width:fit-content; padding-bottom:8px; margin-bottom:10px; cursor:pointer;" onMouseEnter="{{ setMegaHoverSofas }}" onClick="{{ goCategorySofasAll }}">{{ t.sofas }}</div>
+                  <div style="font-size:13px; opacity:0.65; padding:6px 0 6px 8px; cursor:pointer;" onMouseEnter="{{ setMegaHoverSofas }}" onClick="{{ goCategorySofasModular }}">{{ t.modular }}</div>
+                  <div style="font-size:13px; opacity:0.65; padding:6px 0 6px 8px; cursor:pointer;" onMouseEnter="{{ setMegaHoverSofas }}" onClick="{{ goCategorySofasCorner }}">{{ t.corner }}</div>
+                  <div style="font-size:13px; opacity:0.65; padding:6px 0 6px 8px; cursor:pointer;" onMouseEnter="{{ setMegaHoverSofas }}" onClick="{{ goCategorySofasStraight }}">{{ t.straight }}</div>
+                  <div style="font-family:'Montserrat',sans-serif; font-size:15px; margin-top:12px; cursor:pointer; opacity:{{ megaBedsOpacity }}; border-bottom:{{ megaBedsUnderline }}; width:fit-content;" onMouseEnter="{{ setMegaHoverBeds }}" onClick="{{ goCatalogBeds }}">{{ t.beds }}</div>
+                  <div style="font-family:'Montserrat',sans-serif; font-size:15px; margin-top:8px; cursor:pointer; opacity:{{ megaPoufsOpacity }}; border-bottom:{{ megaPoufsUnderline }}; width:fit-content;" onMouseEnter="{{ setMegaHoverPoufs }}" onClick="{{ goCatalogPoufs }}">{{ t.poufs }}</div>
+                </div>
+                <image-slot id="{{ megaPreviewSlotId }}" shape="rect" placeholder="Фото категорії" style="width:260px; height:100%;"></image-slot>
+              </div>
+            </sc-if>
+          </div>
+          <div style="cursor:pointer;" onClick="{{ goCollab }}">{{ t.nav_collab }}</div>
+          <div style="cursor:pointer;" onClick="{{ goAbout }}">{{ t.nav_about }}</div>
+          <div style="cursor:pointer;" onClick="{{ goContact }}">{{ t.nav_contact }}</div>
+        </div>
+      </sc-if>
+      <div style="display:flex; align-items:center; gap:22px; position:relative;">
+        <div style="cursor:pointer; font-size:26px; color:#C9A24B;" onClick="{{ toggleSearch }}">⌕</div>
+        <sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; top:38px; right:0; background:rgba(57,57,57,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:12px; padding:20px; width:380px; max-height:70vh; overflow:auto; box-shadow:0 20px 44px rgba(0,0,0,0.3); z-index:70;" onClick="{{ stopProp }}">
+            <input placeholder="{{ t.search_ph }}" value="{{ searchQuery }}" onChange="{{ onSearchChange }}" style="width:100%; padding:10px 4px; border:none; border-bottom:1px solid #F6F2F7; background:transparent; font-size:16px; color:#F6F2F7; font-family:'Montserrat',sans-serif;">
+            <sc-if value="{{ searchEmpty }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:13px; opacity:0.65; margin-top:16px; color:#F6F2F7;">{{ t.search_empty }}</div>
+            </sc-if>
+            <sc-if value="{{ searchNoResults }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px; opacity:0.65; margin-top:16px; color:#F6F2F7;">{{ t.search_noresults }}</div>
+            </sc-if>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+              <sc-for list="{{ searchResults }}" as="p" hint-placeholder-count="0">
+                <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onClick="{{ p.onOpen }}">
+                  <div style="font-size:14px; color:#F6F2F7;">{{ p.name }}</div>
+                  <div style="font-size:12px; opacity:0.6; color:#F6F2F7;">{{ p.type }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showMobileToggle }}" hint-placeholder-val="{{ false }}">
+          <div style="cursor:pointer; font-size:22px;" onClick="{{ toggleMobileNav }}">{{ mobileNavIcon }}</div>
+        </sc-if>
+      </div>
+    </div>
+    <sc-if value="{{ mobileNavOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#4C4C4C; padding:24px 32px 32px; display:flex; flex-direction:column; gap:20px; border-bottom:1px solid rgba(246,242,247,0.14); font-size:19px; font-family:'Montserrat',sans-serif;">
+        <div onClick="{{ goCatalog }}">{{ t.catalog }}</div>
+        <div onClick="{{ goCategorySofasAll }}">{{ t.sofas }}</div>
+        <div onClick="{{ goCatalogBeds }}">{{ t.beds }}</div>
+        <div onClick="{{ goCatalogPoufs }}">{{ t.poufs }}</div>
+        <div onClick="{{ goCollab }}">{{ t.nav_collab }}</div>
+        <div onClick="{{ goAbout }}">{{ t.nav_about }}</div>
+        <div onClick="{{ goContact }}">{{ t.nav_contact }}</div>
+      </div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ showBreadcrumbs }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:150px 40px 0; font-size:13px; opacity:0.6; display:flex; gap:8px; flex-wrap:wrap;">
+      <sc-for list="{{ breadcrumbs }}" as="bc" hint-placeholder-count="2">
+        <span style="cursor:pointer;" onClick="{{ bc.onClick }}">{{ bc.label }}</span>
+        <sc-if value="{{ bc.hasNext }}" hint-placeholder-val="{{ true }}"><span>/</span></sc-if>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ pageIsHome }}" hint-placeholder-val="{{ true }}">
+    <div style="background:#F8F8F8;">
+      <div style="position:relative; width:100%; height:60vh; min-height:420px; overflow:hidden;">
+        
+      <image-slot id="hero-video" shape="rect" placeholder="Відео: інтер'єр ROSSA (кадр-заглушка)" style="width:100%;height:100%;" src="./virender-singh-he0nmtffktm-unsplash-mu6sek8p-9utf.jpg"></image-slot></div>
+      <div style="padding:70px 40px; text-align:center; background:#F8F8F8;">
+          <div style="font-family:'Montserrat',sans-serif; font-size:44px; margin-top:14px; color:#1A1817; line-height:1.1;">{{ t.hero_title }}</div>
+          <div style="font-family:'Montserrat',sans-serif; font-size:15px; margin-top:16px; opacity:0.7; max-width:420px; margin-left:auto; margin-right:auto; line-height:1.6; color:#4C4C4C;">{{ t.hero_sub }}</div>
+          <div style="margin-top:24px; display:inline-block; border:1px solid #903838; color:#903838; padding:14px 40px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:transform .15s,box-shadow .15s;" style-hover="transform:scale(1.06); box-shadow:0 8px 22px rgba(0,0,0,0.15);" onClick="{{ goCatalog }}">{{ t.cta_catalog }}</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; padding:60px 40px; background:#AFBDC6; margin-top:72px;">
+        <sc-for list="{{ valueProps }}" as="v" hint-placeholder-count="4">
+          <div style="background:#F8F8F8; padding:24px 20px; box-shadow:0 8px 24px rgba(0,0,0,0.08); position:relative; transition:transform .15s,box-shadow .15s;" style-hover="transform:scale(1.06); box-shadow:0 8px 22px rgba(0,0,0,0.3);">
+            <div style="position:absolute; top:14px; right:16px; font-family:'Montserrat',sans-serif; font-size:24px; color:#903838; opacity:0.5;">{{ v.num }}</div>
+            <div style="font-family:'Montserrat',sans-serif; font-size:17px; font-weight:700; color:#1A1817; max-width:80%;">{{ v.title }}</div>
+            <div style="font-size:13px; opacity:0.65; margin-top:10px; line-height:1.5;">{{ v.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="padding:72px 40px 72px; margin-top:72px;">
+        <div style="font-family:'Montserrat',sans-serif; font-size:32px; margin-bottom:26px;">{{ t.section_categories }}</div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+          <sc-for list="{{ featuredCategories }}" as="fc" hint-placeholder-count="3">
+            <div>
+              <div style="position:relative; aspect-ratio:3/4; cursor:pointer; overflow:hidden;" onClick="{{ fc.onClick }}">
+                <image-slot id="{{ fc.slotId }}" shape="rect" placeholder="{{ fc.label }}" style="width:100%;height:100%;" src="./invictus-tailoring-sneaker-socks-7b58pva-mu6qlyxx-fujn.jpg"></image-slot>
+              </div>
+              <div style="margin-top:12px; color:#4C4C4C; font-family:'Montserrat',sans-serif; font-size:22px; cursor:pointer;" onClick="{{ fc.onClick }}">{{ fc.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:0 40px 72px; margin-top:72px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:26px; flex-wrap:wrap; gap:12px;">
+          <div style="font-family:'Montserrat',sans-serif; font-size:32px;">{{ t.section_bestsellers }}</div>
+          <div style="font-size:14px; color:#4C4C4C; cursor:pointer; font-weight:600; text-decoration:underline;" onClick="{{ goCatalog }}">{{ t.view_all }} →</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); column-gap:32px; row-gap:96px;">
+          <sc-for list="{{ homeBestsellers }}" as="p" hint-placeholder-count="4">
+            <dc-import name="ProductCard" product="{{ p }}" on-open="{{ openProduct }}" accent-color="#903838" hint-size="100%,420px"></dc-import>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:relative; background:#393939; overflow:hidden; height:460px; margin-top:72px;">
+        <image-slot id="home-craft" shape="rect" placeholder="Майстерня ROSSA" style="position:absolute; inset:0; width:100%; height:100%; z-index:0;" src="./mitchell-luo--ho0s-yuxuk-unsplash-mu6qkjea-dy9h.jpg"></image-slot>
+        <div style="position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); height:100%;">
+          <div style="width: 479px; height: 454px"></div><div style="padding:28px 48px; display:flex; flex-direction:column; justify-content:center; color:#F6F2F7; background:rgba(30,30,30,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); overflow:auto;">
+            
+            <div style="font-family: 'Montserrat',sans-serif; font-size: 24px; width: 481px; height: 28px">{{ t.craft_title }}</div><div style="font-size:13px; opacity:0.85; margin-top:8px; line-height:1.45; max-width:440px;">{{ t.craft_body }}</div>
+            <div style="margin-top:8px; font-size:13px; text-decoration:underline; cursor:pointer; width:fit-content;" onClick="{{ goAbout }}">{{ t.craft_link }}</div><div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(246,242,247,0.2); width: 445px; height: 108px">
+              <div style="font-family:'Montserrat',sans-serif; font-size:15px; max-width:420px;">{{ t.cta_banner_title_1 }} {{ t.cta_banner_title_2 }}</div>
+              <div style="margin-top:10px; display:inline-block; background:transparent; border:1px solid #F6F2F7; color:#F6F2F7; padding:9px 24px; border-radius:8px; cursor:pointer; font-size:13px; transition:transform .15s;" style-hover="transform:scale(1.06);" onClick="{{ goContact }}">{{ t.nav_contact }}</div>
+            </div>
+            
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  
+
+  <sc-if value="{{ pageIsCatalog }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:36px 40px 80px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:42px;">{{ t.catalog }}</div>
+      <div style="font-size:15px; opacity:0.7; margin-top:10px; max-width:600px; line-height:1.6;">{{ t.catalog_intro }}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:34px; padding-bottom:22px; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <sc-for list="{{ catalogChips }}" as="c" hint-placeholder-count="4">
+            <div style="padding:9px 22px; border:1px solid {{ c.borderColor }}; background:{{ c.bg }}; color:{{ c.color }}; border-radius:20px; font-size:13px; cursor:pointer; transition:transform .15s;" style-hover="transform:scale(1.06);" onClick="{{ c.onClick }}">{{ c.label }}</div>
+          </sc-for>
+        </div>
+        <select style="border:1px solid rgba(26,24,23,0.25); background:#F1EFEC; padding:10px 14px; font-size:13px; color:#4C4C4C;" onChange="{{ onSortChange }}" value="{{ catalogSort }}">
+          <option value="popular">{{ t.sort_popular }}</option>
+          <option value="price-asc">{{ t.sort_price_asc }}</option>
+          <option value="price-desc">{{ t.sort_price_desc }}</option>
+        </select>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); column-gap:32px; row-gap:96px; margin-top:34px;">
+        <sc-for list="{{ catalogVisibleProducts }}" as="p" hint-placeholder-count="4">
+          <dc-import name="ProductCard" product="{{ p }}" on-open="{{ openProduct }}" hint-size="100%,420px"></dc-import>
+        </sc-for>
+      </div>
+      <sc-if value="{{ catalogHasMore }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center; margin-top:48px;">
+          <div style="display:inline-block; border:1px solid #903838; color:#903838; border-radius:8px; padding:14px 52px; cursor:pointer; font-size:14px; transition:transform .15s,box-shadow .15s;" style-hover="transform:scale(1.06); box-shadow:0 8px 22px rgba(0,0,0,0.15);" onClick="{{ showMore }}">{{ t.cta_more }}</div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ pageIsCategory }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:36px 40px 80px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:42px;">{{ t.sofas }}</div>
+      <div style="font-size:15px; opacity:0.7; margin-top:10px; max-width:600px; line-height:1.6;">{{ t.category_intro }}</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:32px; padding-bottom:22px; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <sc-for list="{{ categoryTabs }}" as="tb" hint-placeholder-count="4">
+          <div style="padding:9px 22px; border:1px solid {{ tb.borderColor }}; background:{{ tb.bg }}; color:{{ tb.color }}; border-radius:20px; font-size:13px; cursor:pointer; transition:transform .15s;" style-hover="transform:scale(1.06);" onClick="{{ tb.onClick }}">{{ tb.label }}</div>
+        </sc-for>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); column-gap:32px; row-gap:96px; margin-top:34px;">
+        <sc-for list="{{ categoryProducts }}" as="p" hint-placeholder-count="3">
+          <dc-import name="ProductCard" product="{{ p }}" on-open="{{ openProduct }}" hint-size="100%,420px"></dc-import>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ pageIsProduct }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:24px 40px 90px;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:56px;">
+        <div>
+          <div style="position:relative; width:100%; aspect-ratio:16/9; background:#F1EFEC;">
+            <sc-for list="{{ detailSwatches }}" as="sw" hint-placeholder-count="1">
+              <sc-if value="{{ sw.active }}" hint-placeholder-val="{{ true }}">
+                <image-slot id="{{ sw.detailSlotId }}" shape="rect" fit="contain" placeholder="Фото моделі" style="width:100%;height:100%;"></image-slot>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:12px;">
+            <sc-for list="{{ detailSwatches }}" as="sw" hint-placeholder-count="3">
+              <div style="width:64px; height:64px; border-radius:6px; overflow:hidden; cursor:pointer; box-shadow:0 0 0 2px {{ sw.borderColor }}; box-sizing:border-box; background:#F1EFEC;" onClick="{{ sw.select }}">
+                <image-slot id="{{ sw.thumbSlotId }}" shape="rect" fit="contain" placeholder="Фото" style="width:100%;height:100%;"></image-slot>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; opacity:0.6;">{{ selectedProduct.category }}</div>
+          <div style="font-family:'Montserrat',sans-serif; font-size:44px; margin-top:8px; line-height:1.05;">{{ selectedProduct.name }}</div>
+          <div style="font-size:14px; opacity:0.65; margin-top:6px;">{{ selectedProduct.type }}</div>
+          <div style="font-family:'Montserrat',sans-serif; font-size:32px; margin-top:22px; color:#4C4C4C;">від {{ currentPriceFormatted }} грн</div>
+
+          <div style="margin-top:30px;">
+            <div style="font-size:13px; text-transform:uppercase; letter-spacing:0.06em; opacity:0.6; margin-bottom:12px;">{{ t.fabric }}</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <sc-for list="{{ fabricOptionsComputed }}" as="f" hint-placeholder-count="3">
+                <div style="padding:10px 20px; border:1px solid {{ f.borderColor }}; background:{{ f.bg }}; color:{{ f.color }}; border-radius:20px; font-size:13px; cursor:pointer; transition:transform .15s;" style-hover="transform:scale(1.06);" onClick="{{ f.select }}">{{ f.label }} <span style="opacity:0.6;">{{ f.surchargeLabel }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:28px;">
+            <div style="font-size:13px; text-transform:uppercase; letter-spacing:0.06em; opacity:0.6; margin-bottom:12px;">{{ t.shade }}</div>
+            <div style="display:flex; gap:12px;">
+              <sc-for list="{{ detailSwatches }}" as="sw" hint-placeholder-count="3">
+                <div style="width:30px;height:30px;border-radius:50%; background:{{ sw.hex }}; cursor:pointer; box-shadow:0 0 0 2px {{ sw.borderColor }}; box-sizing:border-box;" onClick="{{ sw.select }}"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:20px; font-size:14px; opacity:0.65;">{{ selectedProduct.dims }}</div>
+
+          <div style="margin-top:32px; display:flex; flex-wrap:wrap; gap:14px;">
+            <div style="display:inline-block; background:#903838; color:#FFFFFF; padding:16px 52px; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; transition:transform .15s,box-shadow .15s;" style-hover="transform:scale(1.06); box-shadow:0 8px 22px rgba(0,0,0,0.3);" onClick="{{ openOrderModal }}">{{ t.order_cta }}</div>
+            <div style="display:inline-block; border:1px solid #4C4C4C; color:#4C4C4C; padding:16px 32px; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; transition:transform .15s;" style-hover="transform:scale(1.06);" onClick="{{ openOrderModal }}">{{ t.consult_cta }}</div>
+          </div>
+
+          <div style="margin-top:24px; display:flex; gap:28px; font-size:13px; opacity:0.65;">
+            <div>{{ t.guarantee_label }}</div>
+            <div>{{ t.delivery_label }}</div>
+          </div>
+
+          <div style="margin-top:40px; border-top:1px solid rgba(255,255,255,0.15); padding-top:24px;">
+            <div style="font-size:14px; font-weight:600; margin-bottom:8px;">{{ t.description_label }}</div>
+            <div style="font-size:14px; opacity:0.75; line-height:1.7;">{{ selectedProduct.description }}</div>
+          </div>
+          <div style="margin-top:24px;">
+            <div style="font-size:14px; font-weight:600; margin-bottom:8px;">{{ t.care_label }}</div>
+            <div style="font-size:14px; opacity:0.75; line-height:1.7;">{{ selectedProduct.care }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:80px;">
+        <div style="font-family:'Montserrat',sans-serif; font-size:28px; margin-bottom:26px;">{{ t.related_label }}</div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); column-gap:32px; row-gap:96px;">
+          <sc-for list="{{ relatedProducts }}" as="p" hint-placeholder-count="3">
+            <dc-import name="ProductCard" product="{{ p }}" on-open="{{ openProduct }}" hint-size="100%,420px"></dc-import>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{ orderModalOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed; inset:0; background:rgba(26,24,23,0.55); z-index:100; display:flex; align-items:center; justify-content:center; padding:20px;" onClick="{{ closeModal }}">
+        <div style="background:#F1EFEC; padding:44px; max-width:420px; width:100%; position:relative;" onClick="{{ stopProp }}">
+          <div style="position:absolute; top:16px; right:20px; cursor:pointer; font-size:20px;" onClick="{{ closeModal }}">×</div>
+          <sc-if value="{{ orderSubmitted }}" hint-placeholder-val="{{ false }}">
+            <div style="font-family:'Montserrat',sans-serif; font-size:26px; margin-top:12px;">{{ t.form_thanks }}</div>
+            <div style="font-size:14px; opacity:0.7; margin-top:10px;">{{ t.form_thanks_body }}</div>
+          </sc-if>
+          <sc-if value="{{ orderNotSubmitted }}" hint-placeholder-val="{{ true }}">
+            <div style="font-family:'Montserrat',sans-serif; font-size:26px; margin-top:6px;">{{ selectedProduct.name }}</div>
+            <div style="font-size:13px; opacity:0.6; margin-top:4px;">{{ currentPriceFormatted }} грн</div>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:24px;">
+              <input placeholder="{{ t.form_name }}" style="padding:12px 14px; border:1px solid rgba(255,255,255,0.3); background:#F8F8F8; font-size:14px; font-family:'Montserrat',sans-serif;">
+              <input placeholder="{{ t.form_phone }}" style="padding:12px 14px; border:1px solid rgba(255,255,255,0.3); background:#F8F8F8; font-size:14px; font-family:'Montserrat',sans-serif;">
+              <div style="margin-top:8px; background:#903838; color:#FFFFFF; padding:14px 22px; border-radius:8px; text-align:center; cursor:pointer; font-size:14px; font-weight:600; transition:transform .15s;" style-hover="transform:scale(1.04);" onClick="{{ submitOrder }}">{{ t.form_submit }}</div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ false }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:40px 40px 90px; max-width:900px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:38px;">{{ t.search_title }}</div>
+      <input placeholder="{{ t.search_ph }}" value="{{ searchQuery }}" onChange="{{ onSearchChange }}" style="width:100%; margin-top:22px; padding:16px 18px; border:none; border-bottom:1px solid #1A1817; background:transparent; font-size:20px; font-family:'Montserrat',sans-serif; color:#4C4C4C;">
+      <sc-if value="{{ searchEmpty }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:14px; opacity:0.55; margin-top:28px;">{{ t.search_empty }}</div>
+      </sc-if>
+      <sc-if value="{{ searchNoResults }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:14px; opacity:0.55; margin-top:28px;">{{ t.search_noresults }}</div>
+      </sc-if>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:36px;">
+        <sc-for list="{{ searchResults }}" as="p" hint-placeholder-count="0">
+          <dc-import name="ProductCard" product="{{ p }}" on-open="{{ openProduct }}" hint-size="100%,420px"></dc-import>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ pageIsCollab }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="padding:150px 40px 0; font-size:13px; opacity:0.6; display:flex; gap:8px; flex-wrap:wrap;">
+        <sc-for list="{{ breadcrumbs }}" as="bc" hint-placeholder-count="2">
+          <span style="cursor:pointer;" onClick="{{ bc.onClick }}">{{ bc.label }}</span>
+          <sc-if value="{{ bc.hasNext }}" hint-placeholder-val="{{ true }}"><span>/</span></sc-if>
+        </sc-for>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+        <div style="padding:40px 40px 40px; display:flex; flex-direction:column; justify-content:center; color:#4C4C4C;">
+          <div style="font-family:'Cormorant',serif; font-size:42px; max-width:520px;">{{ t.collab_title }}</div>
+          <div style="font-size:15px; opacity:0.85; margin-top:16px; max-width:480px; line-height:1.6;">{{ t.collab_sub }}</div>
+        </div>
+        <image-slot id="collab-hero" shape="rect" placeholder="Співпраця з ROSSA" style="width:100%; height:100%; min-height:380px;"></image-slot>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:56px; padding:48px 40px 80px;">
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <sc-for list="{{ collabBenefits }}" as="b" hint-placeholder-count="3">
+            <div style="padding:24px 0; border-bottom:1px solid #eee; transition:transform .15s, padding-left .15s;" style-hover="transform:translateX(6px);">
+              <div style="font-size:13px; color:#B83C3C; font-weight:700;">{{ b.num }}</div>
+              <div style="font-family:'Montserrat',sans-serif; font-size:20px; color:#4C4C4C; margin-top:8px;">{{ b.title }}</div>
+              <div style="font-size:14px; opacity:0.7; margin-top:8px; line-height:1.6; color:#4C4C4C;">{{ b.body }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div>
+          <sc-if value="{{ collabSubmitted }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#1A1817; padding:32px; font-size:15px; color:#FFFFFF;">{{ t.form_thanks }} {{ t.form_thanks_body }}</div>
+          </sc-if>
+          <sc-if value="{{ collabNotSubmitted }}" hint-placeholder-val="{{ true }}">
+            <div style="font-family:'Montserrat',sans-serif; font-size:26px; margin-bottom:20px;">{{ t.collab_form_title }}</div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <input placeholder="{{ t.form_company }}" style="padding:14px 16px; border:1.5px solid #4C4C4C; background:#F8F8F8; font-size:14px;">
+              <input placeholder="{{ t.form_name }}" style="padding:14px 16px; border:1.5px solid #4C4C4C; background:#F8F8F8; font-size:14px;">
+              <input placeholder="{{ t.form_phone }}" style="padding:14px 16px; border:1.5px solid #4C4C4C; background:#F8F8F8; font-size:14px;">
+              <textarea placeholder="{{ t.form_message }}" style="padding:14px 16px; border:1.5px solid #4C4C4C; background:#F8F8F8; font-size:14px; min-height:100px; font-family:'Montserrat',sans-serif; resize:vertical;"></textarea>
+              <div style="background:#903838; color:#FFFFFF; padding:14px; border-radius:8px; text-align:center; cursor:pointer; font-size:14px; font-weight:600; width:fit-content; padding-left:48px; padding-right:48px; transition:transform .15s;" style-hover="transform:scale(1.04);" onClick="{{ submitCollab }}">{{ t.form_submit }}</div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ pageIsAbout }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="padding:150px 40px 0; font-size:13px; opacity:0.6; display:flex; gap:8px; flex-wrap:wrap;">
+        <sc-for list="{{ breadcrumbs }}" as="bc" hint-placeholder-count="2">
+          <span style="cursor:pointer;" onClick="{{ bc.onClick }}">{{ bc.label }}</span>
+          <sc-if value="{{ bc.hasNext }}" hint-placeholder-val="{{ true }}"><span>/</span></sc-if>
+        </sc-for>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:48px; padding:40px 40px 60px;">
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div style="font-family:'Cormorant',serif; font-size:44px; color:#4C4C4C;">{{ t.about_title }}</div>
+          <div style="font-size:15px; color:#4C4C4C; opacity:0.7; margin-top:10px; margin-bottom:28px; max-width:480px; line-height:1.6;">{{ t.about_body }}</div>
+          <sc-for list="{{ aboutMilestones }}" as="m" hint-placeholder-count="4">
+            <div style="display:flex; gap:20px; padding:18px 0; border-left:2px solid #B83C3C; padding-left:20px;">
+              <div style="min-width:56px; font-family:'Cormorant',serif; font-size:22px; color:#B83C3C;">{{ m.year }}</div>
+              <div style="font-size:14px; color:#4C4C4C; opacity:0.85; line-height:1.6;">{{ m.body }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <image-slot id="about-hero" shape="rect" placeholder="ROSSA — майстерня" style="width:100%; height:100%; min-height:380px;"></image-slot>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:4px; padding:0 40px 140px;">
+        <sc-for list="{{ aboutCraftImages }}" as="ci" hint-placeholder-count="3">
+          <div>
+            <image-slot id="{{ ci.slotId }}" shape="rect" placeholder="{{ ci.label }}" style="width:100%; aspect-ratio:4/5;"></image-slot>
+            <div style="font-size:13px; opacity:0.6; margin-top:10px;">{{ ci.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#AFBDC6; padding:64px 40px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px;">
+        <sc-for list="{{ aboutValues }}" as="av" hint-placeholder-count="4">
+          <div style="background:#F8F8F8; padding:28px 24px; display:flex; flex-direction:column; gap:8px; position:relative; transition:transform .15s, box-shadow .15s;" style-hover="transform:translateY(-6px); box-shadow:0 12px 28px rgba(0,0,0,0.18);">
+            <div style="font-family:'Montserrat',sans-serif; font-size:19px; font-weight:700; color:#1A1817; max-width:80%;">{{ av.title }}</div>
+            <div style="position:absolute; top:24px; right:24px; font-family:'Cormorant',serif; font-size:26px; color:#C98B8B;">{{ av.num }}</div>
+            <div style="font-size:14px; color:#666; line-height:1.6; margin-top:4px;">{{ av.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ pageIsContact }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="padding:150px 40px 0; font-size:13px; opacity:0.6; display:flex; gap:8px; flex-wrap:wrap;">
+        <sc-for list="{{ breadcrumbs }}" as="bc" hint-placeholder-count="2">
+          <span style="cursor:pointer;" onClick="{{ bc.onClick }}">{{ bc.label }}</span>
+          <sc-if value="{{ bc.hasNext }}" hint-placeholder-val="{{ true }}"><span>/</span></sc-if>
+        </sc-for>
+      </div>
+      <div style="padding:28px 40px 0;">
+        <div style="font-family:'Cormorant',serif; font-size:44px; color:#4C4C4C;">{{ t.nav_contact }}</div>
+        <div style="font-size:15px; opacity:0.7; margin-top:10px; max-width:520px; line-height:1.6;">{{ t.contact_hours }}</div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:32px; margin-top:36px; padding:0 40px 90px;">
+        <div>
+          <div style="background:#FFFFFF; border:1px solid rgba(76,76,76,0.12); padding:32px; display:flex; flex-direction:column; gap:20px; font-size:15px;">
+            <div><div style="color:#C9A24B; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">{{ t.contact_phone_label }}</div><div style="margin-top:6px; color:#4C4C4C;">{{ t.phone }}</div></div>
+            <div><div style="color:#C9A24B; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">Email</div><div style="margin-top:6px; color:#4C4C4C;">hello@rossa.ua</div></div>
+            <div><div style="color:#C9A24B; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">{{ t.contact_address_label }}</div><div style="margin-top:6px; color:#4C4C4C;">{{ t.contact_address }}</div></div>
+            <div><div style="color:#C9A24B; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">{{ t.contact_hours_label }}</div><div style="margin-top:6px; color:#4C4C4C;">{{ t.contact_hours }}</div></div>
+            <div><div style="color:#C9A24B; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">Telegram</div><div style="margin-top:6px; color:#4C4C4C; text-decoration:underline; cursor:pointer;">@rossa_furniture</div></div>
+          </div>
+          <image-slot id="contact-map" shape="rect" placeholder="Карта — салон ROSSA" style="width:100%; aspect-ratio:16/9; max-height:280px; margin-top:20px;"></image-slot>
+        </div>
+        <div style="background:#F8F8F8; border:1.5px solid #903838; padding:40px; color:#4C4C4C;">
+          <sc-if value="{{ contactSubmitted }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:15px;">{{ t.form_thanks }} {{ t.form_thanks_body }}</div>
+          </sc-if>
+          <sc-if value="{{ contactNotSubmitted }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="font-family:'Cormorant',serif; font-size:26px; color:#903838;">{{ t.form_message }}</div>
+              <input placeholder="{{ t.form_name }}" style="padding:14px 16px; border:1.5px solid #903838; background:#F8F8F8; color:#4C4C4C; font-size:14px;">
+              <input placeholder="{{ t.form_phone }}" style="padding:14px 16px; border:1.5px solid #903838; background:#F8F8F8; color:#4C4C4C; font-size:14px;">
+              <textarea placeholder="{{ t.form_message }}" style="padding:14px 16px; border:1.5px solid #903838; background:#F8F8F8; color:#4C4C4C; font-size:14px; min-height:120px; font-family:'Montserrat',sans-serif; resize:vertical;"></textarea>
+              <div style="background:#903838; color:#FFFFFF; padding:14px; border-radius:8px; text-align:center; cursor:pointer; font-size:14px; font-weight:600; width:fit-content; padding-left:48px; padding-right:48px; transition:transform .15s;" style-hover="transform:scale(1.04);" onClick="{{ submitContact }}">{{ t.form_submit }}</div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="background:{{ footerBg }}; color:#313131; padding:36px 40px 0;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:24px; padding-bottom:26px; border-bottom:1px solid rgba(49,49,49,0.15);">
+      <div>
+        <img src="./assets/rossa-logo.png" alt="ROSSA" style="height:64px; width:auto;">
+        <div style="font-size:13px; opacity:0.65; margin-top:12px; line-height:1.6; max-width:220px;">{{ t.footer_tagline }}</div>
+      </div>
+      <div>
+        <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; opacity:0.6; margin-bottom:16px;">{{ t.footer_products }}</div>
+        <div style="display:flex; flex-direction:column; gap:11px; font-size:14px; opacity:0.9;">
+          <div style="cursor:pointer;" onClick="{{ goCategorySofasAll }}">{{ t.sofas }}</div>
+          <div style="cursor:pointer;" onClick="{{ goCatalogBeds }}">{{ t.beds }}</div>
+          <div style="cursor:pointer;" onClick="{{ goCatalogPoufs }}">{{ t.poufs }}</div>
+          <div style="cursor:pointer;" onClick="{{ goCatalog }}">{{ t.catalog }}</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; opacity:0.6; margin-bottom:16px;">{{ t.footer_info }}</div>
+        <div style="display:flex; flex-direction:column; gap:11px; font-size:14px; opacity:0.9;">
+          <div style="cursor:pointer;" onClick="{{ goAbout }}">{{ t.nav_about }}</div>
+          <div style="cursor:pointer;" onClick="{{ goCollab }}">{{ t.nav_collab }}</div>
+          <div style="cursor:pointer;" onClick="{{ goContact }}">{{ t.nav_contact }}</div>
+          <div style="cursor:pointer; opacity:0.75;">{{ t.how_to_order }}</div>
+          <div style="cursor:pointer; opacity:0.75;">{{ t.offer }}</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; opacity:0.6; margin-bottom:16px;">{{ t.footer_contacts }}</div>
+        <div style="display:flex; flex-direction:column; gap:11px; font-size:14px; opacity:0.9;">
+          <div>{{ t.phone }}</div>
+          <div>hello@rossa.ua</div>
+          <div>{{ t.contact_address }}</div>
+          <div style="color:{{ footerAccent }};">Telegram: @rossa_furniture</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:14px 0; font-size:12px; opacity:0.55; flex-wrap:wrap; gap:12px;">
+      <div>{{ t.rights }}</div>
+      <div style="cursor:pointer;">{{ t.offer }}</div>
+    </div>
+  </div>
+
+
+
+</div></x-dc>
+<script type="text/x-dc" data-dc-script>
+const FABRIC_DEFS = [
+  { id: 'rogozhka', label: 'Рогожка', price: 0 },
+  { id: 'oksamyt', label: 'Оксамит', price: 3200 },
+  { id: 'ecoshkira', label: 'Екошкіра', price: 5800 }
+];
+
+const PRODUCTS = [
+  { id: 1, name: 'Мілан', type: 'Модульний диван', category: 'Дивани', price: 42900, badge: 'NEW', dims: '320×95×82 см (модульна конфігурація)',
+    description: 'Модульний диван «Мілан» дозволяє зібрати конфігурацію під форму вашої вітальні — від компактного двомісного варіанта до великого кутового ансамблю. Каркас із масиву бука, незалежний пружинний блок.',
+    care: 'Знімні чохли, машинне прання за температури до 30°C. Рекомендовано хімчистку раз на рік.',
+    swatches: [{ hex: '#6B6255', slotId: 'p1-a', src: './assets/product-milan.png' }, { hex: '#C7BBA3', slotId: 'p1-b' }, { hex: '#903838', slotId: 'p1-c' }] },
+  { id: 2, name: 'Онтаріо', type: 'Кутовий диван', category: 'Дивани', price: 38500, badge: 'ХІТ', dims: '280×165×88 см',
+    description: 'Кутовий диван «Онтаріо» поєднує глибоке сидіння та широкі підлокітники. Ідеальний для сімейного перегляду фільмів чи денного відпочинку.',
+    care: 'Тканина стійка до стирання, знімні подушки, сухе чищення.',
+    swatches: [{ hex: '#C9BFA5', slotId: 'p2-a', src: './assets/product-ontario.png' }, { hex: '#7C7267', slotId: 'p2-b' }] },
+  { id: 3, name: 'Верона', type: 'Прямий диван', category: 'Дивани', price: 27900, badge: null, dims: '210×90×80 см',
+    description: 'Лаконічний прямий диван «Верона» для невеликих просторів. Дерев’яні ніжки, чіткі лінії, універсальний масштаб.',
+    care: 'Знімний чохол, чищення мильним розчином.',
+    swatches: [{ hex: '#D8CFC0', slotId: 'p3-a' }, { hex: '#4A5A52', slotId: 'p3-b' }, { hex: '#1A1817', slotId: 'p3-c' }] },
+  { id: 4, name: 'Соло', type: 'Ліжко', category: 'Ліжка', price: 24900, badge: 'TOP', dims: '160×200 см, узголів’я 110 см',
+    description: 'Ліжко «Соло» з м’яким тканинним узголів’ям і масивною основою з ламелями. Безшумний підйомний механізм для зберігання постільної білизни.',
+    care: 'Узголів’я знімне, сухе чищення тканини раз на пів року.',
+    swatches: [{ hex: '#EFE6D8', slotId: 'p4-a' }, { hex: '#7C6A55', slotId: 'p4-b' }] },
+  { id: 5, name: 'Кіото', type: 'Пуф', category: 'Пуфи', price: 4200, badge: null, dims: '45×45×40 см',
+    description: 'Компактний пуф «Кіото» — додаткове місце для сидіння або підставка для ніг. Легко переставляється по кімнаті.',
+    care: 'Знімний чохол, машинне прання.',
+    swatches: [{ hex: '#903838', slotId: 'p5-a' }, { hex: '#3E4B5C', slotId: 'p5-b' }, { hex: '#1A1817', slotId: 'p5-c' }] },
+  { id: 6, name: 'Локс', type: 'Кутовий модульний диван', category: 'Дивани', price: 45000, badge: 'NEW', dims: '340×180×85 см (модульна конфігурація)',
+    description: 'Диван «Локс» — модульна кутова система з можливістю трансформації в спальне місце. Підходить для великих вітальнь.',
+    care: 'Знімні чохли, машинне прання, регулярне збивання наповнювача подушок.',
+    swatches: [{ hex: '#7C7267', slotId: 'p6-a' }, { hex: '#D8CFC0', slotId: 'p6-b' }] }
+];
+
+const DICT = {
+  ua: {
+    phone: '+380 44 123 45 67', nav_product: 'Продукція', nav_collab: 'Співпраця', nav_about: 'Про нас', nav_contact: 'Контакти',
+    sofas: 'Дивани', beds: 'Ліжка', poufs: 'Пуфи', modular: 'Модульні', corner: 'Кутові', straight: 'Прямі', catalog: 'Каталог',
+    hero_eyebrow: 'Нова колекція 2026', hero_title: 'Меблі, створені для дому', hero_sub: 'М’які меблі з натуральних матеріалів. Індивідуальний пошив, доставка по всій Україні.',
+    cta_catalog: 'Дивитись каталог', section_categories: 'Категорії', section_bestsellers: 'Популярні моделі', view_all: 'Весь каталог',
+    craft_title: 'Кожна деталь має значення', craft_body: 'Каркаси з масиву дерева, незалежні пружинні блоки та тканини від європейських постачальників. Ми контролюємо якість на кожному етапі виробництва.', craft_link: 'Дізнатись більше про нас',
+    cta_banner_title_1: 'Не можете обрати модель?', cta_banner_title_2: 'Ми допоможемо підібрати меблі під ваш інтер’єр.',
+    catalog_intro: 'Дивани, ліжка та пуфи власного виробництва. Обирайте тканину та відтінок під ваш інтер’єр.',
+    sort_popular: 'За популярністю', sort_price_asc: 'Спочатку дешевші', sort_price_desc: 'Спочатку дорожчі', cta_more: 'Показати ще',
+    category_intro: 'Модульні, кутові та прямі дивани власного виробництва з можливістю вибору тканини.',
+    fabric: 'Тканина', shade: 'Відтінок', order_cta: 'Замовити', consult_cta: 'Отримати консультацію', guarantee_label: 'Гарантія: 18 місяців', delivery_label: 'Доставка: від 3 тижнів', description_label: 'Опис', care_label: 'Догляд за тканиною', related_label: 'Вам також сподобається',
+    footer_products: 'Продукція', footer_info: 'Інформація', footer_contacts: 'Контакти', footer_tagline: 'М’які меблі преміум-класу власного виробництва.',
+    how_to_order: 'Як отримати замовлення', offer: 'Оферта та політика конфіденційності', rights: '© 2026 ROSSA. Усі права захищені.',
+    search_title: 'Пошук', search_ph: 'Введіть назву моделі...', search_empty: 'Введіть назву моделі або категорію, щоб почати пошук.', search_noresults: 'Нічого не знайдено. Спробуйте інший запит.',
+    collab_title: 'Співпраця з ROSSA', collab_sub: 'Оптові умови для дизайнерів інтер’єру, дилерів та готельного бізнесу.',
+    collab_form_title: 'Залишити заявку на співпрацю', form_company: 'Назва компанії', form_name: 'Ім’я', form_phone: 'Телефон', form_message: 'Повідомлення', form_submit: 'Надіслати',
+    form_thanks: 'Дякуємо за заявку!', form_thanks_body: 'Наш менеджер зв’яжеться з вами найближчим часом.',
+    about_title: 'Про ROSSA', about_body: 'ROSSA — бренд м’яких меблів власного виробництва. Ми поєднуємо традиційну столярну майстерність із сучасним дизайном, щоб створювати меблі, які служать роками. Кожна модель проходить через руки майстрів — від розкрою тканини до фінальної збірки.',
+    contact_phone_label: 'Телефон', contact_address_label: 'Адреса', contact_address: 'м. Київ, вул. Індустріальна, 12', contact_hours_label: 'Графік роботи', contact_hours: 'Пн–Сб, 10:00–19:00'
+  },
+  ru: {
+    phone: '+380 44 123 45 67', nav_product: 'Продукция', nav_collab: 'Сотрудничество', nav_about: 'О нас', nav_contact: 'Контакты',
+    sofas: 'Диваны', beds: 'Кровати', poufs: 'Пуфы', modular: 'Модульные', corner: 'Угловые', straight: 'Прямые', catalog: 'Каталог',
+    hero_eyebrow: 'Новая коллекция 2026', hero_title: 'Мебель, созданная для дома', hero_sub: 'Мягкая мебель из натуральных материалов. Индивидуальный пошив, доставка по всей Украине.',
+    cta_catalog: 'Смотреть каталог', section_categories: 'Категории', section_bestsellers: 'Популярные модели', view_all: 'Весь каталог',
+    craft_title: 'Каждая деталь имеет значение', craft_body: 'Каркасы из массива дерева, независимые пружинные блоки и ткани от европейских поставщиков. Мы контролируем качество на каждом этапе производства.', craft_link: 'Узнать больше о нас',
+    cta_banner_title_1: 'Не можете выбрать модель?', cta_banner_title_2: 'Мы поможем подобрать мебель под ваш интерьер.',
+    catalog_intro: 'Диваны, кровати и пуфы собственного производства. Выбирайте ткань и оттенок под ваш интерьер.',
+    sort_popular: 'По популярности', sort_price_asc: 'Сначала дешевле', sort_price_desc: 'Сначала дороже', cta_more: 'Показать ещё',
+    category_intro: 'Модульные, угловые и прямые диваны собственного производства с возможностью выбора ткани.',
+    fabric: 'Ткань', shade: 'Оттенок', order_cta: 'Заказать', consult_cta: 'Получить консультацию', guarantee_label: 'Гарантия: 18 месяцев', delivery_label: 'Доставка: от 3 недель', description_label: 'Описание', care_label: 'Уход за тканью', related_label: 'Вам также понравится',
+    footer_products: 'Продукция', footer_info: 'Информация', footer_contacts: 'Контакты', footer_tagline: 'Мягкая мебель премиум-класса собственного производства.',
+    how_to_order: 'Как получить заказ', offer: 'Оферта и политика конфиденциальности', rights: '© 2026 ROSSA. Все права защищены.',
+    search_title: 'Поиск', search_ph: 'Введите название модели...', search_empty: 'Введите название модели или категорию, чтобы начать поиск.', search_noresults: 'Ничего не найдено. Попробуйте другой запрос.',
+    collab_title: 'Сотрудничество с ROSSA', collab_sub: 'Оптовые условия для дизайнеров интерьера, дилеров и гостиничного бизнеса.',
+    collab_form_title: 'Оставить заявку на сотрудничество', form_company: 'Название компании', form_name: 'Имя', form_phone: 'Телефон', form_message: 'Сообщение', form_submit: 'Отправить',
+    form_thanks: 'Спасибо за заявку!', form_thanks_body: 'Наш менеджер свяжется с вами в ближайшее время.',
+    about_title: 'О ROSSA', about_body: 'ROSSA — бренд мягкой мебели собственного производства. Мы соединяем традиционное столярное мастерство с современным дизайном, чтобы создавать мебель, которая служит годами. Каждая модель проходит через руки мастеров — от раскроя ткани до финальной сборки.',
+    contact_phone_label: 'Телефон', contact_address_label: 'Адрес', contact_address: 'г. Киев, ул. Индустриальная, 12', contact_hours_label: 'Часы работы', contact_hours: 'Пн–Сб, 10:00–19:00'
+  }
+};
+
+class Component extends DCLogic {
+  state = {
+    page: 'home', lang: 'ua', megaOpen: false, megaHoverCat: 'sofas', mobileNavOpen: false, isMobile: false, searchOpen: false,
+    catalogFilter: 'all', catalogSort: 'popular', catalogVisible: 4,
+    categoryTab: 'Всі', searchQuery: '',
+    selectedProductId: 1, productFabric: 'rogozhka', productShade: 0,
+    orderModalOpen: false, orderSubmitted: false, contactSubmitted: false, collabSubmitted: false, scrolled: false
+  };
+
+  componentDidMount() {
+    this.checkWidth = () => this.setState({ isMobile: window.innerWidth < 900 });
+    this.checkWidth();
+    window.addEventListener('resize', this.checkWidth);
+    this.checkScroll = () => this.setState({ scrolled: window.scrollY > 40 });
+    window.addEventListener('scroll', this.checkScroll);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.checkWidth);
+    window.removeEventListener('scroll', this.checkScroll);
+  }
+
+  goTo(page, extra) {
+    this.setState({ page, megaOpen: false, mobileNavOpen: false, ...(extra || {}) });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const t = DICT[s.lang];
+    const fmt = (n) => n.toLocaleString('uk-UA');
+
+    const breadcrumbMaps = {
+      catalog: [{ label: t.home, page: 'home' }, { label: t.catalog, page: 'catalog' }],
+      category: [{ label: t.home, page: 'home' }, { label: t.catalog, page: 'catalog' }, { label: t.sofas, page: 'category' }],
+      product: [{ label: t.home, page: 'home' }, { label: t.catalog, page: 'catalog' }, { label: this.products ? '' : '', page: 'product' }],
+      search: [{ label: t.home, page: 'home' }, { label: t.search_title, page: 'search' }],
+      collab: [{ label: t.home, page: 'home' }, { label: t.nav_collab, page: 'collab' }],
+      about: [{ label: t.home, page: 'home' }, { label: t.nav_about, page: 'about' }],
+      contact: [{ label: t.home, page: 'home' }, { label: t.nav_contact, page: 'contact' }]
+    };
+    t.home = t.home || (s.lang === 'ua' ? 'Головна' : 'Главная');
+
+    const selectedProduct = PRODUCTS.find(p => p.id === s.selectedProductId) || PRODUCTS[0];
+
+    let rawCrumbs = [];
+    if (s.page === 'catalog') rawCrumbs = breadcrumbMaps.catalog;
+    else if (s.page === 'category') rawCrumbs = breadcrumbMaps.category;
+    else if (s.page === 'product') rawCrumbs = [{ label: t.home, page: 'home' }, { label: t.catalog, page: 'catalog' }, { label: selectedProduct.name, page: 'product' }];
+    else if (s.page === 'search') rawCrumbs = breadcrumbMaps.search;
+    else if (s.page === 'collab') rawCrumbs = breadcrumbMaps.collab;
+    else if (s.page === 'about') rawCrumbs = breadcrumbMaps.about;
+    else if (s.page === 'contact') rawCrumbs = breadcrumbMaps.contact;
+
+    const breadcrumbs = rawCrumbs.map((c, i) => ({
+      label: c.label, hasNext: i < rawCrumbs.length - 1,
+      onClick: i < rawCrumbs.length - 1 ? () => this.goTo(c.page) : () => {}
+    }));
+
+    // catalog
+    const catalogFiltered = PRODUCTS.filter(p => s.catalogFilter === 'all' || p.category === s.catalogFilter);
+    const catalogSorted = [...catalogFiltered].sort((a, b) => {
+      if (s.catalogSort === 'price-asc') return a.price - b.price;
+      if (s.catalogSort === 'price-desc') return b.price - a.price;
+      return 0;
+    });
+    const chipDefs = [{ label: t.home && 'Всі' || 'Всі', value: 'all' }, { label: t.sofas, value: 'Дивани' }, { label: t.beds, value: 'Ліжка' }, { label: t.poufs, value: 'Пуфи' }];
+    const catalogChips = chipDefs.map(c => {
+      const active = s.catalogFilter === c.value;
+      return {
+        label: c.label, borderColor: active ? '#903838' : 'rgba(26,24,23,0.3)', bg: active ? '#903838' : 'transparent', color: active ? '#FFFFFF' : '#4C4C4C',
+        onClick: () => this.setState({ catalogFilter: c.value, catalogVisible: 4 })
+      };
+    });
+
+    // category (sofas)
+    const subMap = { 'Модульні': 'Модульний', 'Кутові': 'Кутовий', 'Прямі': 'Прямий' };
+    const categoryProducts = PRODUCTS.filter(p => p.category === 'Дивани' && (s.categoryTab === 'Всі' || p.type.includes(subMap[s.categoryTab])));
+    const categoryTabs = ['Всі', 'Модульні', 'Кутові', 'Прямі'].map(label => {
+      const active = s.categoryTab === label;
+      return { label, borderColor: active ? '#903838' : 'rgba(26,24,23,0.3)', bg: active ? '#903838' : 'transparent', color: active ? '#FFFFFF' : '#4C4C4C', onClick: () => this.setState({ categoryTab: label }) };
+    });
+
+    // product detail
+    const fabricOptionsComputed = FABRIC_DEFS.map(f => {
+      const active = s.productFabric === f.id;
+      return { label: f.label, surchargeLabel: f.price > 0 ? '+' + fmt(f.price) + ' грн' : '', borderColor: active ? '#903838' : 'rgba(26,24,23,0.3)', bg: active ? '#903838' : 'transparent', color: active ? '#FFFFFF' : '#4C4C4C', select: () => this.setState({ productFabric: f.id }) };
+    });
+    const currentFabric = FABRIC_DEFS.find(f => f.id === s.productFabric);
+    const currentPriceFormatted = fmt(selectedProduct.price + currentFabric.price);
+    const detailSwatches = selectedProduct.swatches.map((sw, i) => ({
+      hex: sw.hex, detailSlotId: sw.slotId, thumbSlotId: sw.slotId, active: i === s.productShade, borderColor: i === s.productShade ? '#903838' : 'transparent',
+      select: () => this.setState({ productShade: i })
+    }));
+    const relatedProducts = PRODUCTS.filter(p => p.id !== selectedProduct.id).slice(0, 3);
+
+    // search
+    const q = s.searchQuery.trim().toLowerCase();
+    const searchResults = q ? PRODUCTS.filter(p => (p.name + ' ' + p.type + ' ' + p.category).toLowerCase().includes(q)) : [];
+
+    return {
+      t, lang: s.lang, uaOpacity: s.lang === 'ua' ? 1 : 0.5, ruOpacity: s.lang === 'ru' ? 1 : 0.5,
+      setLangUa: () => this.setState({ lang: 'ua' }), setLangRu: () => this.setState({ lang: 'ru' }),
+      showDesktopNav: !s.isMobile, showMobileToggle: s.isMobile, mobileNavOpen: s.mobileNavOpen,
+      mobileNavIcon: s.mobileNavOpen ? '×' : '☰',
+      toggleMobileNav: () => this.setState(st => ({ mobileNavOpen: !st.mobileNavOpen })),
+      megaOpen: s.megaOpen, openMega: () => this.setState({ megaOpen: true }), closeMega: () => this.setState({ megaOpen: false }), toggleMega: () => this.setState(st => ({ megaOpen: !st.megaOpen })),
+      megaHoverCat: s.megaHoverCat,
+      setMegaHoverSofas: () => this.setState({ megaHoverCat: 'sofas' }),
+      setMegaHoverBeds: () => this.setState({ megaHoverCat: 'beds' }),
+      setMegaHoverPoufs: () => this.setState({ megaHoverCat: 'poufs' }),
+      megaPreviewSlotId: s.megaHoverCat === 'beds' ? 'cat-beds' : s.megaHoverCat === 'poufs' ? 'cat-poufs' : 'cat-sofas',
+      megaSofasUnderline: s.megaHoverCat === 'sofas' ? '1px solid #903838' : '1px solid transparent',
+      megaBedsUnderline: s.megaHoverCat === 'beds' ? '1px solid #903838' : '1px solid transparent',
+      megaPoufsUnderline: s.megaHoverCat === 'poufs' ? '1px solid #903838' : '1px solid transparent',
+      megaBedsOpacity: s.megaHoverCat === 'beds' ? 1 : 0.85,
+      megaPoufsOpacity: s.megaHoverCat === 'poufs' ? 1 : 0.85,
+
+      goHome: () => this.goTo('home'), goCatalog: () => this.goTo('catalog', { catalogFilter: 'all', catalogVisible: 4 }),
+      goCatalogBeds: () => this.goTo('catalog', { catalogFilter: 'Ліжка', catalogVisible: 4 }),
+      goCatalogPoufs: () => this.goTo('catalog', { catalogFilter: 'Пуфи', catalogVisible: 4 }),
+      goCategorySofasAll: () => this.goTo('category', { categoryTab: 'Всі' }),
+      goCategorySofasModular: () => this.goTo('category', { categoryTab: 'Модульні' }),
+      goCategorySofasCorner: () => this.goTo('category', { categoryTab: 'Кутові' }),
+      goCategorySofasStraight: () => this.goTo('category', { categoryTab: 'Прямі' }),
+      goCollab: () => this.goTo('collab'), goAbout: () => this.goTo('about'), goContact: () => this.goTo('contact'), goSearch: () => this.goTo('search'),
+
+      footerBg: '#F8F8F8', footerAccent: '#903838',
+      headerWrapStyle: s.scrolled
+        ? 'position:fixed; top:0; left:0; right:0; z-index:50; background:rgba(248,248,248,0.8); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 4px 24px rgba(0,0,0,0.08);'
+        : 'position:fixed; top:0; left:0; right:0; z-index:50; background:#F8F8F8;',
+      navTextColor: '#313131',
+      pageIsHome: s.page === 'home', pageIsCatalog: s.page === 'catalog', pageIsCategory: s.page === 'category',
+      pageIsProduct: s.page === 'product', pageIsSearch: s.page === 'search', pageIsCollab: s.page === 'collab',
+      pageIsAbout: s.page === 'about', pageIsContact: s.page === 'contact',
+      showBreadcrumbs: s.page !== 'home' && s.page !== 'about' && s.page !== 'collab' && s.page !== 'contact',
+      breadcrumbs,
+
+      valueProps: [
+        { num: '01', title: s.lang === 'ua' ? 'Матеріали преміум-класу' : 'Материалы премиум-класса', body: s.lang === 'ua' ? 'Тканини та шкіра від перевірених європейських постачальників.' : 'Ткани и кожа от проверенных европейских поставщиков.' },
+        { num: '02', title: s.lang === 'ua' ? 'Гарантія 5 років' : 'Гарантия 5 лет', body: s.lang === 'ua' ? 'На каркас та механізми трансформації.' : 'На каркас и механизмы трансформации.' },
+        { num: '03', title: s.lang === 'ua' ? 'Доставка по Україні' : 'Доставка по Украине', body: s.lang === 'ua' ? 'Збірка та підйом на поверх включені у вартість.' : 'Сборка и подъём на этаж включены в стоимость.' },
+        { num: '04', title: s.lang === 'ua' ? 'Індивідуальний пошив' : 'Индивидуальный пошив', body: s.lang === 'ua' ? 'Оберіть тканину та розміри під ваш простір.' : 'Выберите ткань и размеры под ваше пространство.' }
+      ],
+      featuredCategories: [
+        { label: t.sofas, slotId: 'cat-sofas', onClick: () => this.goTo('category', { categoryTab: 'Всі' }) },
+        { label: t.beds, slotId: 'cat-beds', onClick: () => this.goTo('catalog', { catalogFilter: 'Ліжка', catalogVisible: 4 }) },
+        { label: t.poufs, slotId: 'cat-poufs', onClick: () => this.goTo('catalog', { catalogFilter: 'Пуфи', catalogVisible: 4 }) }
+      ],
+      homeBestsellers: PRODUCTS.slice(0, 6),
+
+      catalogChips, catalogSort: s.catalogSort, onSortChange: (e) => this.setState({ catalogSort: e.target.value }),
+      catalogVisibleProducts: catalogSorted.slice(0, s.catalogVisible), catalogHasMore: catalogSorted.length > s.catalogVisible,
+      showMore: () => this.setState(st => ({ catalogVisible: st.catalogVisible + 4 })),
+
+      categoryTabs, categoryProducts,
+
+      openProduct: (product) => this.setState({ page: 'product', selectedProductId: product.id, productFabric: 'rogozhka', productShade: 0, orderModalOpen: false, orderSubmitted: false }),
+      selectedProduct, currentPriceFormatted, fabricOptionsComputed, detailSwatches, relatedProducts,
+      openOrderModal: () => this.setState({ orderModalOpen: true, orderSubmitted: false }),
+      closeModal: () => this.setState({ orderModalOpen: false }),
+      stopProp: (e) => e && e.stopPropagation && e.stopPropagation(),
+      orderModalOpen: s.orderModalOpen, orderSubmitted: s.orderSubmitted, orderNotSubmitted: !s.orderSubmitted,
+      submitOrder: () => this.setState({ orderSubmitted: true }),
+
+      searchQuery: s.searchQuery, onSearchChange: (e) => this.setState({ searchQuery: e.target.value }),
+      toggleSearch: () => this.setState({ searchOpen: !s.searchOpen }),
+      searchOpen: s.searchOpen,
+      searchEmpty: q.length === 0, searchNoResults: q.length > 0 && searchResults.length === 0, searchResults: searchResults.map(p => ({ ...p, onOpen: () => this.setState({ searchOpen: false, page: 'product', selectedProductId: p.id, productFabric: 'rogozhka', productShade: 0, orderModalOpen: false, orderSubmitted: false }) })),
+
+      collabBenefits: [
+        { num: '01', title: s.lang === 'ua' ? 'Дилерські ціни' : 'Дилерские цены', body: s.lang === 'ua' ? 'Спеціальні умови від обсягу закупівлі.' : 'Специальные условия от объёма закупки.' },
+        { num: '02', title: s.lang === 'ua' ? 'Каталог для дизайнерів' : 'Каталог для дизайнеров', body: s.lang === 'ua' ? 'Технічні креслення та зразки тканин на запит.' : 'Технические чертежи и образцы тканей по запросу.' },
+        { num: '03', title: s.lang === 'ua' ? 'Персональний менеджер' : 'Персональный менеджер', body: s.lang === 'ua' ? 'Супровід проєкту від замовлення до монтажу.' : 'Сопровождение проекта от заказа до монтажа.' }
+      ],
+      collabSubmitted: s.collabSubmitted, collabNotSubmitted: !s.collabSubmitted, submitCollab: () => this.setState({ collabSubmitted: true }),
+
+      aboutMilestones: [
+        { year: '2011', body: s.lang === 'ua' ? 'Заснування майстерні, перші дивани на замовлення.' : 'Основание мастерской, первые диваны на заказ.' },
+        { year: '2016', body: s.lang === 'ua' ? 'Власне виробництво каркасів і пружинних блоків.' : 'Собственное производство каркасов и пружинных блоков.' },
+        { year: '2020', body: s.lang === 'ua' ? 'Розширення асортименту: ліжка та пуфи.' : 'Расширение ассортимента: кровати и пуфы.' },
+        { year: '2024', body: s.lang === 'ua' ? 'Шоурум і доставка по всій Україні.' : 'Шоурум и доставка по всей Украине.' }
+      ],
+      aboutCraftImages: [
+        { slotId: 'about-fabric', label: s.lang === 'ua' ? 'Тканини' : 'Ткани' },
+        { slotId: 'about-frame', label: s.lang === 'ua' ? 'Каркас і наповнення' : 'Каркас и наполнение' },
+        { slotId: 'about-assembly', label: s.lang === 'ua' ? 'Ручна збірка' : 'Ручная сборка' }
+      ],
+      aboutValues: [
+        { num: '01', title: s.lang === 'ua' ? 'Якість' : 'Качество', body: s.lang === 'ua' ? 'Контроль на кожному етапі виробництва.' : 'Контроль на каждом этапе производства.' },
+        { num: '02', title: s.lang === 'ua' ? 'Довговічність' : 'Долговечность', body: s.lang === 'ua' ? 'Матеріали, розраховані на роки використання.' : 'Материалы, рассчитанные на годы использования.' },
+        { num: '03', title: s.lang === 'ua' ? 'Дизайн' : 'Дизайн', body: s.lang === 'ua' ? 'Лаконічні форми для сучасного інтер’єру.' : 'Лаконичные формы для современного интерьера.' },
+        { num: '04', title: s.lang === 'ua' ? 'Сервіс' : 'Сервис', body: s.lang === 'ua' ? 'Гарантія та підтримка після покупки.' : 'Гарантия и поддержка после покупки.' }
+      ],
+
+      contactSubmitted: s.contactSubmitted, contactNotSubmitted: !s.contactSubmitted, submitContact: () => this.setState({ contactSubmitted: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

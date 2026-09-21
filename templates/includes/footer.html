@@ -1,0 +1,51 @@
+{% load i18n static %}
+<footer class="footer">
+  <div class="footer__grid">
+    <div>
+      {% if site_settings.logo %}
+        <img class="footer__logo" src="{{ site_settings.logo.url }}" alt="ROSSA" width="160" height="64">
+      {% else %}
+        <img class="footer__logo" src="{% static 'images/logo/rossa-logo.png' %}" alt="ROSSA" width="160" height="64">
+      {% endif %}
+      <p class="footer__tagline">{{ site_settings.footer_tagline }}</p>
+    </div>
+    <div>
+      <div class="footer__label">{% trans "Продукція" %}</div>
+      <div class="footer__list">
+        {% for cat in nav_categories %}
+          <a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+          {% for child in cat.children.all %}
+            {% if child.is_active %}
+              <a href="{{ child.get_absolute_url }}">{{ child.name }}</a>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        <a href="{% url 'catalog:index' %}">{% trans "Каталог" %}</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer__label">{% trans "Інформація" %}</div>
+      <div class="footer__list">
+        <a href="{% url 'core:about' %}">{% trans "Про нас" %}</a>
+        <a href="{% url 'core:collab' %}">{% trans "Співпраця" %}</a>
+        <a href="{% url 'core:contacts' %}">{% trans "Контакти" %}</a>
+        <a href="{% url 'core:delivery' %}">{% trans "Як отримати замовлення" %}</a>
+        <a href="{% url 'core:offer' %}">{% trans "Оферта" %}</a>
+        <a href="{% url 'core:privacy' %}">{% trans "Політика конфіденційності" %}</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer__label">{% trans "Контакти" %}</div>
+      <div class="footer__list">
+        <a href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a>
+        <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+        <span>{{ site_settings.address }}</span>
+        <a class="footer__accent" href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer">Telegram: {{ site_settings.telegram_handle }}</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div>{% trans "© 2026 ROSSA. Усі права захищені." %}</div>
+    <a href="{% url 'core:privacy' %}">{% trans "Оферта та політика конфіденційності" %}</a>
+  </div>
+</footer>

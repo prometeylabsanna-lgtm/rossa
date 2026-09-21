@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block body_class %}page--inner{% endblock %}
+{% block content %}
+  {% include "includes/breadcrumbs.html" %}
+  <section class="section wrap">
+    <h1 class="page-title">{{ category.name }}</h1>
+    {% if category.intro %}<p class="page-intro">{{ category.intro }}</p>{% endif %}
+    <p class="page-intro">{{ total }} {% trans "моделей" %}</p>
+    <div class="toolbar" data-qa="filter-form">
+      <div class="chips">
+        {% if children %}
+          <a class="chip{% if category.get_absolute_url == parent_all_url %} is-active{% endif %}" href="{{ parent_all_url }}">{% trans "Всі" %}</a>
+          {% for child in children %}
+            <a class="chip{% if child.id == category.id %} is-active{% endif %}" href="{{ child.get_absolute_url }}">{{ child.name }}</a>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <form method="get">
+        <label class="visually-hidden" for="sort">{% trans "Сортування" %}</label>
+        <select class="sort" id="sort" name="sort" data-sort>
+          <option value="popular" {% if sort == 'popular' %}selected{% endif %}>{% trans "За популярністю" %}</option>
+          <option value="new" {% if sort == 'new' %}selected{% endif %}>{% trans "Новинки" %}</option>
+          <option value="price-asc" {% if sort == 'price-asc' %}selected{% endif %}>{% trans "Спочатку дешевші" %}</option>
+          <option value="price-desc" {% if sort == 'price-desc' %}selected{% endif %}>{% trans "Спочатку дорожчі" %}</option>
+          <option value="name" {% if sort == 'name' %}selected{% endif %}>{% trans "За назвою" %}</option>
+        </select>
+      </form>
+    </div>
+    {% include "partials/product_grid.html" %}
+  </section>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/pages/catalog.js' %}" defer></script>
+{% endblock %}

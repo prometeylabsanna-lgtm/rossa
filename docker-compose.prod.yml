@@ -1,0 +1,13 @@
+services:
+  nginx:
+    restart: always
+  backend:
+    restart: always
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app/src
+  db:
+    restart: always
+    env_file:
+      - .env

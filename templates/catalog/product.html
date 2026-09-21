@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n static rossa %}
+{% block body_class %}page--inner{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/pages/product.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+  {% include "includes/breadcrumbs.html" %}
+  {% include "partials/product_config.html" %}
+  <section class="related">
+    <h2>{% trans "Вам також сподобається" %}</h2>
+    <div class="product-grid" data-qa="product-grid">
+      {% for product in related %}
+        {% include "includes/product_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+  <div class="modal" data-order-modal>
+    <div class="modal__box" role="dialog" aria-modal="true">
+      <button class="modal__close" type="button" data-close-modal aria-label="{% trans 'Закрити' %}">×</button>
+      {% include "leads/order_form.html" %}
+    </div>
+  </div>
+{% endblock %}

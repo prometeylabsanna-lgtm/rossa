@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f0eee9;font-family:'Montserrat',sans-serif}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+.ph{background:linear-gradient(135deg,#c9c4bd,#e4e0da);display:flex;align-items:center;justify-content:center;color:#8a857d;font-size:11px;font-family:'Montserrat',sans-serif;text-align:center}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Редизайн сторінки «Про нас» — 6 напрямків</span></div>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Повноекранний банер, текст по центру</div>
+      <div class="dv-card" style="width:340px">
+        <div class="ph" style="height:280px; position:relative;">
+          <div style="position:absolute; inset:0; background:rgba(26,24,23,0.45);"></div>
+          <div style="position:relative; color:#F6F2F7; padding:0 24px; text-align:center;">
+            <div style="font-family:'Cormorant',serif; font-size:30px;">Про ROSSA</div>
+            <div style="font-size:11px; margin-top:8px; opacity:0.9; line-height:1.5;">Меблі власного виробництва, які поєднують традиційну столярну майстерність із сучасним дизайном.</div>
+          </div>
+        </div>
+        <div style="padding:20px; display:flex; flex-direction:column; gap:10px;">
+          <div class="ph" style="height:70px; border-radius:4px;">фото 1</div>
+          <div style="display:flex; gap:10px;">
+            <div class="ph" style="height:70px; flex:1; border-radius:4px;">фото 2</div>
+            <div class="ph" style="height:70px; flex:1; border-radius:4px;">фото 3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Хронологія бренду (вертикальна стрічка)</div>
+      <div class="dv-card" style="width:340px">
+        <div style="padding:24px 24px 8px;">
+          <div style="font-family:'Cormorant',serif; font-size:26px; color:#4C4C4C;">Історія ROSSA</div>
+          <div style="font-size:11px; color:#4C4C4C; opacity:0.7; margin-top:6px;">Від меблевої майстерні до бренду м'яких меблів.</div>
+        </div>
+        <div style="padding:16px 24px 24px; display:flex; flex-direction:column; gap:0;">
+          <div style="display:flex; gap:14px; padding:14px 0; border-left:2px solid #B83C3C; padding-left:16px;">
+            <div style="min-width:44px; font-family:'Cormorant',serif; font-size:18px; color:#B83C3C;">2011</div>
+            <div style="font-size:11px; color:#4C4C4C; line-height:1.5;">Заснування майстерні, перші дивани на замовлення.</div>
+          </div>
+          <div style="display:flex; gap:14px; padding:14px 0; border-left:2px solid #B83C3C; padding-left:16px;">
+            <div style="min-width:44px; font-family:'Cormorant',serif; font-size:18px; color:#B83C3C;">2016</div>
+            <div style="font-size:11px; color:#4C4C4C; line-height:1.5;">Власне виробництво каркасів і пружинних блоків.</div>
+          </div>
+          <div style="display:flex; gap:14px; padding:14px 0; border-left:2px solid #B83C3C; padding-left:16px;">
+            <div style="min-width:44px; font-family:'Cormorant',serif; font-size:18px; color:#B83C3C;">2024</div>
+            <div style="font-size:11px; color:#4C4C4C; line-height:1.5;">Шоурум і доставка по всій Україні.</div>
+          </div>
+        </div>
+        <div class="ph" style="height:120px;">фото майстерні</div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Журнальний колаж, асиметричний</div>
+      <div class="dv-card" style="width:340px">
+        <div style="padding:24px 24px 0;">
+          <div style="font-family:'Cormorant',serif; font-size:26px; color:#4C4C4C;">Про ROSSA</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:8px; padding:16px 24px;">
+          <div class="ph" style="height:180px; border-radius:4px;">фото велике</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="ph" style="height:84px; border-radius:4px;">фото</div>
+            <div style="font-size:11px; color:#4C4C4C; line-height:1.5; font-style:italic; font-family:'Cormorant',serif; font-size:15px;">«Кожна деталь має значення»</div>
+          </div>
+        </div>
+        <div style="padding:0 24px 24px; font-size:11px; color:#4C4C4C; opacity:0.8; line-height:1.6;">Каркаси з масиву дерева, незалежні пружинні блоки та тканини від європейських постачальників.</div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Портрет засновника + цитата</div>
+      <div class="dv-card" style="width:340px">
+        <div style="display:flex; gap:0;">
+          <div class="ph" style="width:140px; height:220px;">портрет</div>
+          <div style="padding:24px; display:flex; flex-direction:column; justify-content:center;">
+            <div style="font-family:'Cormorant',serif; font-size:19px; color:#4C4C4C; line-height:1.3;">«Ми будуємо меблі, які служать роками, а не сезон»</div>
+            <div style="font-size:11px; color:#B83C3C; margin-top:10px; font-weight:600;">Засновник ROSSA</div>
+          </div>
+        </div>
+        <div style="padding:20px 24px 24px; font-size:11px; color:#4C4C4C; opacity:0.8; line-height:1.6;">ROSSA — бренд м'яких меблів власного виробництва, заснований на традиційній столярній майстерності.</div>
+        <div style="display:flex; gap:8px; padding:0 24px 24px;">
+          <div class="ph" style="height:60px; flex:1; border-radius:4px;">фото</div>
+          <div class="ph" style="height:60px; flex:1; border-radius:4px;">фото</div>
+          <div class="ph" style="height:60px; flex:1; border-radius:4px;">фото</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1e">
+      <div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Цифри бренду великим планом</div>
+      <div class="dv-card" style="width:340px">
+        <div class="ph" style="height:150px;">банер</div>
+        <div style="padding:24px;">
+          <div style="font-family:'Cormorant',serif; font-size:24px; color:#4C4C4C;">Про ROSSA у цифрах</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:16px;">
+            <div><div style="font-family:'Cormorant',serif; font-size:28px; color:#B83C3C;">13</div><div style="font-size:10px; color:#4C4C4C; opacity:0.7;">років на ринку</div></div>
+            <div><div style="font-family:'Cormorant',serif; font-size:28px; color:#B83C3C;">120+</div><div style="font-size:10px; color:#4C4C4C; opacity:0.7;">моделей</div></div>
+            <div><div style="font-family:'Cormorant',serif; font-size:28px; color:#B83C3C;">5</div><div style="font-size:10px; color:#4C4C4C; opacity:0.7;">років гарантії</div></div>
+          </div>
+          <div style="font-size:11px; color:#4C4C4C; opacity:0.8; margin-top:16px; line-height:1.6;">Виробництво повного циклу: від розкрою каркасу до фінального оздоблення.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1f">
+      <div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Мінімалістичний, багато повітря</div>
+      <div class="dv-card" style="width:340px">
+        <div style="padding:60px 32px 40px; text-align:center;">
+          <div style="font-family:'Cormorant',serif; font-size:30px; color:#4C4C4C;">ROSSA</div>
+          <div style="font-size:11px; color:#4C4C4C; opacity:0.7; margin-top:12px; line-height:1.6; max-width:220px; margin-left:auto; margin-right:auto;">Меблі, зроблені руками, для дому, який хочеться берегти.</div>
+        </div>
+        <div class="ph" style="height:200px;">фото на всю ширину</div>
+        <div style="padding:40px 32px; text-align:center; font-size:11px; color:#4C4C4C; opacity:0.6;">Дізнатись більше →</div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Спробуй далі: «зроби повну сторінку за <a class="dv-oid" href="#1b">1b</a>» · «поєднай <a class="dv-oid" href="#1d">1d</a> і <a class="dv-oid" href="#1e">1e</a>» · «ще варіанти»</p>
+</section>
+
+</x-dc>
+</body>
+</html>

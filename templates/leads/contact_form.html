@@ -1,0 +1,23 @@
+{% load i18n %}
+<form class="form"
+      method="post"
+      action="{% url 'leads:contact' %}"
+      data-qa="lead-form"
+      hx-post="{% url 'leads:contact' %}"
+      hx-swap="outerHTML">
+  {% csrf_token %}
+  <div class="contact-form__title">{% trans "Повідомлення" %}</div>
+  {{ form.non_field_errors }}
+  {{ form.name }}
+  {{ form.name.errors }}
+  {{ form.phone }}
+  {{ form.phone.errors }}
+  {{ form.message }}
+  {{ form.message.errors }}
+  <label class="form__check">
+    {{ form.consent }}
+    <span>{{ form.consent.label }}</span>
+  </label>
+  {{ form.consent.errors }}
+  <button class="btn btn--solid" type="submit">{% trans "Надіслати" %}</button>
+</form>

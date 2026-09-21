@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+  <section class="thanks">
+    <h1>{% trans "Дякуємо за заявку!" %}</h1>
+    <p>{% trans "Наш менеджер зв’яжеться з вами найближчим часом." %}</p>
+    <a class="btn btn--ghost" href="{% url 'catalog:index' %}">{% trans "До продукції" %}</a>
+  </section>
+{% endblock %}

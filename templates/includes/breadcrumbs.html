@@ -1,0 +1,12 @@
+{% if breadcrumbs %}
+<nav class="crumbs" aria-label="breadcrumb">
+  {% for bc in breadcrumbs %}
+    {% if bc.url %}
+      <a href="{{ bc.url }}">{{ bc.label }}</a>
+    {% else %}
+      <span>{{ bc.label }}</span>
+    {% endif %}
+    {% if bc.has_next %}<span>/</span>{% endif %}
+  {% endfor %}
+</nav>
+{% endif %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}page--inner{% endblock %}
+{% block content %}
+  {% include "includes/breadcrumbs.html" %}
+  <section class="contacts">
+    <h1 class="serif-title">{% trans "Контакти" %}</h1>
+    <p class="page-intro">{{ site_settings.hours }}</p>
+    <div class="contacts__grid">
+      <div>
+        <div class="info-card">
+          <div>
+            <div class="info-card__label">{% trans "Телефон" %}</div>
+            <div class="info-card__value"><a href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a></div>
+          </div>
+          <div>
+            <div class="info-card__label">Email</div>
+            <div class="info-card__value"><a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></div>
+          </div>
+          <div>
+            <div class="info-card__label">{% trans "Адреса" %}</div>
+            <div class="info-card__value">{{ site_settings.address }}</div>
+          </div>
+          <div>
+            <div class="info-card__label">{% trans "Графік роботи" %}</div>
+            <div class="info-card__value">{{ site_settings.hours }}</div>
+          </div>
+          <div>
+            <div class="info-card__label">Telegram</div>
+            <div class="info-card__value"><a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer">{{ site_settings.telegram_handle }}</a></div>
+          </div>
+        </div>
+        {% if map_image %}
+          <img class="map-slot" src="{{ map_image.url }}" alt="{% trans 'Салон ROSSA' %}" width="800" height="450" loading="lazy">
+        {% endif %}
+      </div>
+      <div class="contact-form">
+        {% include "leads/contact_form.html" %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

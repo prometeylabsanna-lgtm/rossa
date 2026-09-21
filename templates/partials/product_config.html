@@ -1,0 +1,90 @@
+{% load i18n rossa %}
+<div class="pdp" id="pdp-config">
+  <div>
+    <div class="pdp__stage">
+      {% if main_image %}
+        <img src="{{ main_image.url }}" alt="{{ product.name }}" width="900" height="506">
+      {% endif %}
+    </div>
+    {% if gallery %}
+      <div class="thumbs">
+        {% for img in gallery %}
+          <button type="button" class="{% if forloop.first %}is-active{% endif %}">
+            <img src="{{ img.image.url }}" alt="" width="64" height="64">
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  <div>
+    <div class="pdp__eyebrow">{{ product.category.label_path }}</div>
+    <h1>{{ product.name }}</h1>
+    <div class="pdp__type">{{ product.type_label }}{% if sku %} · {{ sku }}{% endif %}</div>
+    {% if not product.is_available %}<div class="pdp__type">{% trans "Немає в наявності" %}</div>{% endif %}
+    <div class="pdp__price">{% if selected_fabric %}{{ price|uah }}{% else %}{% trans "від" %} {{ product.min_price|uah }}{% endif %} {% trans "грн" %}</div>
+    <p class="pdp__meta">{% trans "ціна залежить від тканини" %}</p>
+
+    {% if fabrics %}
+      <div class="pdp__label">{% trans "Тканина" %}</div>
+      <div class="chips">
+        {% for fabric in fabrics %}
+          <a class="chip{% if selected_fabric and fabric.id == selected_fabric.id %} is-active{% endif %}"
+             href="?fabric={{ fabric.id }}{% if selected_shade %}&shade={{ selected_shade.id }}{% endif %}"
+             hx-get="?fabric={{ fabric.id }}"
+             hx-target="#pdp-config"
+             hx-swap="outerHTML"
+             hx-push-url="true">
+            {{ fabric.name }}
+            {% if fabric.surcharge %} <span>+{{ fabric.surcharge|uah }} {% trans "грн" %}</span>{% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if shades %}
+      <div class="pdp__label">{% trans "Відтінок" %}</div>
+      <div class="swatches">
+        {% for shade in shades %}
+          <a class="swatch swatch--lg{% if selected_shade and shade.id == selected_shade.id %} is-active{% endif %}"
+             href="?fabric={{ selected_fabric.id }}&shade={{ shade.id }}"
+             hx-get="?fabric={{ selected_fabric.id }}&shade={{ shade.id }}"
+             hx-target="#pdp-config"
+             hx-swap="outerHTML"
+             hx-push-url="true"
+             data-hex="{{ shade.hex_color }}"
+             aria-label="{{ shade.name }}"></a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if product.dims %}<div class="pdp__meta">{{ product.dims }}</div>{% endif %}
+
+    <div class="pdp__actions">
+      <button class="btn btn--solid" type="button" data-open-order {% if not selected_fabric and fabrics %}disabled{% endif %}>{% trans "Замовити" %}</button>
+      <button class="btn btn--outline" type="button" data-open-order>{% trans "Отримати консультацію" %}</button>
+    </div>
+    <div class="pdp__notes">
+      <div>{{ site_settings.guarantee }}</div>
+      <div>{{ site_settings.delivery_label }}</div>
+    </div>
+    {% if product.description %}
+      <div class="pdp__block">
+        <h2>{% trans "Опис" %}</h2>
+        <p>{{ product.description }}</p>
+      </div>
+    {% endif %}
+    {% if product.care %}
+      <div class="pdp__block">
+        <h2>{% trans "Догляд за тканиною" %}</h2>
+        <p>{{ product.care }}</p>
+      </div>
+    {% endif %}
+
+    <input form="order-form" type="hidden" name="product_name" value="{{ product.name }}">
+    <input form="order-form" type="hidden" name="product_slug" value="{{ product.slug }}">
+    <input form="order-form" type="hidden" name="fabric_name" value="{% if selected_fabric %}{{ selected_fabric.name }}{% endif %}">
+    <input form="order-form" type="hidden" name="shade_name" value="{% if selected_shade %}{{ selected_shade.name }}{% endif %}">
+    <input form="order-form" type="hidden" name="sku" value="{{ sku }}">
+    <input form="order-form" type="hidden" name="price" value="{{ price }}">
+  </div>
+</div>

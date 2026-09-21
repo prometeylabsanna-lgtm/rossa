@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}page--inner{% endblock %}
+{% block content %}
+  {% include "includes/breadcrumbs.html" %}
+  <section class="search-page">
+    <h1 class="page-title">{% trans "Пошук" %}</h1>
+    <form action="{% url 'catalog:search' %}" method="get" data-qa="search"
+          hx-get="{% url 'catalog:search' %}"
+          hx-target="#search-results"
+          hx-push-url="true"
+          hx-trigger="submit, keyup changed delay:400ms from:input">
+      <label class="visually-hidden" for="q">{% trans "Пошук" %}</label>
+      <input id="q" type="search" name="q" value="{{ q }}" placeholder="{% trans 'Введіть назву моделі...' %}" autocomplete="off">
+    </form>
+    <div id="search-results">
+      {% include "partials/search_results.html" %}
+    </div>
+  </section>
+{% endblock %}

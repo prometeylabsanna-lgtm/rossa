@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n rossa %}
+{% block body_class %}page--inner{% endblock %}
+{% block content %}
+  {% include "includes/breadcrumbs.html" %}
+  <div class="about-grid">
+    <div>
+      <h1 class="serif-title">{{ page.title }}</h1>
+      <p class="page-intro">{{ page.body }}</p>
+      {% for m in page.milestones %}
+        <div class="milestone">
+          <div class="milestone__year">{{ m.year }}</div>
+          <div class="milestone__body">{{ m|loc:'body' }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    {% if page.hero_image %}
+      <img src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="800" height="600">
+    {% endif %}
+  </div>
+  {% if page.craft_images %}
+    <div class="craft-mosaic">
+      {% for ci in page.craft_images %}
+        <div>
+          <img src="{{ ci.image }}" alt="{{ ci|loc:'label' }}" width="400" height="500" loading="lazy">
+          <span>{{ ci|loc:'label' }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <section class="values">
+    {% for av in page.values %}
+      <article class="value-card">
+        <h2>{{ av|loc:'title' }}</h2>
+        <div class="value-card__num">{{ av.num }}</div>
+        <p>{{ av|loc:'body' }}</p>
+      </article>
+    {% endfor %}
+  </section>
+{% endblock %}
