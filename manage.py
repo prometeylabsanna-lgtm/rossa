@@ -4,11 +4,17 @@ import sys
 from pathlib import Path
 
 
+def _default_settings_module() -> str:
+    if os.environ.get('VERCEL'):
+        return 'config.settings.vercel'
+    return 'config.settings.develop'
+
+
 def main():
-    os.environ.setdefault(
-        'DJANGO_SETTINGS_MODULE',
-        os.environ.get('DJANGO_SETTINGS_MODULE', 'config.settings.develop'),
-    )
+    # Порожній DJANGO_SETTINGS_MODULE на Vercel ламає discovery — не використовуємо setdefault.
+    if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+        os.environ['DJANGO_SETTINGS_MODULE'] = _default_settings_module()
+
     base_dir = Path(__file__).resolve().parent
     src = str(base_dir / 'src')
     if src not in sys.path:
@@ -16,7 +22,9 @@ def main():
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
-        raise ImportError('Django is not installed. Use python3 -m venv .venv && pip install -r requirements.txt') from exc
+        raise ImportError(
+            'Django is not installed. Use python3 -m venv .venv && pip install -r requirements.txt'
+        ) from exc
     execute_from_command_line(sys.argv)
 
 

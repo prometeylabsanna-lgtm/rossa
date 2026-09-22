@@ -1,0 +1,19 @@
+[project]
+name = "rossa"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "Django>=5.2,<6.0",
+  "python-decouple==3.8",
+  "whitenoise==6.9.0",
+  "django-htmx==1.23.0",
+  "django-unfold==0.107.0",
+  "Pillow==11.3.0",
+  "django-csp==4.0",
+]
+
+[tool.vercel]
+entrypoint = "config.wsgi:application"
+
+[tool.vercel.scripts]
+build = "bash scripts/build_vercel.sh"

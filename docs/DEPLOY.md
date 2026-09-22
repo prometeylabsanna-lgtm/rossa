@@ -56,10 +56,10 @@ seed_demo ідемпотентний і не перезаписує вже зм�
 
 ### Кроки в Vercel
 1. Import репо `prometeylabsanna-lgtm/rossa`
-2. Framework Preset: **Other**
+2. Framework Preset: **Other** (або Django, якщо підхопить `manage.py`)
 3. Root Directory: `.`
 4. **Не додавати** Environment Variables
-5. Deploy
+5. Deploy — entrypoint: `config.wsgi:application` (`pyproject.toml` → `[tool.vercel]`)
 
 Локальна перевірка збірки:
 ```bash
