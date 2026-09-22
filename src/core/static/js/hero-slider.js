@@ -9,24 +9,50 @@
   const prevBtn = root.querySelector("[data-hero-prev]");
   const nextBtn = root.querySelector("[data-hero-next]");
   const delay = Number(root.dataset.autoplay || 0);
+  const fadeMs = 1000;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let index = slides.findIndex((slide) => slide.classList.contains("is-active"));
   if (index < 0) index = 0;
   let timer = null;
   let touching = false;
+  let leaveTimer = null;
 
   const setActive = (next) => {
+    const prev = index;
     index = (next + slides.length) % slides.length;
-    slides.forEach((slide, i) => {
-      const on = i === index;
-      slide.classList.toggle("is-active", on);
-      slide.setAttribute("aria-hidden", on ? "false" : "true");
+    if (prev === index) return;
+
+    if (leaveTimer) {
+      window.clearTimeout(leaveTimer);
+      leaveTimer = null;
+    }
+
+    slides.forEach((slide) => {
+      slide.classList.remove("is-active", "is-leaving");
+      slide.setAttribute("aria-hidden", "true");
     });
+
+    if (!reduced) {
+      slides[prev].classList.add("is-leaving");
+      slides[prev].setAttribute("aria-hidden", "true");
+    }
+
+    slides[index].classList.add("is-active");
+    slides[index].setAttribute("aria-hidden", "false");
+
     dots.forEach((dot, i) => {
       const on = i === index;
       dot.classList.toggle("is-active", on);
       if (on) dot.setAttribute("aria-current", "true");
       else dot.removeAttribute("aria-current");
     });
+
+    if (!reduced) {
+      leaveTimer = window.setTimeout(() => {
+        slides[prev].classList.remove("is-leaving");
+        leaveTimer = null;
+      }, fadeMs);
+    }
   };
 
   const stop = () => {
@@ -37,7 +63,7 @@
   };
 
   const start = () => {
-    if (!delay || touching || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!delay || touching || reduced) return;
     stop();
     timer = window.setInterval(() => setActive(index + 1), delay);
   };
@@ -88,6 +114,18 @@
     else start();
   });
 
-  setActive(index);
+  slides.forEach((slide, i) => {
+    const on = i === index;
+    slide.classList.toggle("is-active", on);
+    slide.classList.remove("is-leaving");
+    slide.setAttribute("aria-hidden", on ? "false" : "true");
+  });
+  dots.forEach((dot, i) => {
+    const on = i === index;
+    dot.classList.toggle("is-active", on);
+    if (on) dot.setAttribute("aria-current", "true");
+    else dot.removeAttribute("aria-current");
+  });
+
   start();
 })();

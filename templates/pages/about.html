@@ -7,12 +7,14 @@
     <div>
       <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
       <p class="page-intro reveal reveal--up" data-reveal-delay="100">{{ page.body }}</p>
-      {% for m in page.milestones %}
-        <div class="milestone reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
-          <div class="milestone__year">{{ m.year }}</div>
-          <div class="milestone__body">{{ m|loc:'body' }}</div>
-        </div>
-      {% endfor %}
+      <div class="milestones" data-draw-dividers>
+        {% for m in page.milestones %}
+          <div class="milestone reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
+            <div class="milestone__year">{{ m.year }}</div>
+            <div class="milestone__body">{{ m|loc:'body' }}</div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
     {% if page.hero_image %}
       <img class="reveal reveal--scale" data-reveal-delay="120" src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="800" height="600">

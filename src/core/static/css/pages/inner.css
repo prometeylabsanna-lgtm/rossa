@@ -24,6 +24,7 @@
 }
 
 @media (min-width: 768px) {
+
   .split__copy h1,
   .serif-title {
     font-size: 44px;
@@ -80,7 +81,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 28px;
-  padding: var(--section-y) var(--pad-x);
+  padding: 40px var(--pad-x) var(--section-y);
   padding-bottom: calc(var(--section-y) + env(safe-area-inset-bottom, 0px));
 }
 
@@ -89,6 +90,7 @@
   font-size: 32px;
   line-height: 1.15;
   color: var(--color-text);
+  margin: 0;
 }
 
 .collab__intro p {
@@ -115,19 +117,24 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 40px;
-  padding: var(--section-y) var(--pad-x);
+  padding: 40px var(--pad-x) var(--section-y);
+}
+
+.about-grid .serif-title {
+  margin: 0;
 }
 
 .about-grid .page-intro {
+  margin-top: 16px;
   margin-bottom: 0;
 }
 
-.about-grid .page-intro + .milestone {
+.about-grid .page-intro+.milestones {
   margin-top: 36px;
 }
 
 @media (min-width: 768px) {
-  .about-grid .page-intro + .milestone {
+  .about-grid .page-intro+.milestones {
     margin-top: 28px;
   }
 }
@@ -135,6 +142,11 @@
 @media (min-width: 768px) {
   .collab {
     gap: 32px;
+    padding-top: 48px;
+  }
+
+  .about-grid {
+    padding-top: 48px;
   }
 
   .collab__intro h1 {
@@ -155,6 +167,7 @@
 }
 
 @media (min-width: 900px) {
+
   .page--collab .crumbs,
   .page--collab .collab {
     padding-left: max(80px, env(safe-area-inset-left, 0px));
@@ -210,6 +223,7 @@
 }
 
 @media (min-width: 1280px) {
+
   .page--collab .crumbs,
   .page--collab .collab {
     padding-left: max(120px, env(safe-area-inset-left, 0px));
@@ -217,12 +231,57 @@
   }
 }
 
+.milestones {
+  position: relative;
+  padding-left: 20px;
+}
+
+.milestones::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: var(--color-accent-soft);
+  -webkit-transform: scaleY(0);
+  transform: scaleY(0);
+  -webkit-transform-origin: top center;
+  transform-origin: top center;
+  pointer-events: none;
+}
+
+.milestones.is-drawn::before {
+  -webkit-animation: milestones-draw 0.9s var(--reveal-easing) both;
+  animation: milestones-draw 0.9s var(--reveal-easing) both;
+}
+
+@-webkit-keyframes milestones-draw {
+  from {
+    -webkit-transform: scaleY(0);
+    transform: scaleY(0);
+  }
+  to {
+    -webkit-transform: scaleY(1);
+    transform: scaleY(1);
+  }
+}
+
+@keyframes milestones-draw {
+  from {
+    -webkit-transform: scaleY(0);
+    transform: scaleY(0);
+  }
+  to {
+    -webkit-transform: scaleY(1);
+    transform: scaleY(1);
+  }
+}
+
 .milestone {
   display: flex;
   gap: 20px;
   padding: 18px 0;
-  border-left: 2px solid var(--color-accent-soft);
-  padding-left: 20px;
 }
 
 .milestone__year {
@@ -236,6 +295,15 @@
   font-size: 14px;
   opacity: 0.85;
   line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .milestones::before {
+    -webkit-transform: none;
+    transform: none;
+    -webkit-animation: none;
+    animation: none;
+  }
 }
 
 .craft-mosaic {
@@ -353,7 +421,7 @@
 }
 
 .contacts {
-  padding: 24px var(--pad-x) var(--section-y-lg);
+  padding: 40px var(--pad-x) var(--section-y-lg);
 }
 
 .contacts .serif-title {
@@ -373,7 +441,7 @@
 
 @media (min-width: 768px) {
   .contacts {
-    padding-top: 32px;
+    padding-top: 48px;
   }
 
   .contacts .page-intro {

@@ -25,7 +25,7 @@
   --section-y: 80px;
   --section-y-lg: 112px;
   --pad-x: 16px;
-  --header-offset: 56px;
+  --header-offset: 59px;
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 8px 22px rgba(0, 0, 0, 0.15);
   --ease: 150ms ease;
@@ -42,7 +42,7 @@
 @media (min-width: 768px) {
   :root {
     --pad-x: 32px;
-    --header-offset: 72px;
+    --header-offset: 76px;
     --section-y: 120px;
     --section-y-lg: 152px;
   }
@@ -51,7 +51,7 @@
 @media (min-width: 1024px) {
   :root {
     --pad-x: 40px;
-    --header-offset: 80px;
+    --header-offset: 84px;
     --section-y: 136px;
     --section-y-lg: 168px;
   }
