@@ -1,0 +1,24 @@
+.venv
+venv
+.git
+.github
+.cursor
+.DS_Store
+.env
+.env.*
+!.env.example
+__pycache__
+*.py[cod]
+.pytest_cache
+.coverage
+htmlcov
+*.egg-info
+Design prototype for Rossa
+docs
+deploy
+docker-compose*.yml
+db.sqlite3
+media
+*.mo
+.idea
+.vscode

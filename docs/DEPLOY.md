@@ -35,3 +35,37 @@ git pull
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 seed_demo ідемпотентний і не перезаписує вже змінений контент.
+
+---
+
+## Тестовий деплой на Vercel (Hobby, без env)
+
+Підготовлено для безкоштовного Vercel **без змінних середовища** на дашборді.
+
+### Що всередині
+- `config.settings.vercel` — демо `SECRET_KEY`, SQLite, WhiteNoise
+- `api/index.py` — WSGI entrypoint
+- `scripts/build_vercel.sh` — migrate + seed_demo + collectstatic
+- `requirements-vercel.txt` — без Postgres/gunicorn
+
+### Обмеження демо
+- Дані заявок/сесій у `/tmp` — губляться після cold start
+- Адмінку підключимо пізніше (createsuperuser)
+- Медіа лише з seed зі `static/images` (папка `media/` у git не їде)
+- Hobby: cold start + перший seed можуть бути повільними
+
+### Кроки в Vercel
+1. Import репо `prometeylabsanna-lgtm/rossa`
+2. Framework Preset: **Other**
+3. Root Directory: `.`
+4. **Не додавати** Environment Variables
+5. Deploy
+
+Локальна перевірка збірки:
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-vercel.txt
+bash scripts/build_vercel.sh
+DJANGO_SETTINGS_MODULE=config.settings.vercel python3 manage.py runserver
+```
+
