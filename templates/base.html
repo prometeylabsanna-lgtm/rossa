@@ -7,6 +7,10 @@
   <title>{% if seo_title %}{{ seo_title }}{% else %}ROSSA{% endif %}</title>
   <meta name="description" content="{% if seo_description %}{{ seo_description }}{% endif %}">
   <link rel="canonical" href="{{ canonical_url|default:request.build_absolute_uri }}">
+  <link rel="icon" href="{% static 'images/favicon/favicon.ico' %}" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
   <meta property="og:title" content="{% if seo_title %}{{ seo_title }}{% else %}ROSSA{% endif %}">
   <meta property="og:description" content="{% if seo_description %}{{ seo_description }}{% endif %}">
   <meta property="og:type" content="website">
