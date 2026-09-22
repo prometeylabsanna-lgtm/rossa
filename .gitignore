@@ -8,6 +8,7 @@ __pycache__/
 staticfiles/
 media/
 media_demo/
+public/media/
 *.mo
 .pytest_cache/
 .coverage

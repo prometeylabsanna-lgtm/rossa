@@ -10,4 +10,11 @@ python3 manage.py migrate --noinput
 python3 manage.py seed_demo
 python3 manage.py collectstatic --noinput
 
-echo "Vercel build OK: db.vercel.sqlite3 + media_demo + staticfiles"
+# CDN-статика Vercel: /media/... → public/media/...
+rm -rf public/media
+mkdir -p public/media
+if [ -d media_demo ] && [ "$(ls -A media_demo 2>/dev/null || true)" ]; then
+  cp -a media_demo/. public/media/
+fi
+
+echo "Vercel build OK: db.vercel.sqlite3 + media_demo + public/media + staticfiles"
