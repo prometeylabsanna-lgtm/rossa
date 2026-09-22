@@ -34,7 +34,7 @@ class OrderForm(forms.ModelForm):
     }))
     comment = forms.CharField(label=_('Коментар'), required=False, widget=forms.Textarea(attrs={
         'placeholder': _('Коментар'),
-        'rows': 3,
+        'rows': 2,
     }))
     fulfillment = forms.ChoiceField(
         label=_('Спосіб отримання'),
@@ -82,7 +82,7 @@ class PartnershipForm(forms.ModelForm):
     }))
     message = forms.CharField(label=_('Повідомлення'), required=False, widget=forms.Textarea(attrs={
         'placeholder': _('Повідомлення'),
-        'rows': 4,
+        'rows': 2,
     }))
     consent = forms.BooleanField(label=_('Згода на обробку персональних даних'), required=True)
     collab_type = forms.ChoiceField(

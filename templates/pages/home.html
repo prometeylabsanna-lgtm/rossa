@@ -4,47 +4,111 @@
 {% block body_class %}page--home{% endblock %}
 
 {% block content %}
-  <div class="hero-media">
-    {% if page.hero_video %}
-      <video autoplay muted loop playsinline poster="{% if page.hero_poster %}{{ page.hero_poster.url }}{% endif %}">
-        <source src="{{ page.hero_video.url }}">
-      </video>
-    {% elif page.hero_poster %}
-      <img src="{{ page.hero_poster.url }}" alt="{{ page.hero_title }}" width="1920" height="1080">
+  <section class="hero" data-hero-slider{% if hero_slides|length > 1 %} data-autoplay="6000"{% endif %}>
+    <div class="hero__track" data-hero-track>
+      {% if hero_slides %}
+        {% for slide in hero_slides %}
+          <article class="hero__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide{% if forloop.first %} aria-hidden="false"{% else %} aria-hidden="true"{% endif %}>
+            {% if slide.image %}
+              <img class="hero__image" src="{{ slide.image.url }}" alt="{{ slide.title }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
+            {% endif %}
+            <div class="hero__panel">
+              {% if forloop.first %}
+                <h1 class="hero__title reveal reveal--up">{{ slide.title|linebreaksbr }}</h1>
+              {% else %}
+                <p class="hero__title">{{ slide.title|linebreaksbr }}</p>
+              {% endif %}
+              {% if slide.subtitle %}
+                <p class="hero__sub{% if forloop.first %} reveal reveal--up{% endif %}"{% if forloop.first %} data-reveal-delay="100"{% endif %}>{{ slide.subtitle }}</p>
+              {% endif %}
+              <div class="hero__cta{% if forloop.first %} reveal reveal--up{% endif %}"{% if forloop.first %} data-reveal-delay="200"{% endif %}>
+                <a class="btn hero__btn" href="{% url 'catalog:index' %}">{{ slide.cta }}</a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <article class="hero__slide is-active" data-hero-slide aria-hidden="false">
+          <div class="hero__media">
+            {% if page.hero_video %}
+              <video autoplay muted loop playsinline poster="{% if page.hero_poster %}{{ page.hero_poster.url }}{% endif %}">
+                <source src="{{ page.hero_video.url }}">
+              </video>
+            {% elif page.hero_poster %}
+              <img class="hero__image" src="{{ page.hero_poster.url }}" alt="{{ page.hero_title }}" width="1920" height="1080">
+            {% endif %}
+          </div>
+          <div class="hero__panel">
+            <h1 class="hero__title reveal reveal--up">{{ page.hero_title }}</h1>
+            <p class="hero__sub reveal reveal--up" data-reveal-delay="100">{{ page.hero_sub }}</p>
+            <div class="hero__cta reveal reveal--up" data-reveal-delay="200">
+              <a class="btn hero__btn" href="{% url 'catalog:index' %}">{{ page.cta_catalog }}</a>
+            </div>
+          </div>
+        </article>
+      {% endif %}
+    </div>
+
+    {% if hero_slides|length > 1 %}
+      <button class="hero__arrow hero__arrow--prev" type="button" data-hero-prev aria-label="{% trans 'Попередній слайд' %}">
+        <svg class="hero__arrow-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M8.75 2.5L4.25 7l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="hero__arrow hero__arrow--next" type="button" data-hero-next aria-label="{% trans 'Наступний слайд' %}">
+        <svg class="hero__arrow-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M8.75 2.5L4.25 7l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="hero__dots" data-hero-dots role="tablist" aria-label="{% trans 'Слайди банера' %}">
+        {% for slide in hero_slides %}
+          <button class="hero__dot{% if forloop.first %} is-active{% endif %}" type="button" data-hero-dot="{{ forloop.counter0 }}" aria-label="{% trans 'Слайд' %} {{ forloop.counter }}"{% if forloop.first %} aria-current="true"{% endif %}></button>
+        {% endfor %}
+      </div>
     {% endif %}
-  </div>
-  <section class="hero-copy">
-    <h1>{{ page.hero_title }}</h1>
-    <p>{{ page.hero_sub }}</p>
-    <a class="btn btn--ghost" href="{% url 'catalog:index' %}">{{ page.cta_catalog }}</a>
   </section>
 
-  <section class="props">
-    {% for v in value_props %}
-      <article class="prop">
-        <div class="prop__num">{{ v.number }}</div>
-        <h2 class="prop__title">{{ v.title }}</h2>
-        <p class="prop__body">{{ v.body }}</p>
-      </article>
-    {% endfor %}
+  <section class="about-band">
+    <div class="about-band__inner">
+      <div class="about-band__copy">
+        {% if page.about_title %}<h2 class="about-band__title reveal reveal--up">{{ page.about_title }}</h2>{% endif %}
+        {% if page.about_body %}<p class="about-band__body reveal reveal--up" data-reveal-delay="80">{{ page.about_body }}</p>{% endif %}
+      </div>
+      <div class="about-band__media reveal reveal--scale" data-reveal-delay="100">
+        {% if page.about_video %}
+          <video class="about-band__video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>
+            <source src="{{ page.about_video.url }}" type="video/mp4">
+          </video>
+        {% else %}
+          <div class="about-band__placeholder" aria-hidden="true">відео</div>
+        {% endif %}
+      </div>
+    </div>
+    {% if value_props %}
+      <ul class="about-band__props reveal reveal--up" data-draw-dividers>
+        {% for v in value_props %}
+          <li class="about-band__prop">{{ v.title }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   </section>
 
   <section class="section wrap">
-    <h2 class="section__title">{{ page.section_categories }}</h2>
+    <h2 class="section__title reveal reveal--up">{{ page.section_categories }}</h2>
     <div class="grid-3">
       {% for cat in featured_categories %}
-        <a class="cat-tile" href="{{ cat.get_absolute_url }}">
+        <a class="cat-tile reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00" href="{{ cat.get_absolute_url }}">
           <div class="cat-tile__media">
             {% if cat.image %}<img src="{{ cat.image.url }}" alt="{{ cat.name }}" width="600" height="800" loading="lazy">{% endif %}
+            <span class="cat-tile__label">{{ cat.name }}</span>
           </div>
-          <div class="cat-tile__label">{{ cat.name }}</div>
         </a>
       {% endfor %}
     </div>
   </section>
 
   <section class="section wrap">
-    <div class="section__head">
+    <div class="section__head reveal reveal--up">
       <h2 class="section__title">{{ page.section_bestsellers }}</h2>
       <a class="link-more" href="{% url 'catalog:index' %}">{% trans "Весь каталог" %} →</a>
     </div>
@@ -69,4 +133,9 @@
       </div>
     </div>
   </section>
+{% endblock %}
+
+{% block extra_js %}
+  {% load static %}
+  <script src="{% static 'js/hero-slider.js' %}?v={{ static_v }}" defer></script>
 {% endblock %}

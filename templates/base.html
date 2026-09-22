@@ -15,19 +15,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/variables.css' %}">
-  <link rel="stylesheet" href="{% static 'css/reset.css' %}">
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
-  <link rel="stylesheet" href="{% static 'css/layout.css' %}">
-  <link rel="stylesheet" href="{% static 'css/components/buttons.css' %}">
-  <link rel="stylesheet" href="{% static 'css/components/header.css' %}">
-  <link rel="stylesheet" href="{% static 'css/components/footer.css' %}">
-  <link rel="stylesheet" href="{% static 'css/components/cards.css' %}">
-  <link rel="stylesheet" href="{% static 'css/components/forms.css' %}">
-  <link rel="stylesheet" href="{% static 'css/pages/home.css' %}">
-  <link rel="stylesheet" href="{% static 'css/pages/catalog.css' %}">
-  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}">
+  <link rel="stylesheet" href="{% static 'css/variables.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/reset.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/layout.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/components/buttons.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/components/header.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/components/mobile-nav.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/components/footer.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/components/cards.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/components/forms.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/animations.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/pages/catalog.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
   {% block extra_css %}{% endblock %}
+  <noscript><style>.reveal{opacity:1;-webkit-transform:none;transform:none}.about-band__props{opacity:1}.about-band__prop::before,.about-band__prop::after{-webkit-transform:none;transform:none;-webkit-animation:none;animation:none}</style></noscript>
 </head>
 <body class="page {% block body_class %}{% endblock %}">
   {% include "includes/header.html" %}
@@ -48,8 +51,10 @@
     </a>
   </div>
   <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
-  <script src="{% static 'js/nav.js' %}" defer></script>
+  <script src="{% static 'js/nav.js' %}?v={{ static_v }}" defer></script>
   <script src="{% static 'js/product-card.js' %}" defer></script>
+  <script src="{% static 'js/reveal.js' %}?v={{ static_v }}" defer></script>
+  <script src="{% static 'js/parallax.js' %}?v={{ static_v }}" defer></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

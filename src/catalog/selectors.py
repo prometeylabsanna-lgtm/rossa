@@ -1,5 +1,6 @@
 from catalog.models import Category, Product
 from django.db.models import Case, IntegerField, Min, Q, When
+from django.db.models.functions import Coalesce
 
 
 def visible_products():
@@ -13,6 +14,12 @@ def visible_products():
         )
         .annotate(min_fabric_price=Min('fabric_prices__price'))
     )
+
+
+def with_effective_price(qs):
+    if 'effective_price' in getattr(qs.query, 'annotations', {}):
+        return qs
+    return qs.annotate(effective_price=Coalesce('min_fabric_price', 'base_price'))
 
 
 def home_featured():
@@ -35,6 +42,57 @@ def products_in_category(category: Category):
     return qs.filter(category=category)
 
 
+def related_products(product: Product, *, limit: int = 3):
+    """Товари з тієї ж / батьківської категорії; якщо мало — добиваємо з каталогу."""
+    exclude_pk = product.pk
+    collected: list[Product] = []
+    seen: set[int] = {exclude_pk}
+
+    def _extend(qs) -> bool:
+        for item in qs:
+            if item.pk in seen:
+                continue
+            seen.add(item.pk)
+            collected.append(item)
+            if len(collected) >= limit:
+                return True
+        return False
+
+    if _extend(products_in_category(product.category).exclude(pk=exclude_pk)):
+        return collected
+
+    parent = product.category.parent
+    if parent and _extend(products_in_category(parent).exclude(pk=exclude_pk)):
+        return collected
+
+    _extend(home_featured().exclude(pk=exclude_pk))
+    return collected
+
+
+def top_categories():
+    return Category.objects.filter(is_active=True, parent__isnull=True).order_by('sort')
+
+
+def apply_listing_filters(qs, *, cat_slug=None, price_min=None, price_max=None, available=False):
+    selected_cat = None
+    if cat_slug:
+        selected_cat = Category.objects.filter(
+            is_active=True,
+            parent__isnull=True,
+            slug=cat_slug,
+        ).first()
+        if selected_cat:
+            qs = products_in_category(selected_cat)
+    qs = with_effective_price(qs)
+    if price_min is not None:
+        qs = qs.filter(effective_price__gte=price_min)
+    if price_max is not None:
+        qs = qs.filter(effective_price__lte=price_max)
+    if available:
+        qs = qs.filter(is_available=True)
+    return qs, selected_cat
+
+
 def search_products(query: str):
     q = (query or '').strip()
     if not q:
@@ -51,12 +109,13 @@ def search_products(query: str):
 SORT_MAP = {
     'popular': ('-badge', '-created_at'),
     'new': ('-created_at',),
-    'price-asc': ('min_fabric_price', 'base_price'),
-    'price-desc': ('-min_fabric_price', '-base_price'),
+    'price-asc': ('effective_price', 'base_price'),
+    'price-desc': ('-effective_price', '-base_price'),
     'name': ('name_uk',),
 }
 
 
 def apply_sort(qs, sort_key: str):
+    qs = with_effective_price(qs)
     fields = SORT_MAP.get(sort_key, SORT_MAP['popular'])
     return qs.order_by(*fields)

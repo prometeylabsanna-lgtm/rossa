@@ -3,10 +3,10 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
-from core.models import AboutPage, CollabPage, HomePage, LegalPage, SiteSettings, ValueProp
+from core.models import AboutPage, CollabPage, HeroSlide, HomePage, LegalPage, SiteSettings, ValueProp
 
 
 class SingletonAdmin(ModelAdmin):
@@ -16,6 +16,16 @@ class SingletonAdmin(ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
+class HeroSlideInline(TabularInline):
+    model = HeroSlide
+    extra = 0
+    fields = (
+        'image', 'title_uk', 'title_ru', 'subtitle_uk', 'subtitle_ru',
+        'cta_uk', 'cta_ru', 'sort', 'is_active',
+    )
+    ordering = ('sort', 'id')
+    tab = True
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(SingletonAdmin):
@@ -34,8 +44,9 @@ class SiteSettingsAdmin(SingletonAdmin):
 
 @admin.register(HomePage)
 class HomePageAdmin(SingletonAdmin):
+    inlines = (HeroSlideInline,)
     fieldsets = (
-        ('Hero', {
+        ('Hero (фолбек без слайдів)', {
             'fields': (
                 'hero_title_uk', 'hero_title_ru', 'hero_sub_uk', 'hero_sub_ru',
                 'cta_catalog_uk', 'cta_catalog_ru', 'hero_poster', 'hero_video',
@@ -45,6 +56,13 @@ class HomePageAdmin(SingletonAdmin):
             'fields': (
                 'section_categories_uk', 'section_categories_ru',
                 'section_bestsellers_uk', 'section_bestsellers_ru',
+            ),
+        }),
+        ('Про ROSSA', {
+            'fields': (
+                'about_title_uk', 'about_title_ru',
+                'about_body_uk', 'about_body_ru',
+                'about_video',
             ),
         }),
         ('Майстерня', {

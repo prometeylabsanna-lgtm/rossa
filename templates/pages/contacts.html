@@ -4,10 +4,10 @@
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <section class="contacts">
-    <h1 class="serif-title">{% trans "Контакти" %}</h1>
-    <p class="page-intro">{{ site_settings.hours }}</p>
+    <h1 class="serif-title reveal reveal--up">{% trans "Контакти" %}</h1>
+    <p class="page-intro reveal reveal--up" data-reveal-delay="80">{{ site_settings.hours }}</p>
     <div class="contacts__grid">
-      <div>
+      <div class="reveal reveal--up" data-reveal-delay="120">
         <div class="info-card">
           <div>
             <div class="info-card__label">{% trans "Телефон" %}</div>
@@ -34,7 +34,7 @@
           <img class="map-slot" src="{{ map_image.url }}" alt="{% trans 'Салон ROSSA' %}" width="800" height="450" loading="lazy">
         {% endif %}
       </div>
-      <div class="contact-form">
+      <div class="contact-form reveal reveal--up" data-reveal-delay="180">
         {% include "leads/contact_form.html" %}
       </div>
     </div>

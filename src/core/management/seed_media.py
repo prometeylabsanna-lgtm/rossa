@@ -13,3 +13,12 @@ def attach(field, relative: str, dest_name: str | None = None):
     name = dest_name or src.name
     with src.open('rb') as fh:
         field.save(name, File(fh), save=False)
+
+
+def replace_file(field, relative: str, dest_name: str | None = None):
+    src = STATIC_IMAGES / relative
+    if not src.exists():
+        return
+    name = dest_name or src.name
+    with src.open('rb') as fh:
+        field.save(name, File(fh), save=False)

@@ -4,10 +4,10 @@
   --color-text: #4c4c4c;
   --color-ink: #1a1817;
   --color-header: #313131;
-  --color-nav: #2a2724;
+  --color-nav: #313131;
   --color-gold: #c9a24b;
-  --color-accent: #903838;
-  --color-accent-soft: #b83c3c;
+  --color-accent: #986030;
+  --color-accent-soft: #b07a45;
   --color-mist: #afbdc6;
   --color-dark: #393939;
   --color-light: #f6f2f7;
@@ -22,24 +22,37 @@
   --space-lg: 24px;
   --space-xl: 40px;
   --space-2xl: 72px;
+  --section-y: 80px;
+  --section-y-lg: 112px;
   --pad-x: 16px;
-  --header-offset: 80px;
+  --header-offset: 56px;
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 8px 22px rgba(0, 0, 0, 0.15);
   --ease: 150ms ease;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --duration-fast: 180ms;
+  --duration-base: 320ms;
+  --duration-slow: 500ms;
+  --reveal-duration: 700ms;
+  --reveal-delay: 0ms;
+  --reveal-easing: cubic-bezier(0.22, 0.61, 0.36, 1);
   --tap: 44px;
 }
 
 @media (min-width: 768px) {
   :root {
     --pad-x: 32px;
-    --header-offset: 108px;
+    --header-offset: 72px;
+    --section-y: 120px;
+    --section-y-lg: 152px;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
     --pad-x: 40px;
-    --header-offset: 124px;
+    --header-offset: 80px;
+    --section-y: 136px;
+    --section-y-lg: 168px;
   }
 }

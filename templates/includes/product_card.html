@@ -1,5 +1,5 @@
 {% load i18n rossa %}
-<article class="card" data-product-card data-qa="product-card">
+<article class="card reveal reveal--up"{% if forloop %} data-reveal-delay="{{ forloop.counter0 }}00"{% endif %} data-product-card data-qa="product-card">
   <a href="{{ product.get_absolute_url }}">
     <div class="card__media">
       {% if product.badge %}
@@ -20,6 +20,12 @@
     <div class="card__cat">{{ product.category.parent.name|default:product.category.name }}</div>
     <a href="{{ product.get_absolute_url }}"><h3 class="card__name">{{ product.name }}</h3></a>
     <div class="card__type">{{ product.type_label }}</div>
+    {% if product.sku %}
+      <div class="card__sku">{% trans "Артикул" %}: {{ product.sku }}</div>
+    {% endif %}
+    <div class="card__stock{% if product.is_available %} card__stock--yes{% else %} card__stock--no{% endif %}">
+      {% if product.is_available %}{% trans "В наявності" %}{% else %}{% trans "Немає в наявності" %}{% endif %}
+    </div>
     <div class="card__price">{% trans "від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
     <div class="swatches">
       {% for item in product.preview_shades %}

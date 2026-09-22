@@ -8,13 +8,44 @@
 
   const burger = document.querySelector("[data-burger]");
   const mobile = document.querySelector("[data-mobile-nav]");
+  const mqDesktop = window.matchMedia("(min-width: 1024px)");
+
+  const setNavOpen = (open) => {
+    if (!burger || !mobile) return;
+    if (mqDesktop.matches) open = false;
+    mobile.classList.toggle("is-open", open);
+    burger.classList.toggle("is-open", open);
+    burger.setAttribute("aria-expanded", open ? "true" : "false");
+    document.body.classList.toggle("is-nav-open", open);
+  };
+
   if (burger && mobile) {
     burger.addEventListener("click", () => {
-      const open = mobile.classList.toggle("is-open");
-      burger.classList.toggle("is-open", open);
-      burger.setAttribute("aria-expanded", open ? "true" : "false");
+      setNavOpen(!mobile.classList.contains("is-open"));
+    });
+    mobile.querySelectorAll("[data-mobile-close]").forEach((el) => {
+      el.addEventListener("click", () => setNavOpen(false));
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setNavOpen(false);
+    });
+    mqDesktop.addEventListener("change", () => {
+      if (mqDesktop.matches) setNavOpen(false);
     });
   }
+
+  document.querySelectorAll("[data-acc]").forEach((acc) => {
+    const toggle = acc.querySelector("[data-acc-toggle]");
+    const panel = acc.querySelector("[data-acc-panel]");
+    if (!toggle || !panel) return;
+    toggle.addEventListener("click", () => {
+      const open = !acc.classList.contains("is-open");
+      acc.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) panel.removeAttribute("hidden");
+      else panel.setAttribute("hidden", "");
+    });
+  });
 
   const searchToggle = document.querySelector("[data-search-toggle]");
   const searchPanel = document.querySelector("[data-search-panel]");

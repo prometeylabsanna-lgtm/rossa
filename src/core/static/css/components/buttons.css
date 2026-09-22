@@ -28,7 +28,10 @@
 }
 
 .btn--ghost:hover {
-  box-shadow: var(--shadow-hover);
+  background: var(--color-accent);
+  color: var(--color-white);
+  border-color: var(--color-accent);
+  box-shadow: none;
 }
 
 .btn--solid {
@@ -73,17 +76,17 @@
   display: inline-flex;
   align-items: center;
   min-height: 40px;
-  padding: 9px 22px;
-  border-radius: 20px;
+  padding: 9px 18px;
+  border-radius: 6px;
   border: 1px solid rgba(26, 24, 23, 0.3);
   font-size: 13px;
   background: transparent;
   color: var(--color-text);
-  transition: transform var(--ease), background-color var(--ease), color var(--ease);
+  transition: background-color var(--ease), color var(--ease), border-color var(--ease);
 }
 
 .chip:hover {
-  transform: scale(1.06);
+  border-color: var(--color-ink);
   color: var(--color-text);
 }
 

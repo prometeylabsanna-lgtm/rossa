@@ -1,10 +1,15 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% block body_class %}page--inner{% endblock %}
+{% load i18n static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/legal.css' %}?v={{ static_v }}">
+{% endblock %}
+{% block body_class %}page--inner page--legal{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <article class="legal">
-    <h1>{{ page.title }}</h1>
-    <div class="legal__body">{{ page.body }}</div>
+    <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
+    <div class="legal__card reveal reveal--up" data-reveal-delay="100">
+      <div class="legal__body">{{ page.body|linebreaks }}</div>
+    </div>
   </article>
 {% endblock %}

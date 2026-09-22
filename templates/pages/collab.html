@@ -1,31 +1,28 @@
 {% extends "base.html" %}
 {% load i18n rossa %}
-{% block body_class %}page--inner{% endblock %}
+{% block body_class %}page--inner page--collab{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
-  <div class="split">
-    <div class="split__copy">
-      <h1>{{ page.title }}</h1>
-      <p>{{ page.sub }}</p>
-    </div>
-    {% if page.hero_image %}
-      <div class="split__media">
-        <img src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="900" height="600">
+  <div class="collab">
+    <div class="collab__main">
+      <header class="collab__intro reveal reveal--up">
+        <h1>{{ page.title }}</h1>
+        {% if page.sub %}
+          <p>{{ page.sub }}</p>
+        {% endif %}
+      </header>
+      <div class="collab__benefits">
+        {% for b in page.benefits %}
+          <article class="benefit reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
+            <div class="benefit__num">{{ b.num }}</div>
+            <h2 class="benefit__title">{{ b|loc:'title' }}</h2>
+            <p class="benefit__body">{{ b|loc:'body' }}</p>
+          </article>
+        {% endfor %}
       </div>
-    {% endif %}
-  </div>
-  <div class="collab-grid">
-    <div>
-      {% for b in page.benefits %}
-        <article class="benefit">
-          <div class="benefit__num">{{ b.num }}</div>
-          <h2 class="benefit__title">{{ b|loc:'title' }}</h2>
-          <p class="benefit__body">{{ b|loc:'body' }}</p>
-        </article>
-      {% endfor %}
     </div>
-    <div>
+    <aside class="collab__form reveal reveal--up" data-reveal-delay="120" aria-label="{% trans 'Заявка на співпрацю' %}">
       {% include "leads/partnership_form.html" %}
-    </div>
+    </aside>
   </div>
 {% endblock %}

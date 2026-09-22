@@ -27,7 +27,13 @@ body {
 }
 
 .page--home .page__main {
-  padding-top: calc(var(--header-offset) + env(safe-area-inset-top, 0px));
+  padding-top: 0;
+}
+
+@media (max-width: 767px) {
+  .page--home .page__main {
+    padding-top: calc(var(--header-offset) + env(safe-area-inset-top, 0px));
+  }
 }
 
 h1,

@@ -43,8 +43,18 @@ def home(request):
         .order_by('sort', 'id')
     )
     from catalog.selectors import home_featured
+    hero_slides = list(page.hero_slides.filter(is_active=True).order_by('sort', 'id'))
+    first_slide = hero_slides[0] if hero_slides else None
+    og = None
+    if first_slide and first_slide.image:
+        og = first_slide.image.url
+    elif page.hero_poster:
+        og = page.hero_poster.url
+    elif settings.logo:
+        og = settings.logo.url
     context = {
         'page': page,
+        'hero_slides': hero_slides,
         'value_props': ValueProp.objects.filter(is_active=True),
         'featured_categories': categories,
         'bestsellers': home_featured()[:6],
@@ -52,7 +62,7 @@ def home(request):
             request,
             page.seo_title or 'ROSSA — м’які меблі',
             page.seo_description or page.hero_sub,
-            page.hero_poster.url if page.hero_poster else (settings.logo.url if settings.logo else None),
+            og,
         ),
     }
     return render(request, 'pages/home.html', context)

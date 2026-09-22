@@ -1,0 +1,122 @@
+.legal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--section-y) var(--pad-x);
+  padding-bottom: calc(var(--section-y-lg) + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.legal .serif-title {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.legal__card {
+  width: 100%;
+  max-width: 760px;
+  margin-top: 28px;
+  margin-inline: auto;
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
+  padding: 4px 20px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .legal__card {
+    margin-top: 36px;
+    padding: 8px 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .legal__card {
+    margin-top: 40px;
+    padding: 8px 36px;
+  }
+}
+
+.legal__body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+  -webkit-text-size-adjust: 100%;
+  text-align: center;
+}
+
+.legal__body p,
+.legal__body ul,
+.legal__body ol {
+  margin: 0;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+@media (min-width: 768px) {
+  .legal__body p,
+  .legal__body ul,
+  .legal__body ol {
+    padding: 22px 0;
+  }
+}
+
+.legal__body p:last-child,
+.legal__body ul:last-child,
+.legal__body ol:last-child {
+  border-bottom: 0;
+}
+
+.legal__body p:first-child {
+  color: var(--color-ink);
+}
+
+.legal__body h2,
+.legal__body h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--color-ink);
+  line-height: 1.25;
+  margin: 0;
+  padding: 24px 0 8px;
+  text-align: center;
+}
+
+.legal__body h2 {
+  font-size: 24px;
+}
+
+.legal__body h3 {
+  font-size: 20px;
+}
+
+@media (min-width: 768px) {
+  .legal__body h2 {
+    font-size: 28px;
+    padding-top: 28px;
+  }
+}
+
+.legal__body ul,
+.legal__body ol {
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+.legal__body li + li {
+  margin-top: 8px;
+}
+
+.legal__body a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .legal__body a:hover {
+    color: var(--color-accent-soft);
+  }
+}

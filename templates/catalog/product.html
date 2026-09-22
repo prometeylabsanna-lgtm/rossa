@@ -6,14 +6,18 @@
 {% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
-  {% include "partials/product_config.html" %}
+  <div class="reveal reveal--up">
+    {% include "partials/product_config.html" %}
+  </div>
   <section class="related">
-    <h2>{% trans "Вам також сподобається" %}</h2>
-    <div class="product-grid" data-qa="product-grid">
-      {% for product in related %}
-        {% include "includes/product_card.html" %}
-      {% endfor %}
-    </div>
+    <h2 class="reveal reveal--up">{% trans "Вам також сподобається" %}</h2>
+    {% if related %}
+      <div class="product-grid" data-qa="product-grid">
+        {% for product in related %}
+          {% include "includes/product_card.html" %}
+        {% endfor %}
+      </div>
+    {% endif %}
   </section>
   <div class="modal" data-order-modal>
     <div class="modal__box" role="dialog" aria-modal="true">

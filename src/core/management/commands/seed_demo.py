@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 
 from catalog.models import Category, Fabric, Product, ProductFabricPrice, ProductShadeImage, Shade
-from core.management.seed_media import attach
+from core.management.seed_legal_texts import LEGAL_PAGES
+from core.management.seed_media import attach, replace_file
 from core.models import AboutPage, CollabPage, HomePage, LegalPage, SiteSettings, ValueProp
 
 
@@ -68,14 +69,91 @@ class Command(BaseCommand):
         })
         attach(obj.hero_poster, 'slots/hero-video.webp')
         attach(obj.craft_image, 'craft.jpg')
-        obj.save()
+        about_defaults = {
+            'about_title_uk': 'ROSSA — меблі, народжені в Україні',
+            'about_title_ru': 'ROSSA — мебель, рождённая в Украине',
+            'about_body_uk': (
+                'Власне виробництво і матеріали, перевірені часом. '
+                'Ми створюємо м’які меблі з увагою до форми, дотику та довговічності — '
+                'щоб кожна модель гармонійно жила у вашому просторі.'
+            ),
+            'about_body_ru': (
+                'Собственное производство и материалы, проверенные временем. '
+                'Мы создаём мягкую мебель с вниманием к форме, тактильности и долговечности — '
+                'чтобы каждая модель гармонично жила в вашем пространстве.'
+            ),
+        }
+        updated = False
+        for key, value in about_defaults.items():
+            if getattr(obj, key, None) != value:
+                setattr(obj, key, value)
+                updated = True
+        if not obj.about_video:
+            replace_file(obj.about_video, 'home/video/about-showroom.mp4')
+            updated = True
+        if updated:
+            obj.save()
+        else:
+            obj.save()
+        self._hero_slides(obj)
+
+    def _hero_slides(self, page):
+        from core.models import HeroSlide
+
+        slides = [
+            {
+                'sort': 0,
+                'image': 'home/slide-1.jpg',
+                'title_uk': 'Меблі, створені для дому',
+                'title_ru': 'Мебель, созданная для дома',
+                'subtitle_uk': 'М’які дивани, ліжка та крісла з натуральних матеріалів. Індивідуальний пошив тканини й доставка по всій Україні — щоб ваш простір відчувався завершеним.',
+                'subtitle_ru': 'Мягкие диваны, кровати и кресла из натуральных материалов. Индивидуальный пошив ткани и доставка по всей Украине — чтобы ваше пространство ощущалось завершённым.',
+            },
+            {
+                'sort': 1,
+                'image': 'home/slide-2.jpg',
+                'title_uk': 'Комфорт без компромісів',
+                'title_ru': 'Комфорт без компромиссов',
+                'subtitle_uk': 'Крісла та дивани для спокійних вечорів. Надійний каркас, пружні блоки й тканини, які приємно відчувати щодня — комфорт, розрахований на роки.',
+                'subtitle_ru': 'Кресла и диваны для спокойных вечеров. Надёжный каркас, упругие блоки и ткани, которые приятно ощущать каждый день — комфорт, рассчитанный на годы.',
+            },
+            {
+                'sort': 2,
+                'image': 'home/slide-3.jpg',
+                'title_uk': 'Затишок\nу кожній деталі',
+                'title_ru': 'Уют\nв каждой детали',
+                'subtitle_uk': 'Текстури й матеріали, які хочеться відчувати. Відтінки, фактури та форми підбираємо так, щоб меблі гармонійно жили у вашому інтер’єрі.',
+                'subtitle_ru': 'Текстуры и материалы, которые хочется ощущать. Оттенки, фактуры и формы подбираем так, чтобы мебель гармонично жила в вашем интерьере.',
+            },
+        ]
+        for item in slides:
+            slide, created = HeroSlide.objects.get_or_create(
+                page=page,
+                sort=item['sort'],
+                defaults={
+                    'title_uk': item['title_uk'],
+                    'title_ru': item['title_ru'],
+                    'subtitle_uk': item['subtitle_uk'],
+                    'subtitle_ru': item['subtitle_ru'],
+                    'cta_uk': 'Дивитись каталог',
+                    'cta_ru': 'Смотреть каталог',
+                    'is_active': True,
+                },
+            )
+            # Keep captions in sync for demo slides
+            slide.title_uk = item['title_uk']
+            slide.title_ru = item['title_ru']
+            slide.subtitle_uk = item['subtitle_uk']
+            slide.subtitle_ru = item['subtitle_ru']
+            replace_file(slide.image, item['image'])
+            slide.save()
 
     def _value_props(self):
         items = [
-            ('01', 'Матеріали преміум-класу', 'Материалы премиум-класса',
+            ('01', 'Преміум тканини', 'Премиум ткани',
              'Тканини та шкіра від перевірених європейських постачальників.',
              'Ткани и кожа от проверенных европейских поставщиков.'),
-            ('02', 'Гарантія 5 років', 'Гарантия 5 лет',
+            ('02', '5 років гарантії', '5 лет гарантии',
              'На каркас та механізми трансформації.',
              'На каркас и механизмы трансформации.'),
             ('03', 'Доставка по Україні', 'Доставка по Украине',
@@ -86,9 +164,19 @@ class Command(BaseCommand):
              'Выберите ткань и размеры под ваше пространство.'),
         ]
         for i, (num, tu, tr, bu, br) in enumerate(items):
-            ValueProp.objects.get_or_create(number=num, defaults={
+            obj, _ = ValueProp.objects.get_or_create(number=num, defaults={
                 'title_uk': tu, 'title_ru': tr, 'body_uk': bu, 'body_ru': br, 'sort': i,
             })
+            changed = False
+            for field, value in (
+                ('title_uk', tu), ('title_ru', tr),
+                ('body_uk', bu), ('body_ru', br), ('sort', i),
+            ):
+                if getattr(obj, field) != value:
+                    setattr(obj, field, value)
+                    changed = True
+            if changed:
+                obj.save(update_fields=['title_uk', 'title_ru', 'body_uk', 'body_ru', 'sort'])
 
     def _about(self):
         obj, _ = AboutPage.objects.get_or_create(pk=1, defaults={
@@ -152,18 +240,17 @@ class Command(BaseCommand):
         obj.save()
 
     def _legal(self):
-        pages = [
-            ('otrymannya', 'Як отримати замовлення', 'Как получить заказ',
-             'Після заявки менеджер телефонує, щоб узгодити комплектацію.\n\nСамовивіз / завантаження — на виробництві.\n\nДоставка власним авто клієнта.\n\nОнлайн-оплати та тарифів перевізників на сайті немає.'),
-            ('oferta', 'Договір оферти', 'Договор оферты',
-             'TODO: юридичний текст оферти замовника. Редагується в адмінці.'),
-            ('privacy', 'Політика конфіденційності', 'Политика конфиденциальности',
-             'TODO: текст політики конфіденційності замовника. Редагується в адмінці.'),
-        ]
-        for slug, tu, tr, body in pages:
-            LegalPage.objects.get_or_create(slug=slug, defaults={
-                'title_uk': tu, 'title_ru': tr, 'body_uk': body, 'body_ru': body,
-            })
+        for slug, title_uk, title_ru, body_uk, body_ru in LEGAL_PAGES:
+            LegalPage.objects.update_or_create(
+                slug=slug,
+                defaults={
+                    'title_uk': title_uk,
+                    'title_ru': title_ru,
+                    'body_uk': body_uk,
+                    'body_ru': body_ru,
+                    'is_active': True,
+                },
+            )
 
     def _fabrics(self):
         data = [
@@ -178,16 +265,36 @@ class Command(BaseCommand):
             })
             out[slug] = obj
         shades = {
-            'rogozhka': [('taupe', 'Тауп', '#6B6255'), ('sand', 'Пісок', '#C7BBA3'), ('wine', 'Вино', '#903838')],
-            'oksamyt': [('ivory', 'Айворі', '#C9BFA5'), ('stone', 'Камінь', '#7C7267'), ('forest', 'Ліс', '#4A5A52')],
-            'ecoshkira': [('cream', 'Крем', '#D8CFC0'), ('graphite', 'Графіт', '#3E4B5C'), ('black', 'Чорний', '#1A1817')],
+            'rogozhka': [
+                ('taupe', 'Тауп', 'Тауп', '#6B6255'),
+                ('sand', 'Пісок', 'Песок', '#C7BBA3'),
+                ('wine', 'Вино', 'Вино', '#903838'),
+            ],
+            'oksamyt': [
+                ('ivory', 'Айворі', 'Айвори', '#C9BFA5'),
+                ('stone', 'Камінь', 'Камень', '#7C7267'),
+                ('forest', 'Ліс', 'Лес', '#4A5A52'),
+            ],
+            'ecoshkira': [
+                ('cream', 'Крем', 'Крем', '#D8CFC0'),
+                ('graphite', 'Графіт', 'Графит', '#3E4B5C'),
+                ('black', 'Чорний', 'Чёрный', '#1A1817'),
+            ],
         }
         for fabric_slug, items in shades.items():
             fabric = out[fabric_slug]
-            for i, (slug, name, hex_color) in enumerate(items):
-                Shade.objects.get_or_create(fabric=fabric, slug=slug, defaults={
-                    'name_uk': name, 'name_ru': name, 'hex_color': hex_color, 'sort': i,
+            fabric.name_uk = next(uk for s, uk, ru, sur, so in data if s == fabric_slug)
+            fabric.name_ru = next(ru for s, uk, ru, sur, so in data if s == fabric_slug)
+            fabric.save(update_fields=['name_uk', 'name_ru'])
+            for i, (slug, name_uk, name_ru, hex_color) in enumerate(items):
+                shade, _ = Shade.objects.get_or_create(fabric=fabric, slug=slug, defaults={
+                    'name_uk': name_uk, 'name_ru': name_ru, 'hex_color': hex_color, 'sort': i,
                 })
+                shade.name_uk = name_uk
+                shade.name_ru = name_ru
+                shade.hex_color = hex_color
+                shade.sort = i
+                shade.save()
         return out
 
     def _categories(self):
@@ -196,17 +303,29 @@ class Command(BaseCommand):
             'intro_uk': 'Модульні, кутові та прямі дивани власного виробництва з можливістю вибору тканини.',
             'intro_ru': 'Модульные, угловые и прямые диваны собственного производства с возможностью выбора ткани.',
         })
-        attach(sofas.image, 'slots/cat-sofas.webp')
+        replace_file(sofas.image, 'slots/cat-sofas.webp')
         sofas.save()
         beds, _ = Category.objects.get_or_create(slug='lizhka', parent=None, defaults={
             'name_uk': 'Ліжка', 'name_ru': 'Кровати', 'sort': 1,
+            'intro_uk': 'Ліжка з м’яким узголів’ям і надійним каркасом власного виробництва.',
+            'intro_ru': 'Кровати с мягким изголовьем и надёжным каркасом собственного производства.',
         })
-        attach(beds.image, 'slots/cat-beds.webp')
+        beds.name_uk = 'Ліжка'
+        beds.name_ru = 'Кровати'
+        beds.intro_uk = beds.intro_uk or 'Ліжка з м’яким узголів’ям і надійним каркасом власного виробництва.'
+        beds.intro_ru = 'Кровати с мягким изголовьем и надёжным каркасом собственного производства.'
+        replace_file(beds.image, 'slots/cat-beds.webp')
         beds.save()
         poufs, _ = Category.objects.get_or_create(slug='pufy', parent=None, defaults={
             'name_uk': 'Пуфи', 'name_ru': 'Пуфы', 'sort': 2,
+            'intro_uk': 'Пуфи як доповнення до диванів і окреме м’яке місце для сидіння.',
+            'intro_ru': 'Пуфы как дополнение к диванам и отдельное мягкое место для сидения.',
         })
-        attach(poufs.image, 'slots/cat-poufs.webp')
+        poufs.name_uk = 'Пуфи'
+        poufs.name_ru = 'Пуфы'
+        poufs.intro_uk = poufs.intro_uk or 'Пуфи як доповнення до диванів і окреме м’яке місце для сидіння.'
+        poufs.intro_ru = 'Пуфы как дополнение к диванам и отдельное мягкое место для сидения.'
+        replace_file(poufs.image, 'slots/cat-poufs.webp')
         poufs.save()
         subs = [
             ('modulni', 'Модульні', 'Модульные', 0),
@@ -229,8 +348,11 @@ class Command(BaseCommand):
                 'type_uk': 'Модульний диван', 'type_ru': 'Модульный диван',
                 'cat': 'modulni', 'price': 42900, 'badge': Product.Badge.NEW,
                 'dims_uk': '320×95×82 см (модульна конфігурація)',
+                'dims_ru': '320×95×82 см (модульная конфигурация)',
                 'description_uk': 'Модульний диван «Мілан» дозволяє зібрати конфігурацію під форму вашої вітальні — від компактного двомісного варіанта до великого кутового ансамблю. Каркас із масиву бука, незалежний пружинний блок.',
+                'description_ru': 'Модульный диван «Милан» позволяет собрать конфигурацию под форму вашей гостиной — от компактного двухместного варианта до большого углового ансамбля. Каркас из массива бука, независимый пружинный блок.',
                 'care_uk': 'Знімні чохли, машинне прання за температури до 30°C. Рекомендовано хімчистку раз на рік.',
+                'care_ru': 'Съёмные чехлы, машинная стирка при температуре до 30°C. Рекомендуется химчистка раз в год.',
                 'image': 'products/milan.png', 'slot': 'p1-a.webp',
             },
             {
@@ -238,8 +360,11 @@ class Command(BaseCommand):
                 'type_uk': 'Кутовий диван', 'type_ru': 'Угловой диван',
                 'cat': 'kutovi', 'price': 38500, 'badge': Product.Badge.HIT,
                 'dims_uk': '280×165×88 см',
+                'dims_ru': '280×165×88 см',
                 'description_uk': 'Кутовий диван «Онтаріо» поєднує глибоке сидіння та широкі підлокітники. Ідеальний для сімейного перегляду фільмів чи денного відпочинку.',
+                'description_ru': 'Угловой диван «Онтарио» сочетает глубокое сиденье и широкие подлокотники. Идеален для семейного просмотра фильмов или дневного отдыха.',
                 'care_uk': 'Тканина стійка до стирання, знімні подушки, сухе чищення.',
+                'care_ru': 'Ткань устойчива к истиранию, съёмные подушки, сухая чистка.',
                 'image': 'products/ontario.png', 'slot': 'p2-a.webp',
             },
             {
@@ -247,8 +372,11 @@ class Command(BaseCommand):
                 'type_uk': 'Прямий диван', 'type_ru': 'Прямой диван',
                 'cat': 'pryami', 'price': 27900, 'badge': '',
                 'dims_uk': '210×90×80 см',
+                'dims_ru': '210×90×80 см',
                 'description_uk': 'Лаконічний прямий диван «Верона» для невеликих просторів. Дерев’яні ніжки, чіткі лінії, універсальний масштаб.',
+                'description_ru': 'Лаконичный прямой диван «Верона» для небольших пространств. Деревянные ножки, чёткие линии, универсальный масштаб.',
                 'care_uk': 'Знімний чохол, чищення мильним розчином.',
+                'care_ru': 'Съёмный чехол, чистка мыльным раствором.',
                 'image': 'slots/p3-a.webp', 'slot': 'p3-a.webp',
             },
             {
@@ -256,8 +384,11 @@ class Command(BaseCommand):
                 'type_uk': 'Ліжко', 'type_ru': 'Кровать',
                 'cat': 'beds', 'price': 24900, 'badge': Product.Badge.TOP,
                 'dims_uk': '160×200 см, узголів’я 110 см',
+                'dims_ru': '160×200 см, изголовье 110 см',
                 'description_uk': 'Ліжко «Соло» з м’яким тканинним узголів’ям і масивною основою з ламелями. Безшумний підйомний механізм для зберігання постільної білизни.',
+                'description_ru': 'Кровать «Соло» с мягким тканевым изголовьем и массивной основой с ламелями. Бесшумный подъёмный механизм для хранения постельного белья.',
                 'care_uk': 'Узголів’я знімне, сухе чищення тканини раз на пів року.',
+                'care_ru': 'Изголовье съёмное, сухая чистка ткани раз в полгода.',
                 'image': 'slots/p4-a.webp', 'slot': 'p4-a.webp',
             },
             {
@@ -265,8 +396,11 @@ class Command(BaseCommand):
                 'type_uk': 'Пуф', 'type_ru': 'Пуф',
                 'cat': 'poufs', 'price': 4200, 'badge': '',
                 'dims_uk': '45×45×40 см',
+                'dims_ru': '45×45×40 см',
                 'description_uk': 'Компактний пуф «Кіото» — додаткове місце для сидіння або підставка для ніг. Легко переставляється по кімнаті.',
+                'description_ru': 'Компактный пуф «Киото» — дополнительное место для сидения или подставка для ног. Легко переставляется по комнате.',
                 'care_uk': 'Знімний чохол, машинне прання.',
+                'care_ru': 'Съёмный чехол, машинная стирка.',
                 'image': 'slots/p5-a.webp', 'slot': 'p5-a.webp',
             },
             {
@@ -274,8 +408,11 @@ class Command(BaseCommand):
                 'type_uk': 'Кутовий модульний диван', 'type_ru': 'Угловой модульный диван',
                 'cat': 'kutovi', 'price': 45000, 'badge': Product.Badge.NEW,
                 'dims_uk': '340×180×85 см (модульна конфігурація)',
+                'dims_ru': '340×180×85 см (модульная конфигурация)',
                 'description_uk': 'Диван «Локс» — модульна кутова система з можливістю трансформації в спальне місце. Підходить для великих вітальнь.',
+                'description_ru': 'Диван «Локс» — модульная угловая система с возможностью трансформации в спальное место. Подходит для больших гостиных.',
                 'care_uk': 'Знімні чохли, машинне прання, регулярне збивання наповнювача подушок.',
+                'care_ru': 'Съёмные чехлы, машинная стирка, регулярное взбивание наполнителя подушек.',
                 'image': 'slots/p6-a.webp', 'slot': 'p6-a.webp',
             },
         ]
@@ -287,10 +424,26 @@ class Command(BaseCommand):
                 'base_price': item['price'],
                 'badge': item['badge'],
                 'dims_uk': item['dims_uk'],
+                'dims_ru': item['dims_ru'],
                 'description_uk': item['description_uk'],
+                'description_ru': item['description_ru'],
                 'care_uk': item['care_uk'],
+                'care_ru': item['care_ru'],
                 'sku': item['slug'].upper(),
             })
+            product.name_uk = item['name_uk']
+            product.name_ru = item['name_ru']
+            product.type_uk = item['type_uk']
+            product.type_ru = item['type_ru']
+            product.category = categories[item['cat']]
+            product.base_price = item['price']
+            product.badge = item['badge']
+            product.dims_uk = item['dims_uk']
+            product.dims_ru = item['dims_ru']
+            product.description_uk = item['description_uk']
+            product.description_ru = item['description_ru']
+            product.care_uk = item['care_uk']
+            product.care_ru = item['care_ru']
             attach(product.default_image, item['image'])
             product.save()
             for fabric in fabrics.values():

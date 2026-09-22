@@ -10,7 +10,7 @@
       <p class="footer__tagline">{{ site_settings.footer_tagline }}</p>
     </div>
     <div>
-      <div class="footer__label">{% trans "Продукція" %}</div>
+      <div class="footer__label">{% trans "Каталог" %}</div>
       <div class="footer__list">
         {% for cat in nav_categories %}
           <a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>

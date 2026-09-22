@@ -5,23 +5,23 @@
   {% include "includes/breadcrumbs.html" %}
   <div class="about-grid">
     <div>
-      <h1 class="serif-title">{{ page.title }}</h1>
-      <p class="page-intro">{{ page.body }}</p>
+      <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
+      <p class="page-intro reveal reveal--up" data-reveal-delay="100">{{ page.body }}</p>
       {% for m in page.milestones %}
-        <div class="milestone">
+        <div class="milestone reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
           <div class="milestone__year">{{ m.year }}</div>
           <div class="milestone__body">{{ m|loc:'body' }}</div>
         </div>
       {% endfor %}
     </div>
     {% if page.hero_image %}
-      <img src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="800" height="600">
+      <img class="reveal reveal--scale" data-reveal-delay="120" src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="800" height="600">
     {% endif %}
   </div>
   {% if page.craft_images %}
     <div class="craft-mosaic">
       {% for ci in page.craft_images %}
-        <div>
+        <div class="craft-mosaic__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00" tabindex="0">
           <img src="{{ ci.image }}" alt="{{ ci|loc:'label' }}" width="400" height="500" loading="lazy">
           <span>{{ ci|loc:'label' }}</span>
         </div>
@@ -30,7 +30,7 @@
   {% endif %}
   <section class="values">
     {% for av in page.values %}
-      <article class="value-card">
+      <article class="value-card reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
         <h2>{{ av|loc:'title' }}</h2>
         <div class="value-card__num">{{ av.num }}</div>
         <p>{{ av|loc:'body' }}</p>

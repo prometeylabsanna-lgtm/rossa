@@ -93,6 +93,11 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     section_categories_ru = models.CharField('Категорії (RU)', max_length=128, blank=True)
     section_bestsellers_uk = models.CharField('Хіти (UK)', max_length=128, default='Популярні моделі')
     section_bestsellers_ru = models.CharField('Хіти (RU)', max_length=128, blank=True)
+    about_title_uk = models.CharField('Про ROSSA — заголовок (UK)', max_length=255, blank=True)
+    about_title_ru = models.CharField('Про ROSSA — заголовок (RU)', max_length=255, blank=True)
+    about_body_uk = models.TextField('Про ROSSA — текст (UK)', blank=True)
+    about_body_ru = models.TextField('Про ROSSA — текст (RU)', blank=True)
+    about_video = models.FileField('Про ROSSA — відео', upload_to='home/video/', blank=True)
     craft_title_uk = models.CharField('Craft заголовок (UK)', max_length=255)
     craft_title_ru = models.CharField('Craft заголовок (RU)', max_length=255, blank=True)
     craft_body_uk = models.TextField('Craft текст (UK)')
@@ -119,7 +124,7 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1, defaults={
             'hero_title_uk': 'Меблі, створені для дому',
-            'hero_sub_uk': 'М’які меблі з натуральних матеріалів.',
+            'hero_sub_uk': 'М’які меблі з натуральних матеріалів. Індивідуальний пошив, доставка по всій Україні.',
             'craft_title_uk': 'Кожна деталь має значення',
             'craft_body_uk': '',
         })
@@ -146,6 +151,14 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
         return localized(self, 'section_bestsellers')
 
     @property
+    def about_title(self):
+        return localized(self, 'about_title')
+
+    @property
+    def about_body(self):
+        return localized(self, 'about_body')
+
+    @property
     def craft_title(self):
         return localized(self, 'craft_title')
 
@@ -168,3 +181,41 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     @property
     def seo_description(self):
         return localized(self, 'seo_description')
+
+
+class HeroSlide(TimeStampedModel):
+    page = models.ForeignKey(
+        HomePage,
+        on_delete=models.CASCADE,
+        related_name='hero_slides',
+        verbose_name='Головна',
+    )
+    image = models.ImageField('Зображення', upload_to='home/slides/')
+    title_uk = models.CharField('Заголовок (UK)', max_length=120)
+    title_ru = models.CharField('Заголовок (RU)', max_length=120, blank=True)
+    subtitle_uk = models.CharField('Підпис (UK)', max_length=255, blank=True)
+    subtitle_ru = models.CharField('Підпис (RU)', max_length=255, blank=True)
+    cta_uk = models.CharField('Кнопка (UK)', max_length=64, default='Дивитись каталог')
+    cta_ru = models.CharField('Кнопка (RU)', max_length=64, blank=True)
+    sort = models.PositiveSmallIntegerField('Порядок', default=0)
+    is_active = models.BooleanField('Активний', default=True)
+
+    class Meta:
+        verbose_name = 'Hero слайд'
+        verbose_name_plural = 'Hero слайди'
+        ordering = ('sort', 'id')
+
+    def __str__(self):
+        return self.title_uk
+
+    @property
+    def title(self):
+        return localized(self, 'title')
+
+    @property
+    def subtitle(self):
+        return localized(self, 'subtitle')
+
+    @property
+    def cta(self):
+        return localized(self, 'cta')

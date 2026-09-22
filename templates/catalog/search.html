@@ -4,8 +4,8 @@
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <section class="search-page">
-    <h1 class="page-title">{% trans "Пошук" %}</h1>
-    <form action="{% url 'catalog:search' %}" method="get" data-qa="search"
+    <h1 class="page-title reveal reveal--up">{% trans "Пошук" %}</h1>
+    <form class="reveal reveal--up" data-reveal-delay="80" action="{% url 'catalog:search' %}" method="get" data-qa="search"
           hx-get="{% url 'catalog:search' %}"
           hx-target="#search-results"
           hx-push-url="true"

@@ -3,31 +3,87 @@
 {% block body_class %}page--inner{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
-  <section class="section wrap">
-    <h1 class="page-title">{{ category.name }}</h1>
-    {% if category.intro %}<p class="page-intro">{{ category.intro }}</p>{% endif %}
-    <p class="page-intro">{{ total }} {% trans "моделей" %}</p>
-    <div class="toolbar" data-qa="filter-form">
-      <div class="chips">
-        {% if children %}
-          <a class="chip{% if category.get_absolute_url == parent_all_url %} is-active{% endif %}" href="{{ parent_all_url }}">{% trans "Всі" %}</a>
-          {% for child in children %}
-            <a class="chip{% if child.id == category.id %} is-active{% endif %}" href="{{ child.get_absolute_url }}">{{ child.name }}</a>
-          {% endfor %}
-        {% endif %}
+  <section class="section wrap catalog-page">
+    <h1 class="page-title reveal reveal--up">{{ page_title }}</h1>
+    {% if page_intro %}<p class="page-intro reveal reveal--up" data-reveal-delay="80">{{ page_intro }}</p>{% endif %}
+    <p class="page-intro page-intro--count reveal reveal--up" data-reveal-delay="120">{{ total }} {% trans "моделей" %}</p>
+
+    <div class="catalog-layout">
+      <aside class="catalog-filters reveal reveal--up" aria-label="{% trans 'Фільтри' %}">
+        <form method="get" class="catalog-filters__form" data-qa="filter-form">
+          {% if filter_categories %}
+            <div class="catalog-filters__group">
+              <div class="catalog-filters__label">{% trans "Категорія" %}</div>
+              <div class="chips">
+                <label class="chip{% if not selected_cat %} is-active{% endif %}">
+                  <input type="radio" name="cat" value="" data-filter-auto {% if not selected_cat %}checked{% endif %}>
+                  {% trans "Всі" %}
+                </label>
+                {% for cat in filter_categories %}
+                  <label class="chip{% if selected_cat and selected_cat.id == cat.id %} is-active{% endif %}">
+                    <input type="radio" name="cat" value="{{ cat.slug }}" data-filter-auto {% if selected_cat and selected_cat.id == cat.id %}checked{% endif %}>
+                    {{ cat.name }}
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% elif children %}
+            <div class="catalog-filters__group">
+              <div class="catalog-filters__label">{% trans "Категорія" %}</div>
+              <div class="chips">
+                <a class="chip{% if category.get_absolute_url == parent_all_url %} is-active{% endif %}" href="{{ parent_all_url }}">{% trans "Всі" %}</a>
+                {% for child in children %}
+                  <a class="chip{% if child.id == category.id %} is-active{% endif %}" href="{{ child.get_absolute_url }}">{{ child.name }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="catalog-filters__group">
+            <div class="catalog-filters__label">{% trans "Ціна, грн" %}</div>
+            <div class="catalog-filters__price">
+              <label class="catalog-filters__field">
+                <span class="visually-hidden">{% trans "Ціна від" %}</span>
+                <input type="number" name="price_min" inputmode="numeric" min="0" step="100"
+                       value="{{ price_min }}" placeholder="{% trans 'від' %}">
+              </label>
+              <label class="catalog-filters__field">
+                <span class="visually-hidden">{% trans "Ціна до" %}</span>
+                <input type="number" name="price_max" inputmode="numeric" min="0" step="100"
+                       value="{{ price_max }}" placeholder="{% trans 'до' %}">
+              </label>
+            </div>
+          </div>
+
+          <div class="catalog-filters__group">
+            <label class="catalog-filters__check">
+              <input type="checkbox" name="available" value="1" data-filter-auto {% if available %}checked{% endif %}>
+              <span>{% trans "В наявності" %}</span>
+            </label>
+          </div>
+
+          <div class="catalog-filters__group">
+            <label class="catalog-filters__label" for="sort">{% trans "Сортування" %}</label>
+            <select class="sort" id="sort" name="sort" data-sort data-filter-auto>
+              <option value="popular" {% if sort == 'popular' %}selected{% endif %}>{% trans "За популярністю" %}</option>
+              <option value="new" {% if sort == 'new' %}selected{% endif %}>{% trans "Новинки" %}</option>
+              <option value="price-asc" {% if sort == 'price-asc' %}selected{% endif %}>{% trans "Спочатку дешевші" %}</option>
+              <option value="price-desc" {% if sort == 'price-desc' %}selected{% endif %}>{% trans "Спочатку дорожчі" %}</option>
+              <option value="name" {% if sort == 'name' %}selected{% endif %}>{% trans "За назвою" %}</option>
+            </select>
+          </div>
+
+          <div class="catalog-filters__actions">
+            <button type="submit" class="btn btn--ghost">{% trans "Фільтрувати" %}</button>
+            <a class="btn btn--ghost" href="{{ reset_url }}">{% trans "Скинути" %}</a>
+          </div>
+        </form>
+      </aside>
+
+      <div class="catalog-main">
+        {% include "partials/product_grid.html" %}
       </div>
-      <form method="get">
-        <label class="visually-hidden" for="sort">{% trans "Сортування" %}</label>
-        <select class="sort" id="sort" name="sort" data-sort>
-          <option value="popular" {% if sort == 'popular' %}selected{% endif %}>{% trans "За популярністю" %}</option>
-          <option value="new" {% if sort == 'new' %}selected{% endif %}>{% trans "Новинки" %}</option>
-          <option value="price-asc" {% if sort == 'price-asc' %}selected{% endif %}>{% trans "Спочатку дешевші" %}</option>
-          <option value="price-desc" {% if sort == 'price-desc' %}selected{% endif %}>{% trans "Спочатку дорожчі" %}</option>
-          <option value="name" {% if sort == 'name' %}selected{% endif %}>{% trans "За назвою" %}</option>
-        </select>
-      </form>
     </div>
-    {% include "partials/product_grid.html" %}
   </section>
 {% endblock %}
 {% block extra_js %}

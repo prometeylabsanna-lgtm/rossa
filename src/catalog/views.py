@@ -1,5 +1,12 @@
-from catalog.models import Category, Product
-from catalog.selectors import apply_sort, products_in_category, search_products, visible_products
+from catalog.selectors import (
+    apply_listing_filters,
+    apply_sort,
+    products_in_category,
+    related_products,
+    search_products,
+    top_categories,
+    visible_products,
+)
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
@@ -16,6 +23,8 @@ def _breadcrumbs(items):
 
 
 def _category_by_path(slugs):
+    from catalog.models import Category
+
     parent = None
     node = None
     for slug in slugs:
@@ -24,22 +33,76 @@ def _category_by_path(slugs):
     return node
 
 
+def _parse_int(value):
+    try:
+        if value in (None, ''):
+            return None
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _listing_query(request, **overrides):
+    params = request.GET.copy()
+    params.pop('offset', None)
+    for key, value in overrides.items():
+        if value in (None, ''):
+            params.pop(key, None)
+        else:
+            params[key] = str(value)
+    for key in list(params.keys()):
+        if params.get(key) in (None, ''):
+            params.pop(key, None)
+    return params.urlencode()
+
+
 def catalog_index(request):
-    categories = Category.objects.filter(is_active=True, parent__isnull=True).order_by('sort')
-    return render(request, 'catalog/index.html', {
-        'categories': categories,
-        'breadcrumbs': _breadcrumbs([(_('Головна'), '/'), (_('Продукція'), None)]),
-        'seo_title': _('Продукція — ROSSA'),
-        'seo_description': _('Дивани, ліжка та пуфи власного виробництва.'),
-        'canonical_url': request.build_absolute_uri(),
-    })
+    return _render_listing(
+        request,
+        category=None,
+        crumbs=_breadcrumbs([(_('Головна'), '/'), (_('Каталог'), None)]),
+        seo_title=_('Каталог — ROSSA'),
+        seo_description=_('Дивани, ліжка та пуфи власного виробництва.'),
+        intro=_('Дивани, ліжка та пуфи власного виробництва. Обирайте тканину та відтінок під ваш інтер’єр.'),
+    )
 
 
-def _render_listing(request, category, crumbs):
-    qs = products_in_category(category) if category else visible_products()
-    if request.GET.get('available') == '1':
-        qs = qs.filter(is_available=True)
+def _render_listing(request, category, crumbs, seo_title=None, seo_description=None, intro=None):
+    price_min = _parse_int(request.GET.get('price_min'))
+    price_max = _parse_int(request.GET.get('price_max'))
+    available = request.GET.get('available') == '1'
     sort = request.GET.get('sort', 'popular')
+    cat_slug = (request.GET.get('cat') or '').strip()
+    selected_cat = None
+
+    if category:
+        qs = products_in_category(category)
+        qs, _unused_cat = apply_listing_filters(
+            qs,
+            price_min=price_min,
+            price_max=price_max,
+            available=available,
+        )
+        filter_categories = []
+        if category.parent:
+            children = list(category.parent.children.filter(is_active=True))
+            parent_all_url = category.parent.get_absolute_url()
+        else:
+            children = list(category.children.filter(is_active=True))
+            parent_all_url = category.get_absolute_url()
+    else:
+        qs = visible_products()
+        qs, selected_cat = apply_listing_filters(
+            qs,
+            cat_slug=cat_slug,
+            price_min=price_min,
+            price_max=price_max,
+            available=available,
+        )
+        filter_categories = list(top_categories())
+        children = []
+        parent_all_url = None
+
     qs = apply_sort(qs, sort)
     page_size = settings.CATALOG_PAGE_SIZE
     offset = int(request.GET.get('offset', 0) or 0)
@@ -47,15 +110,21 @@ def _render_listing(request, category, crumbs):
     products = list(qs[offset:offset + page_size])
     next_offset = offset + page_size
     has_more = next_offset < total
-    children = []
-    parent_all_url = None
+    listing_qs = _listing_query(request, sort=sort)
+
     if category:
-        if category.parent:
-            children = list(category.parent.children.filter(is_active=True))
-            parent_all_url = category.parent.get_absolute_url()
-        else:
-            children = list(category.children.filter(is_active=True))
-            parent_all_url = category.get_absolute_url()
+        page_title = category.name
+        page_seo_title = (
+            (category.seo_title if category.seo_title else category.name) + ' — ROSSA'
+        )
+        page_seo_description = category.seo_description or category.intro or ''
+        page_intro = category.intro or intro
+    else:
+        page_title = _('Каталог')
+        page_seo_title = seo_title or (_('Каталог') + ' — ROSSA')
+        page_seo_description = seo_description or _('Каталог ROSSA')
+        page_intro = intro
+
     ctx = {
         'category': category,
         'products': products,
@@ -65,9 +134,18 @@ def _render_listing(request, category, crumbs):
         'next_offset': next_offset,
         'children': children,
         'parent_all_url': parent_all_url,
+        'filter_categories': filter_categories,
+        'selected_cat': selected_cat,
+        'price_min': price_min if price_min is not None else '',
+        'price_max': price_max if price_max is not None else '',
+        'available': available,
+        'listing_qs': listing_qs,
+        'reset_url': request.path,
+        'page_title': page_title,
+        'page_intro': page_intro,
         'breadcrumbs': crumbs,
-        'seo_title': (category.seo_title if category and category.seo_title else (category.name if category else 'Каталог')) + ' — ROSSA',
-        'seo_description': (category.seo_description or category.intro) if category else 'Каталог ROSSA',
+        'seo_title': page_seo_title,
+        'seo_description': page_seo_description,
         'canonical_url': request.build_absolute_uri(request.path),
     }
     template = 'partials/product_more.html' if request.htmx else 'catalog/category.html'
@@ -79,7 +157,7 @@ def category_page(request, path):
     if not slugs:
         raise Http404()
     category = _category_by_path(slugs)
-    crumbs = [(_('Головна'), '/'), (_('Продукція'), '/katalog/')]
+    crumbs = [(_('Головна'), '/'), (_('Каталог'), '/katalog/')]
     chain = []
     node = category
     while node:
@@ -111,11 +189,8 @@ def product_detail(request, slug):
     if selected_shade:
         images = [img for img in product.shade_images.all() if img.shade_id == selected_shade.id]
     main_image = images[0].image if images else product.default_image
-    related_qs = products_in_category(product.category).exclude(pk=product.pk)
-    if related_qs.count() < 3 and product.category.parent:
-        related_qs = products_in_category(product.category.parent).exclude(pk=product.pk)
-    related_qs = related_qs[:3]
-    crumbs = [(_('Головна'), '/')]
+    related_qs = related_products(product, limit=3)
+    crumbs = [(_('Головна'), '/'), (_('Каталог'), '/katalog/')]
     if product.category.parent:
         crumbs.append((product.category.parent.name, product.category.parent.get_absolute_url()))
     crumbs.append((product.category.name, product.category.get_absolute_url()))

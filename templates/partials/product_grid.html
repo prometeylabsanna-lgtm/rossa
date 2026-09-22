@@ -6,8 +6,8 @@
   {% if has_more %}
     <div class="more">
       <a class="btn btn--ghost"
-         href="?sort={{ sort }}&offset={{ next_offset }}"
-         hx-get="?sort={{ sort }}&offset={{ next_offset }}"
+         href="?{% if listing_qs %}{{ listing_qs }}&{% endif %}offset={{ next_offset }}"
+         hx-get="?{% if listing_qs %}{{ listing_qs }}&{% endif %}offset={{ next_offset }}"
          hx-target="#product-grid"
          hx-swap="beforeend"
          hx-indicator="this">

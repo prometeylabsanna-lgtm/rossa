@@ -10,7 +10,7 @@
       <div class="thumbs">
         {% for img in gallery %}
           <button type="button" class="{% if forloop.first %}is-active{% endif %}">
-            <img src="{{ img.image.url }}" alt="" width="64" height="64">
+            <img src="{{ img.image.url }}" alt="" width="96" height="96">
           </button>
         {% endfor %}
       </div>
