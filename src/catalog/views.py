@@ -188,10 +188,9 @@ def product_detail(request, slug):
         for img in product.shade_images.all()
         if img.shade.is_active
     }
-    # Порядок відтінків у межах категорії тканини; product sort — лише як уточнення
+    # Порядок кружечків фіксований через ProductShadeImage.sort (темний → світлий)
     shades_qs.sort(key=lambda s: (
         shade_meta.get(s.id, {}).get('sort', s.sort),
-        s.sort,
         s.id,
     ))
     shades = [
@@ -203,9 +202,9 @@ def product_detail(request, slug):
         }
         for s in shades_qs
     ]
-    # shade з іншої категорії тканини ігноруємо
+    # При зміні категорії тканини — завжди перший (темний) відтінок
     selected_shade = None
-    if shade_id:
+    if shade_id and fabric_id:
         selected_shade = next((s for s in shades if str(s['id']) == str(shade_id)), None)
     if not selected_shade:
         selected_shade = shades[0] if shades else None

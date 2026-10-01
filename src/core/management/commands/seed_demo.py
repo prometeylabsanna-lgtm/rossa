@@ -647,14 +647,15 @@ class Command(BaseCommand):
                 'light_hex': '#D4C4A8',
                 'dark_hex': '#3C2415',
                 'map': {
-                    'beige-2': {
-                        'image': 'products/milan.webp',
-                        'hex': '#D4C4A8',
-                        'sort': 0,
-                    },
+                    # завжди: темний ліворуч, світлий праворуч
                     'chocolate-1': {
                         'image': 'products/milan-dark-brown.webp',
                         'hex': '#3C2415',
+                        'sort': 0,
+                    },
+                    'beige-2': {
+                        'image': 'products/milan.webp',
+                        'hex': '#D4C4A8',
                         'sort': 1,
                     },
                 },
@@ -765,13 +766,12 @@ class Command(BaseCommand):
                         dest_name=f'{product.slug}-{shade.slug}.webp',
                     )
                 elif color:
-                    # У кожній категорії тканини завжди пара: темний + світлий колір моделі
-                    if shade.sort == 0:
-                        image_path, swatch_hex = color['dark'], color['dark_hex']
-                        img.sort = 0
+                    # У кожній категорії: 1-й кружечок = темний, 2-й = світлий (як на скріні)
+                    is_dark = (shade.sort % 2) == 0
+                    if is_dark:
+                        image_path, swatch_hex, img.sort = color['dark'], color['dark_hex'], 0
                     else:
-                        image_path, swatch_hex = color['light'], color['light_hex']
-                        img.sort = 1
+                        image_path, swatch_hex, img.sort = color['light'], color['light_hex'], 1
                     img.hex_override = swatch_hex
                     replace_file(
                         img.image,
