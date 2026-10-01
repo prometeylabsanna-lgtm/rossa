@@ -481,6 +481,18 @@
   margin-top: 6px;
 }
 
+.info-card__value--stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-card__value--stack a {
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+}
+
 .map-slot {
   width: 100%;
   aspect-ratio: 16 / 9;

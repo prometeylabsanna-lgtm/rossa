@@ -11,7 +11,11 @@
         <div class="info-card">
           <div>
             <div class="info-card__label">{% trans "Телефон" %}</div>
-            <div class="info-card__value"><a href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a></div>
+            <div class="info-card__value info-card__value--stack">
+              {% for item in site_settings.phones %}
+                <a href="tel:{{ item.tel }}">{{ item.display }}</a>
+              {% endfor %}
+            </div>
           </div>
           <div>
             <div class="info-card__label">Email</div>
@@ -25,10 +29,28 @@
             <div class="info-card__label">{% trans "Графік роботи" %}</div>
             <div class="info-card__value">{{ site_settings.hours }}</div>
           </div>
+          {% if site_settings.telegram_url %}
           <div>
             <div class="info-card__label">Telegram</div>
-            <div class="info-card__value"><a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer">{{ site_settings.telegram_handle }}</a></div>
+            <div class="info-card__value"><a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer">{% if site_settings.telegram_handle %}{{ site_settings.telegram_handle }}{% else %}Telegram{% endif %}</a></div>
           </div>
+          {% endif %}
+          {% if site_settings.instagram_url or site_settings.facebook_url or site_settings.tiktok_url %}
+          <div>
+            <div class="info-card__label">{% trans "Соцмережі" %}</div>
+            <div class="info-card__value info-card__value--stack">
+              {% if site_settings.instagram_url %}
+                <a href="{{ site_settings.instagram_url }}" target="_blank" rel="noopener noreferrer">Instagram</a>
+              {% endif %}
+              {% if site_settings.facebook_url %}
+                <a href="{{ site_settings.facebook_url }}" target="_blank" rel="noopener noreferrer">Facebook</a>
+              {% endif %}
+              {% if site_settings.tiktok_url %}
+                <a href="{{ site_settings.tiktok_url }}" target="_blank" rel="noopener noreferrer">TikTok</a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
         </div>
         {% if map_image %}
           <img class="map-slot" src="{{ map_image.url }}" alt="{% trans 'Салон ROSSA' %}" width="800" height="450" loading="lazy">

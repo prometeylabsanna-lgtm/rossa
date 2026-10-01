@@ -22,11 +22,16 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('seed_demo OK'))
 
     def _settings(self):
-        obj, _ = SiteSettings.objects.get_or_create(pk=1, defaults={
-            'phone': '+380 44 123 45 67',
-            'email': 'hello@rossa.ua',
+        fields = {
+            'phone': '067 540 77 11',
+            'phone_2': '073 076 77 55',
+            'phone_3': '050 029 05 00',
+            'email': 'rossamebli2016@gmail.com',
             'telegram_url': 'https://t.me/rossaukr',
             'telegram_handle': '@rossaukr',
+            'instagram_url': 'https://www.instagram.com/rossa_mebel_ua',
+            'facebook_url': 'https://www.facebook.com/share/19wDTQG2Vc/',
+            'tiktok_url': 'https://www.tiktok.com/@rossa_ua',
             'address_uk': 'м. Київ, вул. Індустріальна, 12',
             'address_ru': 'г. Киев, ул. Индустриальная, 12',
             'hours_uk': 'Пн–Сб, 10:00–19:00',
@@ -37,7 +42,10 @@ class Command(BaseCommand):
             'guarantee_ru': 'Гарантия: 18 месяцев',
             'delivery_label_uk': 'Доставка: від 3 тижнів',
             'delivery_label_ru': 'Доставка: от 3 недель',
-        })
+        }
+        obj, _ = SiteSettings.objects.get_or_create(pk=1, defaults=fields)
+        for key, value in fields.items():
+            setattr(obj, key, value)
         attach(obj.logo, 'logo/rossa-logo.png')
         attach(obj.map_image, 'slots/contact-map.webp')
         obj.save()
@@ -70,8 +78,8 @@ class Command(BaseCommand):
         attach(obj.hero_poster, 'slots/hero-video.webp')
         attach(obj.craft_image, 'craft.jpg')
         about_defaults = {
-            'about_title_uk': 'ROSSA — меблі, народжені в Україні',
-            'about_title_ru': 'ROSSA — мебель, рождённая в Украине',
+            'about_title_uk': 'Rossa. Твій стиль. Твій комфорт.',
+            'about_title_ru': 'Rossa. Твой стиль. Твой комфорт.',
             'about_body_uk': (
                 'Власне виробництво і матеріали, перевірені часом. '
                 'Ми створюємо м’які меблі з увагою до форми, дотику та довговічності — '
@@ -103,27 +111,33 @@ class Command(BaseCommand):
         slides = [
             {
                 'sort': 0,
-                'image': 'home/slide-1.jpg',
+                'image': 'home/slide-1.webp',
                 'title_uk': 'Меблі, створені для дому',
                 'title_ru': 'Мебель, созданная для дома',
                 'subtitle_uk': 'М’які дивани, ліжка та крісла з натуральних матеріалів. Індивідуальний пошив тканини й доставка по всій Україні — щоб ваш простір відчувався завершеним.',
                 'subtitle_ru': 'Мягкие диваны, кровати и кресла из натуральных материалов. Индивидуальный пошив ткани и доставка по всей Украине — чтобы ваше пространство ощущалось завершённым.',
+                'image_alt_uk': 'Білий модульний диван Rossa',
+                'image_alt_ru': 'Белый модульный диван Rossa',
             },
             {
                 'sort': 1,
-                'image': 'home/slide-2.jpg',
+                'image': 'home/slide-2.webp',
                 'title_uk': 'Комфорт без компромісів',
                 'title_ru': 'Комфорт без компромиссов',
                 'subtitle_uk': 'Крісла та дивани для спокійних вечорів. Надійний каркас, пружні блоки й тканини, які приємно відчувати щодня — комфорт, розрахований на роки.',
                 'subtitle_ru': 'Кресла и диваны для спокойных вечеров. Надёжный каркас, упругие блоки и ткани, которые приятно ощущать каждый день — комфорт, рассчитанный на годы.',
+                'image_alt_uk': 'Зелений кутовий диван Rossa',
+                'image_alt_ru': 'Зелёный угловой диван Rossa',
             },
             {
                 'sort': 2,
-                'image': 'home/slide-3.jpg',
+                'image': 'home/slide-3.webp',
                 'title_uk': 'Затишок\nу кожній деталі',
                 'title_ru': 'Уют\nв каждой детали',
                 'subtitle_uk': 'Текстури й матеріали, які хочеться відчувати. Відтінки, фактури та форми підбираємо так, щоб меблі гармонійно жили у вашому інтер’єрі.',
                 'subtitle_ru': 'Текстуры и материалы, которые хочется ощущать. Оттенки, фактуры и формы подбираем так, чтобы мебель гармонично жила в вашем интерьере.',
+                'image_alt_uk': 'Сірий диван Rossa',
+                'image_alt_ru': 'Серый диван Rossa',
             },
         ]
         for item in slides:
@@ -135,6 +149,8 @@ class Command(BaseCommand):
                     'title_ru': item['title_ru'],
                     'subtitle_uk': item['subtitle_uk'],
                     'subtitle_ru': item['subtitle_ru'],
+                    'image_alt_uk': item['image_alt_uk'],
+                    'image_alt_ru': item['image_alt_ru'],
                     'cta_uk': 'Дивитись каталог',
                     'cta_ru': 'Смотреть каталог',
                     'is_active': True,
@@ -145,23 +161,41 @@ class Command(BaseCommand):
             slide.title_ru = item['title_ru']
             slide.subtitle_uk = item['subtitle_uk']
             slide.subtitle_ru = item['subtitle_ru']
+            slide.image_alt_uk = item['image_alt_uk']
+            slide.image_alt_ru = item['image_alt_ru']
             replace_file(slide.image, item['image'])
             slide.save()
 
     def _value_props(self):
         items = [
-            ('01', 'Преміум тканини', 'Премиум ткани',
-             'Тканини та шкіра від перевірених європейських постачальників.',
-             'Ткани и кожа от проверенных европейских поставщиков.'),
-            ('02', '5 років гарантії', '5 лет гарантии',
-             'На каркас та механізми трансформації.',
-             'На каркас и механизмы трансформации.'),
-            ('03', 'Доставка по Україні', 'Доставка по Украине',
-             'Збірка та підйом на поверх включені у вартість.',
-             'Сборка и подъём на этаж включены в стоимость.'),
-            ('04', 'Індивідуальний пошив', 'Индивидуальный пошив',
-             'Оберіть тканину та розміри під ваш простір.',
-             'Выберите ткань и размеры под ваше пространство.'),
+            (
+                '01',
+                'Каркас із сухої деревини',
+                'Каркас из сухой древесины',
+                'Екологічно чиста та безпечна основа виробу, що дбає про ваше здоров’я.',
+                'Экологически чистая и безопасная основа изделия, заботящаяся о вашем здоровье.',
+            ),
+            (
+                '02',
+                'Надійність та довговічність',
+                'Надёжность и долговечность',
+                'Поєднання високоякісних матеріалів і передових технологій робить вироби Rossa втіленням надійності та довговічності.',
+                'Сочетание высококачественных материалов и передовых технологий делает изделия Rossa воплощением надёжности и долговечности.',
+            ),
+            (
+                '03',
+                'Великий вибір тканин',
+                'Большой выбор тканей',
+                'Широка гама фактур та кольорів дозволить створити меблі, які ідеально доповнять ваш простір.',
+                'Широкая гамма фактур и цветов позволит создать мебель, которая идеально дополнит ваше пространство.',
+            ),
+            (
+                '04',
+                'Індивідуальний підхід до кожного клієнта',
+                'Индивидуальный подход к каждому клиенту',
+                'Ми цінуємо ваші ідеї та втілюємо їх із максимальною увагою до деталей і найвищою якістю.',
+                'Мы ценим ваши идеи и воплощаем их с максимальным вниманием к деталям и высочайшим качеством.',
+            ),
         ]
         for i, (num, tu, tr, bu, br) in enumerate(items):
             obj, _ = ValueProp.objects.get_or_create(number=num, defaults={

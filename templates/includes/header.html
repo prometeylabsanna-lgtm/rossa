@@ -39,9 +39,9 @@
 
     <a class="header__logo" href="{% url 'core:home' %}">
       {% if site_settings.logo %}
-      <img src="{{ site_settings.logo.url }}" alt="ROSSA" width="200" height="60">
+      <img src="{{ site_settings.logo.url }}" alt="ROSSA" width="266" height="80">
       {% else %}
-      <img src="{% static 'images/logo/rossa-logo.png' %}" alt="ROSSA" width="200" height="60">
+      <img src="{% static 'images/logo/rossa-logo.png' %}" alt="ROSSA" width="266" height="80">
       {% endif %}
     </a>
 
@@ -64,7 +64,7 @@
           </form>
           <a href="{% url 'catalog:search' %}">{% trans "Відкрити сторінку пошуку" %}</a>
         </div>
-        <a class="icon-btn header__phone" href="tel:{{ site_settings.phone|cut:' ' }}"
+        <a class="icon-btn header__phone" href="tel:{{ site_settings.phone_tel }}"
           aria-label="{{ site_settings.phone }}">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
@@ -141,7 +141,7 @@
     </nav>
 
     <div class="mobile-nav__foot">
-      <a class="mobile-nav__phone" href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a>
+      <a class="mobile-nav__phone" href="tel:{{ site_settings.phone_tel }}">{{ site_settings.phone }}</a>
       <div class="mobile-nav__foot-links">
         <a href="{% url 'core:about' %}">{% trans "Про нас" %}</a>
         <a href="{% url 'core:contacts' %}">{% trans "Контакти" %}</a>

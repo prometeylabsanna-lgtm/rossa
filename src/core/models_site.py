@@ -1,3 +1,5 @@
+import re
+
 from django.core.cache import cache
 from django.db import models
 
@@ -6,10 +8,15 @@ from core.utils import localized
 
 
 class SiteSettings(TimeStampedModel):
-    phone = models.CharField('Телефон', max_length=64)
+    phone = models.CharField('Телефон 1', max_length=64)
+    phone_2 = models.CharField('Телефон 2', max_length=64, blank=True)
+    phone_3 = models.CharField('Телефон 3', max_length=64, blank=True)
     email = models.EmailField('E-mail')
-    telegram_url = models.URLField('Telegram URL')
+    telegram_url = models.URLField('Telegram URL', blank=True)
     telegram_handle = models.CharField('Telegram @', max_length=64, blank=True)
+    instagram_url = models.URLField('Instagram URL', blank=True)
+    facebook_url = models.URLField('Facebook URL', blank=True)
+    tiktok_url = models.URLField('TikTok URL', blank=True)
     address_uk = models.CharField('Адреса (UK)', max_length=255)
     address_ru = models.CharField('Адреса (RU)', max_length=255, blank=True)
     hours_uk = models.CharField('Графік (UK)', max_length=128)
@@ -38,6 +45,32 @@ class SiteSettings(TimeStampedModel):
     def delete(self, *args, **kwargs):
         pass
 
+    @staticmethod
+    def tel_href(phone: str) -> str:
+        digits = re.sub(r'\D', '', phone or '')
+        if not digits:
+            return ''
+        if digits.startswith('0') and len(digits) == 10:
+            digits = '38' + digits
+        elif len(digits) == 9:
+            digits = '380' + digits
+        if not digits.startswith('380') and len(digits) < 12:
+            digits = '380' + digits.lstrip('0')
+        return f'+{digits}'
+
+    @property
+    def phone_tel(self):
+        return self.tel_href(self.phone)
+
+    @property
+    def phones(self):
+        items = []
+        for value in (self.phone, self.phone_2, self.phone_3):
+            value = (value or '').strip()
+            if value:
+                items.append({'display': value, 'tel': self.tel_href(value)})
+        return items
+
     @classmethod
     def load(cls):
         cached = cache.get('site_settings')
@@ -46,10 +79,15 @@ class SiteSettings(TimeStampedModel):
         obj, _ = cls.objects.get_or_create(
             pk=1,
             defaults={
-                'phone': '+380 44 123 45 67',
-                'email': 'hello@rossa.ua',
+                'phone': '067 540 77 11',
+                'phone_2': '073 076 77 55',
+                'phone_3': '050 029 05 00',
+                'email': 'rossamebli2016@gmail.com',
                 'telegram_url': 'https://t.me/rossaukr',
                 'telegram_handle': '@rossaukr',
+                'instagram_url': 'https://www.instagram.com/rossa_mebel_ua',
+                'facebook_url': 'https://www.facebook.com/share/19wDTQG2Vc/',
+                'tiktok_url': 'https://www.tiktok.com/@rossa_ua',
                 'address_uk': 'м. Київ, вул. Індустріальна, 12',
                 'address_ru': 'г. Киев, ул. Индустриальная, 12',
                 'hours_uk': 'Пн–Сб, 10:00–19:00',
@@ -195,6 +233,8 @@ class HeroSlide(TimeStampedModel):
     title_ru = models.CharField('Заголовок (RU)', max_length=120, blank=True)
     subtitle_uk = models.CharField('Підпис (UK)', max_length=255, blank=True)
     subtitle_ru = models.CharField('Підпис (RU)', max_length=255, blank=True)
+    image_alt_uk = models.CharField('Alt зображення (UK)', max_length=160, blank=True)
+    image_alt_ru = models.CharField('Alt зображення (RU)', max_length=160, blank=True)
     cta_uk = models.CharField('Кнопка (UK)', max_length=64, default='Дивитись каталог')
     cta_ru = models.CharField('Кнопка (RU)', max_length=64, blank=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
@@ -215,6 +255,10 @@ class HeroSlide(TimeStampedModel):
     @property
     def subtitle(self):
         return localized(self, 'subtitle')
+
+    @property
+    def image_alt(self):
+        return localized(self, 'image_alt') or self.title
 
     @property
     def cta(self):

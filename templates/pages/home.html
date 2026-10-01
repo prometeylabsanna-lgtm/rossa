@@ -10,7 +10,7 @@
         {% for slide in hero_slides %}
           <article class="hero__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide{% if forloop.first %} aria-hidden="false"{% else %} aria-hidden="true"{% endif %}>
             {% if slide.image %}
-              <img class="hero__image" src="{{ slide.image.url }}" alt="{{ slide.title }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
+              <img class="hero__image" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
             {% endif %}
             <div class="hero__panel">
               {% if forloop.first %}
@@ -87,7 +87,10 @@
     {% if value_props %}
       <ul class="about-band__props reveal reveal--up" data-draw-dividers>
         {% for v in value_props %}
-          <li class="about-band__prop">{{ v.title }}</li>
+          <li class="about-band__prop">
+            <strong class="about-band__prop-title">{{ v.title }}</strong>
+            {% if v.body %}<p class="about-band__prop-body">{{ v.body }}</p>{% endif %}
+          </li>
         {% endfor %}
       </ul>
     {% endif %}

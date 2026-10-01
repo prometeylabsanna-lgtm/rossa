@@ -37,10 +37,41 @@
     <div>
       <div class="footer__label">{% trans "Контакти" %}</div>
       <div class="footer__list">
-        <a href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a>
+        {% for item in site_settings.phones %}
+          <a href="tel:{{ item.tel }}">{{ item.display }}</a>
+        {% endfor %}
         <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
         <span>{{ site_settings.address }}</span>
-        <a class="footer__accent" href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer">Telegram: {{ site_settings.telegram_handle }}</a>
+        {% if site_settings.telegram_url %}
+          <a class="footer__accent" href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer">Telegram{% if site_settings.telegram_handle %}: {{ site_settings.telegram_handle }}{% endif %}</a>
+        {% endif %}
+        {% if site_settings.instagram_url or site_settings.facebook_url or site_settings.tiktok_url %}
+        <div class="footer__social" aria-label="{% trans 'Соцмережі' %}">
+          {% if site_settings.instagram_url %}
+            <a class="footer__social-link" href="{{ site_settings.instagram_url }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+              </svg>
+            </a>
+          {% endif %}
+          {% if site_settings.facebook_url %}
+            <a class="footer__social-link" href="{{ site_settings.facebook_url }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M14 8h3V4h-3c-2.8 0-5 2.2-5 5v2H6v4h3v7h4v-7h3.1l.9-4H13V9c0-.6.4-1 1-1Z" fill="currentColor"/>
+              </svg>
+            </a>
+          {% endif %}
+          {% if site_settings.tiktok_url %}
+            <a class="footer__social-link" href="{{ site_settings.tiktok_url }}" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M14.5 3c.4 2.4 1.9 4.1 4.5 4.4v3c-1.6 0-3-.5-4.2-1.4v6.2c0 3.2-2.5 5.8-5.8 5.8S3.2 18.4 3.2 15.2 5.7 9.4 9 9.4c.3 0 .6 0 .9.1v3.1c-.3-.1-.6-.1-.9-.1-1.5 0-2.7 1.2-2.7 2.7S7.5 18 9 18s2.7-1.2 2.7-2.7V3h2.8Z" fill="currentColor"/>
+              </svg>
+            </a>
+          {% endif %}
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>

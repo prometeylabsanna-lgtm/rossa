@@ -89,6 +89,30 @@
   color: #b67521;
 }
 
+.footer__social {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-header);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer__social-link:hover {
+    color: #b67521;
+  }
+}
+
 .footer__bottom {
   display: flex;
   justify-content: space-between;

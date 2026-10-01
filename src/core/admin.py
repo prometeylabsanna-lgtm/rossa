@@ -22,6 +22,7 @@ class HeroSlideInline(TabularInline):
     extra = 0
     fields = (
         'image', 'title_uk', 'title_ru', 'subtitle_uk', 'subtitle_ru',
+        'image_alt_uk', 'image_alt_ru',
         'cta_uk', 'cta_ru', 'sort', 'is_active',
     )
     ordering = ('sort', 'id')
@@ -30,7 +31,14 @@ class HeroSlideInline(TabularInline):
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(SingletonAdmin):
     fieldsets = (
-        ('Контакти', {'fields': ('phone', 'email', 'telegram_url', 'telegram_handle', 'logo', 'map_image')}),
+        ('Контакти', {
+            'fields': (
+                'phone', 'phone_2', 'phone_3', 'email',
+                'telegram_url', 'telegram_handle',
+                'instagram_url', 'facebook_url', 'tiktok_url',
+                'logo', 'map_image',
+            ),
+        }),
         ('Адреса', {'fields': ('address_uk', 'address_ru', 'hours_uk', 'hours_ru')}),
         ('Підвал / PDP', {
             'fields': (
