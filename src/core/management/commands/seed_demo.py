@@ -642,6 +642,8 @@ class Command(BaseCommand):
         color_models = {
             'beige': {
                 'primary': 'products/milan.webp',
+                'light': 'products/milan.webp',
+                'dark': 'products/milan-dark-brown.webp',
                 'map': {
                     'beige-2': {'image': 'products/milan.webp', 'hex': '', 'sort': 0},
                     'chocolate-1': {'image': 'products/milan-dark-brown.webp', 'hex': '', 'sort': 1},
@@ -649,12 +651,33 @@ class Command(BaseCommand):
             },
             'green': {
                 'primary': 'products/ontario.webp',
+                'light': 'products/ontario-beige.webp',
+                'dark': 'products/ontario.webp',
                 'map': {
                     'chocolate-1': {'image': 'products/ontario.webp', 'hex': '#7A8B6E', 'sort': 0},
                     'beige-2': {'image': 'products/ontario-beige.webp', 'hex': '', 'sort': 1},
                 },
             },
         }
+
+        def _hex_luminance(hex_color: str) -> float:
+            raw = (hex_color or '').lstrip('#')
+            if len(raw) != 6:
+                return 0.5
+            try:
+                r = int(raw[0:2], 16)
+                g = int(raw[2:4], 16)
+                b = int(raw[4:6], 16)
+            except ValueError:
+                return 0.5
+            return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+
+        def _variant_image(color: dict, hex_color: str) -> str:
+            # Світлі кружечки → світле фото, темні → темне/основне
+            if _hex_luminance(hex_color) >= 0.48:
+                return color['light']
+            return color['dark']
+
         for item in catalog:
             product, created = Product.objects.get_or_create(slug=item['slug'], defaults={
                 'name_uk': item['name_uk'], 'name_ru': item['name_ru'],
@@ -739,19 +762,21 @@ class Command(BaseCommand):
                         variant['image'],
                         dest_name=f'{product.slug}-{shade.slug}.webp',
                     )
+                elif color:
+                    img.sort = shade.sort
+                    img.hex_override = ''
+                    replace_file(
+                        img.image,
+                        _variant_image(color, shade.hex_color),
+                        dest_name=f'{product.slug}-{shade.slug}.webp',
+                    )
                 else:
+                    img.sort = shade.sort
                     img.hex_override = ''
                     if not img.image:
                         attach(
                             img.image,
                             f'slots/{item["slot"]}',
-                            dest_name=f'{product.slug}-{shade.slug}.webp',
-                        )
-                    elif color:
-                        # інші категорії тканини — те саме основне фото моделі
-                        replace_file(
-                            img.image,
-                            color['primary'],
                             dest_name=f'{product.slug}-{shade.slug}.webp',
                         )
                 img.save()

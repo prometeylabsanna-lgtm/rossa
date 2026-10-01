@@ -29,7 +29,7 @@
       <div class="chips">
         {% for fabric in fabrics %}
           <a class="chip{% if selected_fabric and fabric.id == selected_fabric.id %} is-active{% endif %}"
-             href="?fabric={{ fabric.id }}{% if selected_shade %}&shade={{ selected_shade.id }}{% endif %}"
+             href="?fabric={{ fabric.id }}"
              hx-get="?fabric={{ fabric.id }}"
              hx-target="#pdp-config"
              hx-swap="outerHTML"

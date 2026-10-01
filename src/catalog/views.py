@@ -188,7 +188,12 @@ def product_detail(request, slug):
         for img in product.shade_images.all()
         if img.shade.is_active
     }
-    shades_qs.sort(key=lambda s: (shade_meta.get(s.id, {}).get('sort', s.sort), s.id))
+    # Порядок відтінків у межах категорії тканини; product sort — лише як уточнення
+    shades_qs.sort(key=lambda s: (
+        shade_meta.get(s.id, {}).get('sort', s.sort),
+        s.sort,
+        s.id,
+    ))
     shades = [
         {
             'id': s.id,
@@ -198,7 +203,12 @@ def product_detail(request, slug):
         }
         for s in shades_qs
     ]
-    selected_shade = next((s for s in shades if str(s['id']) == str(shade_id)), None) or (shades[0] if shades else None)
+    # shade з іншої категорії тканини ігноруємо
+    selected_shade = None
+    if shade_id:
+        selected_shade = next((s for s in shades if str(s['id']) == str(shade_id)), None)
+    if not selected_shade:
+        selected_shade = shades[0] if shades else None
     selected_shade_obj = selected_shade['obj'] if selected_shade else None
     price = product.price_for_fabric(selected_fabric) if selected_fabric else product.min_price
     images = []
