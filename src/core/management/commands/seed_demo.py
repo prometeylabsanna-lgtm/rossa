@@ -213,45 +213,131 @@ class Command(BaseCommand):
                 obj.save(update_fields=['title_uk', 'title_ru', 'body_uk', 'body_ru', 'sort'])
 
     def _about(self):
-        obj, _ = AboutPage.objects.get_or_create(pk=1, defaults={
+        body_uk = (
+            'Усе почалося не з бізнес-плану, а з дуже особистого бажання — знайти той самий диван. '
+            'Такий, на який повертаєшся після найважчого дня, скидаєш усе зайве, занурюєшся у м’які обійми тканини '
+            'й нарешті видихаєш: «Я вдома».\n\n'
+            'Ми обходили десятки меблевих салонів, роздивлялися сотні моделей, але постійно стикалися з розчаруванням. '
+            'Одні дивани були жорсткими й незручними, інші — розчаровували посередньою якістю матеріалів, '
+            'а за справді комфортні та красиві екземпляри просили якісь захмарні гроші. '
+            'Ми зрозуміли: знайти справді м’який, якісний, функціональний і при цьому доступний диван — це справжній квест.\n\n'
+            'І тоді ми вирішили створити його самі.\n\n'
+            'Так народилася фабрика Rossa. Ми поставили собі чітку мету: довести, що функціональність, '
+            'преміальний затишок, анатомічна м’якість та бездоганна якість можуть бути доступними для кожного.\n\n'
+            'За два десятиліття ми пройшли шлях від локального виробництва до сучасної меблевої фабрики. '
+            'Наш секрет простий: ми ніколи не зупиняємося на досягнутому та постійно розвиваємося разом із нашими клієнтами.'
+        )
+        body_ru = (
+            'Всё началось не с бизнес-плана, а с очень личного желания — найти тот самый диван. '
+            'Такой, на который возвращаешься после самого тяжёлого дня, сбрасываешь всё лишнее, '
+            'погружаешься в мягкие объятия ткани и наконец выдыхаешь: «Я дома».\n\n'
+            'Мы обходили десятки мебельных салонов, рассматривали сотни моделей, но постоянно сталкивались с разочарованием. '
+            'Одни диваны были жёсткими и неудобными, другие — разочаровывали посредственным качеством материалов, '
+            'а за по-настоящему комфортные и красивые экземпляры просили какие-то заоблачные деньги. '
+            'Мы поняли: найти по-настоящему мягкий, качественный, функциональный и при этом доступный диван — настоящий квест.\n\n'
+            'И тогда мы решили создать его сами.\n\n'
+            'Так родилась фабрика Rossa. Мы поставили себе чёткую цель: доказать, что функциональность, '
+            'премиальный уют, анатомическая мягкость и безупречное качество могут быть доступны каждому.\n\n'
+            'За два десятилетия мы прошли путь от локального производства до современной мебельной фабрики. '
+            'Наш секрет прост: мы никогда не останавливаемся на достигнутом и постоянно развиваемся вместе с нашими клиентами.'
+        )
+        fields = {
             'title_uk': 'Про ROSSA',
             'title_ru': 'О ROSSA',
-            'body_uk': 'ROSSA — бренд м’яких меблів власного виробництва. Ми поєднуємо традиційну столярну майстерність із сучасним дизайном, щоб створювати меблі, які служать роками. Кожна модель проходить через руки майстрів — від розкрою тканини до фінальної збірки.',
-            'body_ru': 'ROSSA — бренд мягкой мебели собственного производства. Мы соединяем традиционное столярное мастерство с современным дизайном, чтобы создавать мебель, которая служит годами. Каждая модель проходит через руки мастеров — от раскроя ткани до финальной сборки.',
+            'subtitle_uk': 'Все почалося з пошуку власного дому.',
+            'subtitle_ru': 'Всё началось с поиска собственного дома.',
+            'body_uk': body_uk,
+            'body_ru': body_ru,
+            'milestones_title_uk': 'Ключові віхи нашої історії',
+            'milestones_title_ru': 'Ключевые вехи нашей истории',
             'milestones': [
-                {'year': '2011', 'body_uk': 'Заснування майстерні, перші дивани на замовлення.', 'body_ru': 'Основание мастерской, первые диваны на заказ.'},
-                {'year': '2016', 'body_uk': 'Власне виробництво каркасів і пружинних блоків.', 'body_ru': 'Собственное производство каркасов и пружинных блоков.'},
-                {'year': '2020', 'body_uk': 'Розширення асортименту: ліжка та пуфи.', 'body_ru': 'Расширение ассортимента: кровати и пуфы.'},
-                {'year': '2024', 'body_uk': 'Шоурум і доставка по всій Україні.', 'body_ru': 'Шоурум и доставка по всей Украине.'},
+                {
+                    'year': '2005',
+                    'body_uk': (
+                        'Заснування. Виробництво першого функціонального та якісного дивану для себе. '
+                        'Запуск виробництва, формування базових стандартів якості та команди майстрів, '
+                        'закоханих у свою справу.'
+                    ),
+                    'body_ru': (
+                        'Основание. Производство первого функционального и качественного дивана для себя. '
+                        'Запуск производства, формирование базовых стандартов качества и команды мастеров, '
+                        'влюблённых в своё дело.'
+                    ),
+                },
+                {
+                    'year': '2016',
+                    'body_uk': (
+                        'Перший ребрендинг. Знаковий етап масштабного оновлення. Ми модернізували виробничі потужності, '
+                        'розширили асортимент (включивши лінійки корпусних та м’яких меблів) і переглянули підхід до дизайну, '
+                        'зробивши акцент на актуальних європейських трендах та функціональності.'
+                    ),
+                    'body_ru': (
+                        'Первый ребрендинг. Знаковый этап масштабного обновления. Мы модернизировали производственные мощности, '
+                        'расширили ассортимент (включив линейки корпусной и мягкой мебели) и пересмотрели подход к дизайну, '
+                        'сделав акцент на актуальных европейских трендах и функциональности.'
+                    ),
+                },
+                {
+                    'year': '2025',
+                    'body_uk': (
+                        'Другий ребрендинг. Новий крок у майбутнє. Ми повністю переосмислили візуальну концепцію та сервіс, '
+                        'впровадили ще вищі стандарти екологічності, ергономіки й індивідуального підходу до кожного проєкту.'
+                    ),
+                    'body_ru': (
+                        'Второй ребрендинг. Новый шаг в будущее. Мы полностью переосмыслили визуальную концепцию и сервис, '
+                        'внедрили ещё более высокие стандарты экологичности, эргономики и индивидуального подхода к каждому проекту.'
+                    ),
+                },
             ],
-            'values': [
-                {'num': '01', 'title_uk': 'Якість', 'title_ru': 'Качество', 'body_uk': 'Контроль на кожному етапі виробництва.', 'body_ru': 'Контроль на каждом этапе производства.'},
-                {'num': '02', 'title_uk': 'Довговічність', 'title_ru': 'Долговечность', 'body_uk': 'Матеріали, розраховані на роки використання.', 'body_ru': 'Материалы, рассчитанные на годы использования.'},
-                {'num': '03', 'title_uk': 'Дизайн', 'title_ru': 'Дизайн', 'body_uk': 'Лаконічні форми для сучасного інтер’єру.', 'body_ru': 'Лаконичные формы для современного интерьера.'},
-                {'num': '04', 'title_uk': 'Сервіс', 'title_ru': 'Сервис', 'body_uk': 'Гарантія та підтримка після покупки.', 'body_ru': 'Гарантия и поддержка после покупки.'},
-            ],
+            'values': [],
+            'evolution_title_uk': 'Еволюція наших диванів',
+            'evolution_title_ru': 'Эволюция наших диванов',
             'seo_title_uk': 'Про нас — ROSSA',
-            'seo_description_uk': 'Історія бренду ROSSA, виробництво та цінності.',
-        })
-        attach(obj.hero_image, 'slots/about-hero.webp')
-        if not obj.craft_images:
-            mapping = [
-                ('about-fabric.webp', 'Тканини', 'Ткани'),
-                ('about-frame.webp', 'Каркас і наповнення', 'Каркас и наполнение'),
-                ('about-assembly.webp', 'Ручна збірка', 'Ручная сборка'),
-            ]
-            items = []
-            for filename, lu, lr in mapping:
-                from django.core.files.storage import default_storage
-                from django.core.files import File
-                from pathlib import Path
-                src = Path(__file__).resolve().parents[2] / 'static' / 'images' / 'slots' / filename
-                dest = f'about/{filename}'
-                if src.exists() and not default_storage.exists(dest):
-                    with src.open('rb') as fh:
-                        dest = default_storage.save(dest, File(fh))
+            'seo_title_ru': 'О нас — ROSSA',
+            'seo_description_uk': 'Історія фабрики Rossa: від особистого пошуку дому до сучасної меблевої фабрики.',
+            'seo_description_ru': 'История фабрики Rossa: от личного поиска дома до современной мебельной фабрики.',
+        }
+        obj, _ = AboutPage.objects.get_or_create(pk=1, defaults=fields)
+        for key, value in fields.items():
+            setattr(obj, key, value)
+        replace_file(obj.hero_image, 'slots/about-hero.webp')
+
+        from django.core.files import File
+        from django.core.files.storage import default_storage
+        from pathlib import Path
+
+        slots_dir = Path(__file__).resolve().parents[2] / 'static' / 'images' / 'slots'
+
+        mapping = [
+            ('about-fabric.webp', 'Пошив тканини', 'Пошив ткани'),
+            ('about-frame.webp', 'Ручна оббивка', 'Ручная обивка'),
+            ('about-assembly.webp', 'Збірка на виробництві', 'Сборка на производстве'),
+        ]
+        items = []
+        for filename, lu, lr in mapping:
+            src = slots_dir / filename
+            dest = f'about/{filename}'
+            if src.exists():
+                if default_storage.exists(dest):
+                    default_storage.delete(dest)
+                with src.open('rb') as fh:
+                    dest = default_storage.save(dest, File(fh))
                 items.append({'image': f'/media/{dest}', 'label_uk': lu, 'label_ru': lr})
-            obj.craft_images = items
+        obj.craft_images = items
+
+        evolution = []
+        for n in range(1, 19):
+            filename = f'about-evolution-{n:02d}.webp'
+            src = slots_dir / filename
+            dest = f'about/evolution/{filename}'
+            if not src.exists():
+                continue
+            if default_storage.exists(dest):
+                default_storage.delete(dest)
+            with src.open('rb') as fh:
+                dest = default_storage.save(dest, File(fh))
+            evolution.append({'image': f'/media/{dest}'})
+        obj.evolution_images = evolution
         obj.save()
 
     def _collab(self):
@@ -568,11 +654,29 @@ class Command(BaseCommand):
                 setattr(product, field, value)
             attach(product.default_image, item['image'])
             product.save()
-            for fabric in fabrics.values():
-                ProductFabricPrice.objects.get_or_create(
-                    product=product, fabric=fabric,
-                    defaults={'price': product.base_price + fabric.surcharge, 'sku': f'{product.sku}-{fabric.slug[:3].upper()}'},
+            # Приблизні ціни по категоріях тканини 1–7 (CMS: ProductFabricPrice)
+            approx_extra = {
+                'cat-1': 0,
+                'cat-2': 2500,
+                'cat-3': 4800,
+                'cat-4': 7200,
+                'cat-5': 10500,
+                'cat-6': 14200,
+                'cat-7': 18500,
+            }
+            for slug, fabric in fabrics.items():
+                price = product.base_price + approx_extra.get(slug, 0)
+                fp, _ = ProductFabricPrice.objects.get_or_create(
+                    product=product,
+                    fabric=fabric,
+                    defaults={
+                        'price': price,
+                        'sku': f'{product.sku}-{fabric.slug[-1].upper()}',
+                    },
                 )
+                fp.price = price
+                fp.sku = f'{product.sku}-{fabric.slug[-1].upper()}'
+                fp.save(update_fields=['price', 'sku'])
             for shade in Shade.objects.filter(is_active=True):
                 img, created = ProductShadeImage.objects.get_or_create(
                     product=product, shade=shade, sort=0,

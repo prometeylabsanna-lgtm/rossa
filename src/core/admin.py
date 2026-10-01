@@ -93,8 +93,28 @@ class ValuePropAdmin(ModelAdmin):
 @admin.register(AboutPage)
 class AboutPageAdmin(SingletonAdmin):
     fieldsets = (
-        (None, {'fields': ('title_uk', 'title_ru', 'body_uk', 'body_ru', 'hero_image')}),
-        ('Списки (JSON)', {'fields': ('milestones', 'values', 'craft_images')}),
+        (None, {
+            'fields': (
+                'title_uk', 'title_ru',
+                'subtitle_uk', 'subtitle_ru',
+                'body_uk', 'body_ru',
+                'hero_image',
+            ),
+        }),
+        ('Віхи', {
+            'fields': (
+                'milestones_title_uk', 'milestones_title_ru',
+                'milestones',
+            ),
+        }),
+        ('Фото виробництва', {'fields': ('craft_images',)}),
+        ('Еволюція диванів', {
+            'fields': (
+                'evolution_title_uk', 'evolution_title_ru',
+                'evolution_images',
+            ),
+        }),
+        ('Запасні', {'classes': ('collapse',), 'fields': ('values',)}),
         ('SEO', {'fields': ('seo_title_uk', 'seo_title_ru', 'seo_description_uk', 'seo_description_ru')}),
     )
 

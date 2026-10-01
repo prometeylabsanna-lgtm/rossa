@@ -33,12 +33,34 @@ class ValueProp(TimeStampedModel):
 class AboutPage(SeoFieldsMixin, TimeStampedModel):
     title_uk = models.CharField('Заголовок (UK)', max_length=255)
     title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
+    subtitle_uk = models.CharField('Підзаголовок (UK)', max_length=255, blank=True)
+    subtitle_ru = models.CharField('Підзаголовок (RU)', max_length=255, blank=True)
     body_uk = models.TextField('Текст (UK)')
     body_ru = models.TextField('Текст (RU)', blank=True)
     hero_image = models.ImageField('Головне фото', upload_to='about/', blank=True)
+    milestones_title_uk = models.CharField(
+        'Заголовок віх (UK)',
+        max_length=128,
+        blank=True,
+        default='Ключові віхи нашої історії',
+    )
+    milestones_title_ru = models.CharField('Заголовок віх (RU)', max_length=128, blank=True)
     milestones = models.JSONField('Віхи', default=list, blank=True)
     values = models.JSONField('Цінності', default=list, blank=True)
     craft_images = models.JSONField('Фото виробництва', default=list, blank=True)
+    evolution_title_uk = models.CharField(
+        'Заголовок еволюції (UK)',
+        max_length=128,
+        blank=True,
+        default='Еволюція наших диванів',
+    )
+    evolution_title_ru = models.CharField('Заголовок еволюції (RU)', max_length=128, blank=True)
+    evolution_images = models.JSONField(
+        'Еволюція диванів',
+        default=list,
+        blank=True,
+        help_text='Список: image (URL). Порядок = порядок показу.',
+    )
 
     class Meta:
         verbose_name = 'Про нас'
@@ -64,8 +86,20 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
         return localized(self, 'title')
 
     @property
+    def subtitle(self):
+        return localized(self, 'subtitle')
+
+    @property
     def body(self):
         return localized(self, 'body')
+
+    @property
+    def milestones_title(self):
+        return localized(self, 'milestones_title') or 'Ключові віхи нашої історії'
+
+    @property
+    def evolution_title(self):
+        return localized(self, 'evolution_title') or 'Еволюція наших диванів'
 
     @property
     def seo_title(self):

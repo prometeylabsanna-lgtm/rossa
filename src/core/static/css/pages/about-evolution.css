@@ -1,0 +1,139 @@
+/* Еволюція диванів — секція-папка на «Про нас» */
+
+.evolution-folder {
+  margin: 0 var(--pad-x) var(--section-y);
+  padding: 0;
+}
+
+@media (min-width: 1024px) {
+  .evolution-folder {
+    margin-bottom: var(--section-y-lg);
+  }
+}
+
+.evolution-folder__tab {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: flex-end;
+  position: relative;
+  z-index: 1;
+  margin: 0 0 -1px;
+  padding: 14px 22px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  -webkit-box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.55) inset;
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.55) inset;
+}
+
+@media (min-width: 768px) {
+  .evolution-folder__tab {
+    padding: 16px 28px 14px;
+  }
+}
+
+.evolution-folder__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.evolution-folder__panel {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 0 12px 12px 12px;
+  padding: var(--space-md);
+  -webkit-box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+@media (min-width: 768px) {
+  .evolution-folder__panel {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .evolution-folder__panel {
+    padding: var(--space-lg);
+  }
+}
+
+.evolution-gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+@media (min-width: 480px) {
+  .evolution-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  .evolution-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+}
+
+@media (min-width: 1200px) {
+  .evolution-gallery {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.evolution-gallery__item {
+  margin: 0;
+  overflow: hidden;
+  background: var(--color-white);
+  border-radius: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.evolution-gallery__item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  object-position: center;
+  background: var(--color-white);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  transition: -webkit-transform var(--duration-base) var(--ease-out);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@supports not (aspect-ratio: 3 / 2) {
+  .evolution-gallery__item img {
+    min-height: 160px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .evolution-gallery__item:hover img {
+    -webkit-transform: scale(1.03);
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evolution-gallery__item img {
+    transition: none;
+  }
+
+  .evolution-gallery__item:hover img {
+    -webkit-transform: none;
+    transform: none;
+  }
+}

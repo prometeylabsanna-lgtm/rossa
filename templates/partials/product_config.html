@@ -21,7 +21,7 @@
     <h1>{{ product.name }}</h1>
     <div class="pdp__type">{{ product.type_label }}{% if sku %} · {{ sku }}{% endif %}</div>
     {% if not product.is_available %}<div class="pdp__type">{% trans "Немає в наявності" %}</div>{% endif %}
-    <div class="pdp__price">{% trans "Від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
+    <div class="pdp__price">{% trans "Від" %} {{ price|uah }} {% trans "грн" %}</div>
     <p class="pdp__meta">{% trans "ціна залежить від тканини" %}</p>
 
     {% if fabrics %}

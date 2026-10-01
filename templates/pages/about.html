@@ -1,23 +1,40 @@
 {% extends "base.html" %}
-{% load i18n rossa %}
-{% block body_class %}page--inner{% endblock %}
+{% load i18n static rossa %}
+{% block body_class %}page--inner page--about{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/about-evolution.css' %}?v={{ static_v }}">
+{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <div class="about-grid">
-    <div>
+    <div class="about-grid__copy">
       <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
-      <p class="page-intro reveal reveal--up" data-reveal-delay="100">{{ page.body }}</p>
-      <div class="milestones" data-draw-dividers>
-        {% for m in page.milestones %}
-          <div class="milestone reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
-            <div class="milestone__year">{{ m.year }}</div>
-            <div class="milestone__body">{{ m|loc:'body' }}</div>
+      {% if page.subtitle %}
+        <p class="about-subtitle reveal reveal--up" data-reveal-delay="60">{{ page.subtitle }}</p>
+      {% endif %}
+      {% if page.body %}
+        <div class="about-body reveal reveal--up" data-reveal-delay="100">
+          {{ page.body|linebreaks }}
+        </div>
+      {% endif %}
+      {% if page.milestones %}
+        <div class="about-milestones">
+          {% if page.milestones_title %}
+            <h2 class="about-milestones__title reveal reveal--up">{{ page.milestones_title }}</h2>
+          {% endif %}
+          <div class="milestones" data-draw-dividers>
+            {% for m in page.milestones %}
+              <div class="milestone reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
+                <div class="milestone__year">{{ m.year }}</div>
+                <div class="milestone__body">{{ m|loc:'body' }}</div>
+              </div>
+            {% endfor %}
           </div>
-        {% endfor %}
-      </div>
+        </div>
+      {% endif %}
     </div>
     {% if page.hero_image %}
-      <img class="reveal reveal--scale" data-reveal-delay="120" src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="800" height="600">
+      <img class="about-grid__hero reveal reveal--scale" data-reveal-delay="120" src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="800" height="600">
     {% endif %}
   </div>
   {% if page.craft_images %}
@@ -30,13 +47,27 @@
       {% endfor %}
     </div>
   {% endif %}
-  <section class="values">
-    {% for av in page.values %}
-      <article class="value-card reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
-        <h2>{{ av|loc:'title' }}</h2>
-        <div class="value-card__num">{{ av.num }}</div>
-        <p>{{ av|loc:'body' }}</p>
-      </article>
-    {% endfor %}
-  </section>
+  {% if page.evolution_images %}
+    <section class="evolution-folder" aria-labelledby="evolution-folder-title">
+      <div class="evolution-folder__tab reveal reveal--up">
+        <h2 id="evolution-folder-title" class="evolution-folder__title">{{ page.evolution_title }}</h2>
+      </div>
+      <div class="evolution-folder__panel">
+        <div class="evolution-gallery">
+          {% for item in page.evolution_images %}
+            <figure class="evolution-gallery__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}40">
+              <img
+                src="{{ item.image }}"
+                alt="{{ page.evolution_title }}"
+                width="600"
+                height="400"
+                loading="lazy"
+                decoding="async"
+              >
+            </figure>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
 {% endblock %}
