@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="{% static 'css/components/footer.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/components/cards.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/components/forms.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/components/back-float.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/animations.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/pages/catalog.css' %}?v={{ static_v }}">
@@ -42,11 +43,24 @@
     {% block content %}{% endblock %}
   </main>
   {% include "includes/footer.html" %}
+  <button
+    type="button"
+    class="back-float"
+    data-back-float
+    data-show-after="420"
+    data-fallback="{% url 'catalog:index' %}"
+    aria-label="{% trans 'Назад' %}"
+  >
+    <svg class="back-float__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M12.5 4.5L7 10l5.5 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
   <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
   <script src="{% static 'js/nav.js' %}?v={{ static_v }}" defer></script>
   <script src="{% static 'js/product-card.js' %}" defer></script>
   <script src="{% static 'js/reveal.js' %}?v={{ static_v }}" defer></script>
   <script src="{% static 'js/parallax.js' %}?v={{ static_v }}" defer></script>
+  <script src="{% static 'js/back-float.js' %}?v={{ static_v }}" defer></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

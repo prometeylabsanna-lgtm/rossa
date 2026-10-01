@@ -176,44 +176,39 @@ def product_detail(request, slug):
         slug=slug,
     )
     fabric_id = request.GET.get('fabric')
-    shade_id = request.GET.get('shade')
+    color_id = request.GET.get('color') or request.GET.get('shade')
     fabrics = [fp.fabric for fp in product.fabric_prices.all() if fp.fabric.is_active]
     if not fabrics:
         from catalog.models import Fabric
         fabrics = list(Fabric.objects.filter(is_active=True))
     selected_fabric = next((f for f in fabrics if str(f.id) == str(fabric_id)), None) or (fabrics[0] if fabrics else None)
-    shades_qs = list(selected_fabric.shades.filter(is_active=True)) if selected_fabric else []
-    shade_meta = {
-        img.shade_id: {'hex': img.display_hex, 'sort': img.sort}
-        for img in product.shade_images.all()
-        if img.shade.is_active
-    }
-    # Порядок кружечків фіксований через ProductShadeImage.sort (темний → світлий)
-    shades_qs.sort(key=lambda s: (
-        shade_meta.get(s.id, {}).get('sort', s.sort),
-        s.id,
-    ))
-    shades = [
+
+    colors_qs = [c for c in product.colors.all() if c.is_active]
+    colors = [
         {
-            'id': s.id,
-            'name': s.name,
-            'hex_color': shade_meta.get(s.id, {}).get('hex', s.hex_color),
-            'obj': s,
+            'id': c.id,
+            'name': c.name,
+            'hex_color': c.hex_color,
+            'obj': c,
         }
-        for s in shades_qs
+        for c in colors_qs
     ]
-    # При зміні категорії тканини — завжди перший (темний) відтінок
-    selected_shade = None
-    if shade_id and fabric_id:
-        selected_shade = next((s for s in shades if str(s['id']) == str(shade_id)), None)
-    if not selected_shade:
-        selected_shade = shades[0] if shades else None
-    selected_shade_obj = selected_shade['obj'] if selected_shade else None
+    selected_color = None
+    if color_id:
+        selected_color = next((c for c in colors if str(c['id']) == str(color_id)), None)
+    if not selected_color:
+        selected_color = colors[0] if colors else None
+    selected_color_obj = selected_color['obj'] if selected_color else None
+
     price = product.price_for_fabric(selected_fabric) if selected_fabric else product.min_price
-    images = []
-    if selected_shade_obj:
-        images = [img for img in product.shade_images.all() if img.shade_id == selected_shade_obj.id]
-    main_image = images[0].image if images else product.default_image
+    main_image = None
+    gallery = []
+    if selected_color_obj and selected_color_obj.image:
+        main_image = selected_color_obj.image
+        gallery = [selected_color_obj]
+    else:
+        main_image = product.default_image
+
     related_qs = related_products(product, limit=3)
     crumbs = [(_('Головна'), '/'), (_('Каталог'), '/katalog/')]
     if product.category.parent:
@@ -224,22 +219,26 @@ def product_detail(request, slug):
     if selected_fabric:
         match = next((fp for fp in product.fabric_prices.all() if fp.fabric_id == selected_fabric.id), None)
         sku = (match.sku if match and match.sku else product.sku)
+    color_q = f'&color={selected_color["id"]}' if selected_color else ''
     ctx = {
         'product': product,
         'fabrics': fabrics,
-        'shades': shades,
+        'colors': colors,
+        'shades': colors,  # backward alias for templates
         'selected_fabric': selected_fabric,
-        'selected_shade': selected_shade,
+        'selected_color': selected_color,
+        'selected_shade': selected_color,
         'price': price,
-        'gallery': images,
+        'gallery': gallery,
         'main_image': main_image,
         'related': related_qs,
         'sku': sku,
+        'color_query': color_q,
         'form': OrderForm(initial={
             'product_name': product.name,
             'product_slug': product.slug,
             'fabric_name': selected_fabric.name if selected_fabric else '',
-            'shade_name': selected_shade['name'] if selected_shade else '',
+            'shade_name': selected_color['name'] if selected_color else '',
             'sku': sku,
             'price': price,
         }),

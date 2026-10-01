@@ -135,29 +135,22 @@ class Product(SeoFieldsMixin, TimeStampedModel):
         return self.base_price + fabric.surcharge
 
     def preview_shades(self):
-        prices = list(self.fabric_prices.all())
-        fabric_id = None
-        if prices:
-            fabric_id = min(prices, key=lambda fp: fp.price).fabric_id
+        """Кружечки на картці: кольори товару (ціна від кольору не залежить)."""
         seen = []
-        ids = set()
-        for img in self.shade_images.all():
-            if not img.shade.is_active:
+        for color in self.colors.all():
+            if not color.is_active:
                 continue
-            if fabric_id and img.shade.fabric_id != fabric_id:
-                continue
-            if img.shade_id in ids:
-                continue
-            ids.add(img.shade_id)
-            image = img.image or self.default_image
+            image = color.image or self.default_image
             if not image:
                 continue
             seen.append({
-                'shade': img.shade,
+                'shade': color,
                 'image': image,
-                'hex': img.display_hex,
+                'hex': color.hex_color,
             })
-        return seen[:5]
+            if len(seen) >= 8:
+                break
+        return seen
 
 
 class ProductFabricPrice(TimeStampedModel):
@@ -207,9 +200,40 @@ class ProductShadeImage(TimeStampedModel):
     class Meta:
         ordering = ['sort', 'id']
         unique_together = [('product', 'shade', 'sort')]
-        verbose_name = 'Фото відтінку'
-        verbose_name_plural = 'Фото відтінків'
+        verbose_name = 'Фото відтінку (застаріле)'
+        verbose_name_plural = 'Фото відтінків (застаріле)'
 
     @property
     def display_hex(self):
         return self.hex_override or self.shade.hex_color
+
+
+class ProductColor(TimeStampedModel):
+    """Колір товару (кружечок). Ціна від кольору не залежить — лише від категорії тканини."""
+
+    product = models.ForeignKey(
+        Product,
+        verbose_name='Товар',
+        on_delete=models.CASCADE,
+        related_name='colors',
+    )
+    slug = models.SlugField('Slug', max_length=64)
+    name_uk = models.CharField('Назва (UK)', max_length=64)
+    name_ru = models.CharField('Назва (RU)', max_length=64, blank=True)
+    hex_color = models.CharField('HEX кружечка', max_length=7)
+    image = models.ImageField('Фото кольору', upload_to='products/colors/', blank=True)
+    sort = models.PositiveSmallIntegerField('Порядок', default=0)
+    is_active = models.BooleanField('Видимий', default=True)
+
+    class Meta:
+        ordering = ['sort', 'id']
+        unique_together = [('product', 'slug')]
+        verbose_name = 'Колір товару'
+        verbose_name_plural = 'Кольори товару'
+
+    def __str__(self):
+        return f'{self.product.name_uk} / {self.name_uk}'
+
+    @property
+    def name(self):
+        return localized(self, 'name')

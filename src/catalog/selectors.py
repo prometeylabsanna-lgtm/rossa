@@ -9,6 +9,7 @@ def visible_products():
         .select_related('category', 'category__parent')
         .prefetch_related(
             'fabric_prices__fabric',
+            'colors',
             'shade_images__shade',
             'shade_images__shade__fabric',
         )

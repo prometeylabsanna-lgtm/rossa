@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from catalog.models import Category, Fabric, Product, ProductFabricPrice, ProductShadeImage, Shade
+from catalog.models import Category, Fabric, Product, ProductColor, ProductFabricPrice, ProductShadeImage, Shade
 from core.management.seed_legal_texts import LEGAL_PAGES
 from core.management.seed_media import attach, replace_file
 from core.models import AboutPage, CollabPage, HomePage, LegalPage, SiteSettings, ValueProp
@@ -471,48 +471,32 @@ class Command(BaseCommand):
             obj.save()
             out[slug] = obj
 
-        # По кілька відтінків на категорію (палітра для демо)
-        palette = [
-            ('chocolate', 'Шоколад', 'Шоколад', '#3C2415'),
-            ('beige', 'Беж', 'Беж', '#D4C4A8'),
-            ('wine', 'Вино', 'Вино', '#903838'),
-            ('ivory', 'Айворі', 'Айвори', '#C9BFA5'),
-            ('stone', 'Камінь', 'Камень', '#7C7267'),
-            ('forest', 'Ліс', 'Лес', '#4A5A52'),
-            ('cream', 'Крем', 'Крем', '#D8CFC0'),
-            ('graphite', 'Графіт', 'Графит', '#3E4B5C'),
-            ('black', 'Чорний', 'Чёрный', '#1A1817'),
-            ('moss', 'Мох', 'Мох', '#6B7B4A'),
-            ('clay', 'Глина', 'Глина', '#A67C52'),
-            ('sky', 'Небо', 'Небо', '#8FA4B8'),
-            ('blush', 'Пудра', 'Пудра', '#C9A9A6'),
-            ('ink', 'Чорнило', 'Чернила', '#2C3340'),
+        # Єдина палітра для всіх категорій тканини: беж → зелений → темно-коричневий
+        fixed_shades = [
+            ('beige', 'Беж', 'Беж', '#D4C4A8', 0),
+            ('green', 'Зелений', 'Зелёный', '#7A8B6E', 1),
+            ('brown', 'Коричневий', 'Коричневый', '#3C2415', 2),
         ]
-        for idx, (slug, fabric) in enumerate(out.items()):
-            # 2 відтінки на категорію, з циклічної палітри
-            for j in range(2):
-                color = palette[(idx * 2 + j) % len(palette)]
-                shade_slug, name_uk, name_ru, hex_color = color
+        keep_shade_slugs = {slug for slug, *_ in fixed_shades}
+        for slug, fabric in out.items():
+            for shade_slug, name_uk, name_ru, hex_color, sort in fixed_shades:
                 shade, _ = Shade.objects.get_or_create(
                     fabric=fabric,
-                    slug=f'{shade_slug}-{j + 1}',
+                    slug=shade_slug,
                     defaults={
                         'name_uk': name_uk,
                         'name_ru': name_ru,
                         'hex_color': hex_color,
-                        'sort': j,
+                        'sort': sort,
                     },
                 )
                 shade.name_uk = name_uk
                 shade.name_ru = name_ru
                 shade.hex_color = hex_color
-                shade.sort = j
+                shade.sort = sort
                 shade.is_active = True
                 shade.save()
-            # Прибрати зайві відтінки цієї категорії
-            Shade.objects.filter(fabric=fabric).exclude(
-                slug__in=[f'{palette[(idx * 2 + j) % len(palette)][0]}-{j + 1}' for j in range(2)]
-            ).delete()
+            Shade.objects.filter(fabric=fabric).exclude(slug__in=keep_shade_slugs).delete()
         return out
 
     def _categories(self):
@@ -572,7 +556,7 @@ class Command(BaseCommand):
                 'care_uk': 'Знімні чохли, машинне прання за температури до 30°C. Рекомендовано хімчистку раз на рік.',
                 'care_ru': 'Съёмные чехлы, машинная стирка при температуре до 30°C. Рекомендуется химчистка раз в год.',
                 'image': 'products/milan.webp', 'slot': 'p1-a.webp',
-                'color_model': 'beige',
+                'color_set': 'milan',
             },
             {
                 'slug': 'ontario', 'name_uk': 'Онтаріо', 'name_ru': 'Онтарио',
@@ -585,7 +569,7 @@ class Command(BaseCommand):
                 'care_uk': 'Тканина стійка до стирання, знімні подушки, сухе чищення.',
                 'care_ru': 'Ткань устойчива к истиранию, съёмные подушки, сухая чистка.',
                 'image': 'products/ontario.webp', 'slot': 'p2-a.webp',
-                'color_model': 'green',
+                'color_set': 'ontario',
             },
             {
                 'slug': 'verona', 'name_uk': 'Верона', 'name_ru': 'Верона',
@@ -598,7 +582,7 @@ class Command(BaseCommand):
                 'care_uk': 'Знімний чохол, чищення мильним розчином.',
                 'care_ru': 'Съёмный чехол, чистка мыльным раствором.',
                 'image': 'products/ontario.webp', 'slot': 'p3-a.webp',
-                'color_model': 'green',
+                'color_set': 'ontario',
             },
             {
                 'slug': 'solo', 'name_uk': 'Соло', 'name_ru': 'Соло',
@@ -610,7 +594,8 @@ class Command(BaseCommand):
                 'description_ru': 'Кровать «Соло» с мягким тканевым изголовьем и массивной основой с ламелями. Бесшумный подъёмный механизм для хранения постельного белья.',
                 'care_uk': 'Узголів’я знімне, сухе чищення тканини раз на пів року.',
                 'care_ru': 'Изголовье съёмное, сухая чистка ткани раз в полгода.',
-                'image': 'slots/p4-a.webp', 'slot': 'p4-a.webp',
+                'image': 'products/solo-beige.webp', 'slot': 'p4-a.webp',
+                'color_set': 'solo',
             },
             {
                 'slug': 'kyoto', 'name_uk': 'Кіото', 'name_ru': 'Киото',
@@ -622,7 +607,8 @@ class Command(BaseCommand):
                 'description_ru': 'Компактный пуф «Киото» — дополнительное место для сидения или подставка для ног. Легко переставляется по комнате.',
                 'care_uk': 'Знімний чохол, машинне прання.',
                 'care_ru': 'Съёмный чехол, машинная стирка.',
-                'image': 'slots/p5-a.webp', 'slot': 'p5-a.webp',
+                'image': 'products/kyoto-beige.webp', 'slot': 'p5-a.webp',
+                'color_set': 'kyoto',
             },
             {
                 'slug': 'loks', 'name_uk': 'Локс', 'name_ru': 'Локс',
@@ -635,52 +621,37 @@ class Command(BaseCommand):
                 'care_uk': 'Знімні чохли, машинне прання, регулярне збивання наповнювача подушок.',
                 'care_ru': 'Съёмные чехлы, машинная стирка, регулярное взбивание наполнителя подушек.',
                 'image': 'products/milan.webp', 'slot': 'p6-a.webp',
-                'color_model': 'beige',
+                'color_set': 'milan',
             },
         ]
-        # Дві моделі диванів × 2 кольори (лише ці відтінки на кружечках)
-        color_models = {
-            'beige': {
-                'primary': 'products/milan.webp',
-                'light': 'products/milan.webp',
-                'dark': 'products/milan-dark-brown.webp',
-                'light_hex': '#D4C4A8',
-                'dark_hex': '#3C2415',
-                'map': {
-                    # завжди: темний ліворуч, світлий праворуч
-                    'chocolate-1': {
-                        'image': 'products/milan-dark-brown.webp',
-                        'hex': '#3C2415',
-                        'sort': 0,
-                    },
-                    'beige-2': {
-                        'image': 'products/milan.webp',
-                        'hex': '#D4C4A8',
-                        'sort': 1,
-                    },
-                },
+        # Порядок кружечків завжди: беж → зелений → темно-коричневий
+        color_sets = {
+            'milan': {
+                'beige': 'products/milan.webp',
+                'green': 'products/milan-green.webp',
+                'brown': 'products/milan-dark-brown.webp',
             },
-            'green': {
-                'primary': 'products/ontario.webp',
-                'light': 'products/ontario-beige.webp',
-                'dark': 'products/ontario.webp',
-                'light_hex': '#D4C4A8',
-                'dark_hex': '#7A8B6E',
-                'map': {
-                    'chocolate-1': {
-                        'image': 'products/ontario.webp',
-                        'hex': '#7A8B6E',
-                        'sort': 0,
-                    },
-                    'beige-2': {
-                        'image': 'products/ontario-beige.webp',
-                        'hex': '#D4C4A8',
-                        'sort': 1,
-                    },
-                },
+            'ontario': {
+                'beige': 'products/ontario-beige.webp',
+                'green': 'products/ontario.webp',
+                'brown': 'products/ontario-dark-brown.webp',
+            },
+            'solo': {
+                'beige': 'products/solo-beige.webp',
+                'green': 'products/solo-green.webp',
+                'brown': 'products/solo-brown.webp',
+            },
+            'kyoto': {
+                'beige': 'products/kyoto-beige.webp',
+                'green': 'products/kyoto-green.webp',
+                'brown': 'products/kyoto-brown.webp',
             },
         }
-
+        shade_order = (
+            ('beige', 0, '#D4C4A8'),
+            ('green', 1, '#7A8B6E'),
+            ('brown', 2, '#3C2415'),
+        )
         for item in catalog:
             product, created = Product.objects.get_or_create(slug=item['slug'], defaults={
                 'name_uk': item['name_uk'], 'name_ru': item['name_ru'],
@@ -723,7 +694,7 @@ class Command(BaseCommand):
             }
             for field, value in specs.items():
                 setattr(product, field, value)
-            if item.get('color_model'):
+            if item.get('color_set'):
                 replace_file(product.default_image, item['image'])
             else:
                 attach(product.default_image, item['image'])
@@ -751,34 +722,65 @@ class Command(BaseCommand):
                 fp.price = price
                 fp.sku = f'{product.sku}-{fabric.slug[-1].upper()}'
                 fp.save(update_fields=['price', 'sku'])
-            color = color_models.get(item.get('color_model'))
-            for shade in Shade.objects.filter(is_active=True):
-                variant = color['map'].get(shade.slug) if color else None
-                img = ProductShadeImage.objects.filter(product=product, shade=shade).order_by('sort', 'id').first()
-                if not img:
-                    img = ProductShadeImage(product=product, shade=shade, sort=0)
-                if variant:
-                    img.sort = variant['sort']
-                    img.hex_override = variant['hex']
+            color_map = color_sets.get(item.get('color_set'))
+            color_names = {
+                'beige': ('Беж', 'Беж'),
+                'green': ('Зелений', 'Зелёный'),
+                'brown': ('Коричневий', 'Коричневый'),
+            }
+            if color_map:
+                keep_slugs = set(color_map.keys())
+                ProductColor.objects.filter(product=product).exclude(slug__in=keep_slugs).delete()
+                for key, sort, hex_color in shade_order:
+                    path = color_map.get(key)
+                    if not path:
+                        continue
+                    name_uk, name_ru = color_names[key]
+                    color_obj, _ = ProductColor.objects.get_or_create(
+                        product=product,
+                        slug=key,
+                        defaults={
+                            'name_uk': name_uk,
+                            'name_ru': name_ru,
+                            'hex_color': hex_color,
+                            'sort': sort,
+                            'is_active': True,
+                        },
+                    )
+                    color_obj.name_uk = name_uk
+                    color_obj.name_ru = name_ru
+                    color_obj.hex_color = hex_color
+                    color_obj.sort = sort
+                    color_obj.is_active = True
+                    replace_file(
+                        color_obj.image,
+                        path,
+                        dest_name=f'{product.slug}-{key}.webp',
+                    )
+                    color_obj.save()
+                # дублюємо в ProductShadeImage для сумісності зі старою логікою
+                ProductShadeImage.objects.filter(product=product).exclude(
+                    shade__slug__in=keep_slugs,
+                ).delete()
+                for shade in Shade.objects.filter(is_active=True, slug__in=keep_slugs):
+                    img = ProductShadeImage.objects.filter(product=product, shade=shade).order_by('sort', 'id').first()
+                    if not img:
+                        img = ProductShadeImage(product=product, shade=shade, sort=0)
+                    sort = next(s for key, s, _ in shade_order if key == shade.slug)
+                    hex_ovr = next(h for key, _, h in shade_order if key == shade.slug)
+                    img.sort = sort
+                    img.hex_override = hex_ovr
                     replace_file(
                         img.image,
-                        variant['image'],
+                        color_map[shade.slug],
                         dest_name=f'{product.slug}-{shade.slug}.webp',
                     )
-                elif color:
-                    # У кожній категорії: 1-й кружечок = темний, 2-й = світлий (як на скріні)
-                    is_dark = (shade.sort % 2) == 0
-                    if is_dark:
-                        image_path, swatch_hex, img.sort = color['dark'], color['dark_hex'], 0
-                    else:
-                        image_path, swatch_hex, img.sort = color['light'], color['light_hex'], 1
-                    img.hex_override = swatch_hex
-                    replace_file(
-                        img.image,
-                        image_path,
-                        dest_name=f'{product.slug}-{shade.slug}.webp',
-                    )
-                else:
+                    img.save()
+            else:
+                for shade in Shade.objects.filter(is_active=True):
+                    img = ProductShadeImage.objects.filter(product=product, shade=shade).order_by('sort', 'id').first()
+                    if not img:
+                        img = ProductShadeImage(product=product, shade=shade, sort=0)
                     img.sort = shade.sort
                     img.hex_override = ''
                     if not img.image:
@@ -787,4 +789,4 @@ class Command(BaseCommand):
                             f'slots/{item["slot"]}',
                             dest_name=f'{product.slug}-{shade.slug}.webp',
                         )
-                img.save()
+                    img.save()

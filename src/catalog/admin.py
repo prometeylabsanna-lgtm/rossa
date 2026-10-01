@@ -1,7 +1,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, StackedInline, TabularInline
 
-from catalog.models import Category, Fabric, Product, ProductFabricPrice, ProductShadeImage, Shade
+from catalog.models import Category, Fabric, Product, ProductColor, ProductFabricPrice, ProductShadeImage, Shade
 
 
 class ChildCategoryInline(TabularInline):
@@ -23,12 +23,26 @@ class FabricPriceInline(TabularInline):
     verbose_name_plural = 'Ціни за категоріями тканини (1–7)'
 
 
+class ProductColorInline(TabularInline):
+    model = ProductColor
+    extra = 1
+    fields = ('slug', 'name_uk', 'name_ru', 'hex_color', 'image', 'sort', 'is_active')
+    prepopulated_fields = {'slug': ('name_uk',)}
+    ordering = ('sort', 'id')
+    tab = True
+    verbose_name = 'Колір'
+    verbose_name_plural = 'Кольори товару (кружечки)'
+
+
 class ShadeImageInline(TabularInline):
     model = ProductShadeImage
     extra = 0
     fields = ('shade', 'image', 'hex_override', 'sort')
     autocomplete_fields = ('shade',)
     tab = True
+    classes = ('collapse',)
+    verbose_name = 'Застаріле фото відтінку'
+    verbose_name_plural = 'Застарілі фото відтінків'
 
 
 @admin.register(Category)
@@ -62,12 +76,15 @@ class ProductAdmin(ModelAdmin):
     list_filter = ('category', 'badge', 'is_available', 'is_active')
     search_fields = ('name_uk', 'name_ru', 'sku')
     prepopulated_fields = {'slug': ('name_uk',)}
-    inlines = [FabricPriceInline, ShadeImageInline]
+    inlines = [FabricPriceInline, ProductColorInline, ShadeImageInline]
     fieldsets = (
         (None, {'fields': ('name_uk', 'name_ru', 'slug', 'sku', 'category', 'type_uk', 'type_ru')}),
         ('Ціна та наявність', {
             'fields': ('base_price', 'badge', 'is_available', 'is_active', 'default_image'),
-            'description': 'Базова ціна — орієнтир. Фактичні ціни по категоріях тканини 1–7 задаються нижче у вкладці цін.',
+            'description': (
+                'Ціна залежить лише від категорії тканини (вкладка цін 1–7). '
+                'Кольори (кружечки) додавайте у вкладці кольорів — на ціну не впливають.'
+            ),
         }),
         ('Опис', {'fields': ('description_uk', 'description_ru', 'care_uk', 'care_ru', 'dims_uk', 'dims_ru')}),
         ('Характеристики', {

@@ -29,8 +29,8 @@
       <div class="chips">
         {% for fabric in fabrics %}
           <a class="chip{% if selected_fabric and fabric.id == selected_fabric.id %} is-active{% endif %}"
-             href="?fabric={{ fabric.id }}"
-             hx-get="?fabric={{ fabric.id }}"
+             href="?fabric={{ fabric.id }}{{ color_query }}"
+             hx-get="?fabric={{ fabric.id }}{{ color_query }}"
              hx-target="#pdp-config"
              hx-swap="outerHTML"
              hx-push-url="true"
@@ -41,18 +41,18 @@
       </div>
     {% endif %}
 
-    {% if shades %}
+    {% if colors %}
       <div class="pdp__label">{% trans "Відтінок" %}</div>
       <div class="swatches">
-        {% for shade in shades %}
-          <a class="swatch swatch--lg{% if selected_shade and shade.id == selected_shade.id %} is-active{% endif %}"
-             href="?fabric={{ selected_fabric.id }}&shade={{ shade.id }}"
-             hx-get="?fabric={{ selected_fabric.id }}&shade={{ shade.id }}"
+        {% for color in colors %}
+          <a class="swatch swatch--lg{% if selected_color and color.id == selected_color.id %} is-active{% endif %}"
+             href="?{% if selected_fabric %}fabric={{ selected_fabric.id }}&{% endif %}color={{ color.id }}"
+             hx-get="?{% if selected_fabric %}fabric={{ selected_fabric.id }}&{% endif %}color={{ color.id }}"
              hx-target="#pdp-config"
              hx-swap="outerHTML"
              hx-push-url="true"
-             data-hex="{{ shade.hex_color }}"
-             aria-label="{{ shade.name }}"></a>
+             data-hex="{{ color.hex_color }}"
+             aria-label="{{ color.name }}"></a>
         {% endfor %}
       </div>
     {% endif %}
@@ -129,7 +129,7 @@
     <input form="order-form" type="hidden" name="product_name" value="{{ product.name }}">
     <input form="order-form" type="hidden" name="product_slug" value="{{ product.slug }}">
     <input form="order-form" type="hidden" name="fabric_name" value="{% if selected_fabric %}{{ selected_fabric.name }}{% endif %}">
-    <input form="order-form" type="hidden" name="shade_name" value="{% if selected_shade %}{{ selected_shade.name }}{% endif %}">
+    <input form="order-form" type="hidden" name="shade_name" value="{% if selected_color %}{{ selected_color.name }}{% endif %}">
     <input form="order-form" type="hidden" name="sku" value="{{ sku }}">
     <input form="order-form" type="hidden" name="price" value="{{ price }}">
   </div>
