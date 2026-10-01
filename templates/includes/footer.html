@@ -15,9 +15,7 @@
         {% for cat in nav_categories %}
           <a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
           {% for child in cat.children.all %}
-            {% if child.is_active %}
-              <a href="{{ child.get_absolute_url }}">{{ child.name }}</a>
-            {% endif %}
+            <a href="{{ child.get_absolute_url }}">{{ child.name }}</a>
           {% endfor %}
         {% endfor %}
         <a href="{% url 'catalog:index' %}">{% trans "Каталог" %}</a>

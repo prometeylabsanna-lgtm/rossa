@@ -518,6 +518,8 @@ class Command(BaseCommand):
         beds.intro_ru = 'Кровати с мягким изголовьем и надёжным каркасом собственного производства.'
         replace_file(beds.image, 'slots/cat-beds.webp')
         beds.save()
+        # Ліжка/Пуфи — листові на старті; підкатегорії можна додати в адмінці пізніше.
+        beds.children.all().delete()
         poufs, _ = Category.objects.get_or_create(slug='pufy', parent=None, defaults={
             'name_uk': 'Пуфи', 'name_ru': 'Пуфы', 'sort': 2,
             'intro_uk': 'Пуфи як доповнення до диванів і окреме м’яке місце для сидіння.',
@@ -529,6 +531,8 @@ class Command(BaseCommand):
         poufs.intro_ru = 'Пуфы как дополнение к диванам и отдельное мягкое место для сидения.'
         replace_file(poufs.image, 'slots/cat-poufs.webp')
         poufs.save()
+        poufs.children.all().delete()
+        # Підкатегорії лише у Диванів (модульні / кутові / прямі).
         subs = [
             ('modulni', 'Модульні', 'Модульные', 0),
             ('kutovi', 'Кутові', 'Угловые', 1),

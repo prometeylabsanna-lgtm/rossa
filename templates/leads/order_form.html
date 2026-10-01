@@ -1,14 +1,28 @@
-{% load i18n %}
+{% load i18n rossa %}
 <form id="order-form"
       class="form"
       method="post"
       action="{% url 'leads:order' %}"
       data-qa="lead-form"
+      data-order-form
       hx-post="{% url 'leads:order' %}"
       hx-swap="outerHTML">
   {% csrf_token %}
-  <h2 class="modal__title">{{ product.name }}</h2>
-  <p class="modal__price">{% trans "Від" %} {{ price }} {% trans "грн" %}</p>
+  <h2 class="modal__title" data-order-title>{{ product.name }}</h2>
+  <p class="modal__price">
+    <span data-order-price-view>{% if price %}{{ price|uah }}{% else %}{{ price }}{% endif %}</span>
+    {% trans "грн" %}
+  </p>
+  <ul class="modal__selection" data-order-selection>
+    <li>
+      <span class="modal__selection-label">{% trans "Категорія тканини" %}</span>
+      <strong data-order-fabric-view>{% if form.fabric_name.value %}{{ form.fabric_name.value }}{% else %}—{% endif %}</strong>
+    </li>
+    <li>
+      <span class="modal__selection-label">{% trans "Відтінок" %}</span>
+      <strong data-order-shade-view>{% if form.shade_name.value %}{{ form.shade_name.value }}{% else %}—{% endif %}</strong>
+    </li>
+  </ul>
   {{ form.non_field_errors }}
   {% for field in form.hidden_fields %}{{ field }}{% endfor %}
   <label class="visually-hidden" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>

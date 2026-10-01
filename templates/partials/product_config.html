@@ -21,8 +21,8 @@
     <h1>{{ product.name }}</h1>
     <div class="pdp__type">{{ product.type_label }}{% if sku %} · {{ sku }}{% endif %}</div>
     {% if not product.is_available %}<div class="pdp__type">{% trans "Немає в наявності" %}</div>{% endif %}
-    <div class="pdp__price">{% trans "Від" %} {{ price|uah }} {% trans "грн" %}</div>
-    <p class="pdp__meta">{% trans "ціна залежить від тканини" %}</p>
+    <div class="pdp__price">{% if selected_fabric %}{{ price|uah }}{% else %}{% trans "Від" %} {{ price|uah }}{% endif %} {% trans "грн" %}</div>
+    <p class="pdp__meta">{% if selected_fabric %}{% trans "ціна для обраної тканини" %}{% else %}{% trans "ціна залежить від тканини" %}{% endif %}</p>
 
     {% if fabrics %}
       <div class="pdp__label">{% trans "Категорія тканини" %}</div>
@@ -60,7 +60,12 @@
     {% if product.dims %}<div class="pdp__meta">{{ product.dims }}</div>{% endif %}
 
     <div class="pdp__actions">
-      <button class="btn btn--solid" type="button" data-open-order {% if not selected_fabric and fabrics %}disabled{% endif %}>{% trans "Замовити" %}</button>
+      <button
+        class="btn btn--solid"
+        type="button"
+        data-open-order
+        {% if not selected_fabric and fabrics %}disabled{% endif %}
+      >{% trans "Замовити" %}</button>
       <button class="btn btn--outline" type="button" data-open-order>{% trans "Отримати консультацію" %}</button>
     </div>
     <div class="pdp__notes">
@@ -126,11 +131,17 @@
       </div>
     </div>
 
-    <input form="order-form" type="hidden" name="product_name" value="{{ product.name }}">
-    <input form="order-form" type="hidden" name="product_slug" value="{{ product.slug }}">
-    <input form="order-form" type="hidden" name="fabric_name" value="{% if selected_fabric %}{{ selected_fabric.name }}{% endif %}">
-    <input form="order-form" type="hidden" name="shade_name" value="{% if selected_color %}{{ selected_color.name }}{% endif %}">
-    <input form="order-form" type="hidden" name="sku" value="{{ sku }}">
-    <input form="order-form" type="hidden" name="price" value="{{ price }}">
+    <div
+      class="pdp__order-source"
+      hidden
+      data-order-source
+      data-product-name="{{ product.name }}"
+      data-product-slug="{{ product.slug }}"
+      data-fabric-name="{% if selected_fabric %}{{ selected_fabric.name }}{% endif %}"
+      data-shade-name="{% if selected_color %}{{ selected_color.name }}{% endif %}"
+      data-sku="{{ sku }}"
+      data-price="{{ price }}"
+      data-price-label="{{ price|uah }}"
+    ></div>
   </div>
 </div>

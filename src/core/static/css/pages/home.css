@@ -6,24 +6,24 @@
   width: calc(100% + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
   margin: 0 0 0 calc(-1 * env(safe-area-inset-left, 0px));
   border-radius: 0;
-  height: calc(100vh - var(--header-offset) - env(safe-area-inset-top, 0px));
-  height: calc(100svh - var(--header-offset) - env(safe-area-inset-top, 0px));
-  height: calc(100dvh - var(--header-offset) - env(safe-area-inset-top, 0px));
+  height: min(38vh, 260px);
+  height: min(38svh, 260px);
+  height: min(38dvh, 260px);
 }
 
 @media (min-width: 768px) {
   .hero {
     width: 100%;
     margin: 0;
-    height: min(78vh, 720px);
-    height: min(78dvh, 720px);
+    height: min(42vh, 360px);
+    height: min(42dvh, 360px);
   }
 }
 
 @media (min-width: 1024px) {
   .hero {
-    height: calc(100vh - var(--header-offset) - env(safe-area-inset-top, 0px));
-    height: calc(100dvh - var(--header-offset) - env(safe-area-inset-top, 0px));
+    height: min(44vh, 420px);
+    height: min(44dvh, 420px);
   }
 }
 
@@ -96,7 +96,7 @@
   z-index: 2;
   left: 16px;
   right: auto;
-  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   top: auto;
   max-width: min(70%, 280px);
   padding: 10px 14px;
@@ -118,7 +118,7 @@
 @media (min-width: 768px) {
   .hero__caption {
     left: 24px;
-    bottom: 36px;
+    bottom: 20px;
     max-width: min(50%, 360px);
     padding: 12px 16px;
     border-radius: 12px;
@@ -128,7 +128,7 @@
 @media (min-width: 1024px) {
   .hero__caption {
     left: var(--pad-x);
-    bottom: 48px;
+    bottom: 24px;
     max-width: 400px;
     padding: 14px 18px;
   }
