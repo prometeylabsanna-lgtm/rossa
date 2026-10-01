@@ -10,7 +10,7 @@ body {
   color: var(--color-text);
   background: var(--color-bg);
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow-x: clip;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
 }
@@ -23,11 +23,6 @@ body {
 
 .page__main {
   flex: 1 0 auto;
-  padding-top: calc(var(--header-offset) + env(safe-area-inset-top, 0px));
-}
-
-.page--home .page__main {
-  padding-top: 0;
 }
 
 h1,

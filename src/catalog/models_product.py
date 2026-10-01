@@ -35,6 +35,16 @@ class Product(SeoFieldsMixin, TimeStampedModel):
     dims_uk = models.CharField('Розміри (UK)', max_length=255, blank=True)
     dims_ru = models.CharField('Розміри (RU)', max_length=255, blank=True)
     default_image = models.ImageField('Основне фото', upload_to='products/', blank=True)
+    spec_frame_uk = models.CharField('Характеристика: каркас (UK)', max_length=255, blank=True)
+    spec_frame_ru = models.CharField('Характеристика: каркас (RU)', max_length=255, blank=True)
+    spec_filling_uk = models.CharField('Характеристика: наповнення (UK)', max_length=255, blank=True)
+    spec_filling_ru = models.CharField('Характеристика: наповнення (RU)', max_length=255, blank=True)
+    spec_mechanism_uk = models.CharField('Характеристика: механізм (UK)', max_length=255, blank=True)
+    spec_mechanism_ru = models.CharField('Характеристика: механізм (RU)', max_length=255, blank=True)
+    spec_textile_uk = models.CharField('Характеристика: тканина (UK)', max_length=255, blank=True)
+    spec_textile_ru = models.CharField('Характеристика: тканина (RU)', max_length=255, blank=True)
+    spec_storage_uk = models.CharField('Характеристика: ніші (UK)', max_length=255, blank=True)
+    spec_storage_ru = models.CharField('Характеристика: ніші (RU)', max_length=255, blank=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -68,6 +78,37 @@ class Product(SeoFieldsMixin, TimeStampedModel):
     @property
     def dims(self):
         return localized(self, 'dims')
+
+    @property
+    def spec_frame(self):
+        return localized(self, 'spec_frame')
+
+    @property
+    def spec_filling(self):
+        return localized(self, 'spec_filling')
+
+    @property
+    def spec_mechanism(self):
+        return localized(self, 'spec_mechanism')
+
+    @property
+    def spec_textile(self):
+        return localized(self, 'spec_textile')
+
+    @property
+    def spec_storage(self):
+        return localized(self, 'spec_storage')
+
+    @property
+    def spec_rows(self):
+        rows = [
+            ('frame', self.spec_frame),
+            ('filling', self.spec_filling),
+            ('mechanism', self.spec_mechanism),
+            ('textile', self.spec_textile),
+            ('storage', self.spec_storage),
+        ]
+        return [(key, value) for key, value in rows if value]
 
     @property
     def seo_title(self):

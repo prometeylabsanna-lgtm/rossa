@@ -52,10 +52,15 @@ class LeadFormTests(TestCase):
 
     def test_partnership_ok(self):
         response = self.client.post(reverse('leads:partnership'), {
-            'company': 'Салон Тест',
+            'name': 'Олена',
             'phone': '+380671112233',
             'email': 'partner@example.com',
-            'consent': 'on',
+            'city': 'Київ',
+            'message': 'Хочу стати дилером',
         })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(PartnershipLead.objects.count(), 1)
+        lead = PartnershipLead.objects.get()
+        self.assertEqual(lead.name, 'Олена')
+        self.assertEqual(lead.company, 'Олена')
+        self.assertTrue(lead.consent)

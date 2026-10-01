@@ -104,8 +104,20 @@ class CollabPageAdmin(SingletonAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'title_uk', 'title_ru', 'sub_uk', 'sub_ru',
-                'form_title_uk', 'form_title_ru', 'hero_image', 'benefits',
+                'title_uk', 'title_ru',
+                'hero_image',
+                'advantages_title_uk', 'advantages_title_ru',
+                'benefits',
+                'dealer_support_title_uk', 'dealer_support_title_ru',
+                'dealer_support',
+                'form_title_uk', 'form_title_ru',
+                'form_image',
+            ),
+        }),
+        ('Запасні поля', {
+            'classes': ('collapse',),
+            'fields': (
+                'sub_uk', 'sub_ru',
             ),
         }),
         ('SEO', {'fields': ('seo_title_uk', 'seo_title_ru', 'seo_description_uk', 'seo_description_ru')}),

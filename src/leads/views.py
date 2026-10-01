@@ -53,14 +53,12 @@ def partnership_submit(request):
         obj.language = current_lang()
         obj.save()
         notify_manager(
-            f'ROSSA співпраця: {obj.company}',
+            f'ROSSA співпраця: {obj.name}',
             (
-                f'Компанія: {obj.company}\n'
                 f'Ім’я: {obj.name}\n'
                 f'Телефон: {obj.phone}\n'
                 f'E-mail: {obj.email}\n'
                 f'Місто: {obj.city}\n'
-                f'Тип: {obj.get_collab_type_display()}\n'
                 f'Повідомлення: {obj.message}\n'
             ),
         )

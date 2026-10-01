@@ -79,12 +79,33 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
 class CollabPage(SeoFieldsMixin, TimeStampedModel):
     title_uk = models.CharField('Заголовок (UK)', max_length=255)
     title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
-    sub_uk = models.TextField('Вступ (UK)')
+    sub_uk = models.TextField('Вступ (UK)', blank=True)
     sub_ru = models.TextField('Вступ (RU)', blank=True)
     form_title_uk = models.CharField('Заголовок форми (UK)', max_length=128, blank=True)
     form_title_ru = models.CharField('Заголовок форми (RU)', max_length=128, blank=True)
     hero_image = models.ImageField('Hero фото', upload_to='collab/', blank=True)
-    benefits = models.JSONField('Переваги', default=list, blank=True)
+    form_image = models.ImageField('Фото біля форми', upload_to='collab/', blank=True)
+    advantages_title_uk = models.CharField('Заголовок переваг (UK)', max_length=128, blank=True, default='Наші переваги')
+    advantages_title_ru = models.CharField('Заголовок переваг (RU)', max_length=128, blank=True)
+    benefits = models.JSONField(
+        'Переваги',
+        default=list,
+        blank=True,
+        help_text='Список: icon (years|production|guarantee|collections|design), title_uk, title_ru',
+    )
+    dealer_support_title_uk = models.CharField(
+        'Заголовок підтримки дилера (UK)',
+        max_length=128,
+        blank=True,
+        default='Підтримка нашого дилера:',
+    )
+    dealer_support_title_ru = models.CharField('Заголовок підтримки дилера (RU)', max_length=128, blank=True)
+    dealer_support = models.JSONField(
+        'Підтримка дилера',
+        default=list,
+        blank=True,
+        help_text='Список: title_uk, title_ru, body_uk, body_ru',
+    )
 
     class Meta:
         verbose_name = 'Співпраця'
@@ -116,6 +137,14 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
     @property
     def form_title(self):
         return localized(self, 'form_title')
+
+    @property
+    def advantages_title(self):
+        return localized(self, 'advantages_title') or 'Наші переваги'
+
+    @property
+    def dealer_support_title(self):
+        return localized(self, 'dealer_support_title') or 'Підтримка нашого дилера:'
 
     @property
     def seo_title(self):

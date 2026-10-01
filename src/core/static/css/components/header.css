@@ -1,8 +1,7 @@
 .header {
-  position: fixed;
+  position: -webkit-sticky;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 50;
   --header-bg: rgba(10, 10, 10, 0.96);
   background: var(--header-bg);
@@ -10,30 +9,24 @@
   color: var(--color-light);
   --color-gold: #b67521;
   --color-accent: #b67521;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .page--home .header {
-  --header-bg: rgba(10, 10, 10, 0.8);
+  --header-bg: rgba(10, 10, 10, 0.96);
   background: var(--header-bg);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
 }
 
 .header.is-scrolled {
-  --header-bg: rgba(10, 10, 10, 0.8);
+  --header-bg: rgba(10, 10, 10, 0.96);
   background: var(--header-bg);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: none;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .page--home .header.is-scrolled {
-  --header-bg: rgba(10, 10, 10, 0.8);
+  --header-bg: rgba(10, 10, 10, 0.96);
   background: var(--header-bg);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
 }
 
 .header__bar {

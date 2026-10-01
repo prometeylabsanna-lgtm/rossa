@@ -61,39 +61,43 @@ class OrderForm(forms.ModelForm):
 
 
 class PartnershipForm(forms.ModelForm):
-    company = forms.CharField(label=_('Назва компанії / ПІБ'), widget=forms.TextInput(attrs={
-        'placeholder': _('Назва компанії'),
+    name = forms.CharField(label=_('Ім’я'), widget=forms.TextInput(attrs={
+        'placeholder': _('введіть ім’я'),
         'required': True,
-    }))
-    name = forms.CharField(label=_('Ім’я'), required=False, widget=forms.TextInput(attrs={
-        'placeholder': _('Ім’я'),
+        'autocomplete': 'name',
     }))
     phone = PhoneField(label=_('Телефон'), widget=forms.TextInput(attrs={
-        'placeholder': _('Телефон'),
+        'placeholder': _('50 123 4567'),
         'type': 'tel',
         'required': True,
+        'autocomplete': 'tel',
     }))
-    email = forms.EmailField(label=_('E-mail'), widget=forms.EmailInput(attrs={
-        'placeholder': _('E-mail'),
+    email = forms.EmailField(label=_('Електронна адреса'), widget=forms.EmailInput(attrs={
+        'placeholder': _('введіть електронну адресу'),
         'required': True,
+        'autocomplete': 'email',
     }))
-    city = forms.CharField(label=_('Місто'), required=False, widget=forms.TextInput(attrs={
-        'placeholder': _('Місто'),
+    city = forms.CharField(label=_('Місто'), widget=forms.TextInput(attrs={
+        'placeholder': _('введіть місто'),
+        'required': True,
+        'autocomplete': 'address-level2',
     }))
     message = forms.CharField(label=_('Повідомлення'), required=False, widget=forms.Textarea(attrs={
-        'placeholder': _('Повідомлення'),
-        'rows': 2,
+        'placeholder': _('введіть повідомлення'),
+        'rows': 4,
     }))
-    consent = forms.BooleanField(label=_('Згода на обробку персональних даних'), required=True)
-    collab_type = forms.ChoiceField(
-        label=_('Тип співпраці'),
-        required=False,
-        choices=[('', _('Тип співпраці'))] + list(PartnershipLead.CollabType.choices),
-    )
 
     class Meta:
         model = PartnershipLead
-        fields = ['company', 'name', 'phone', 'email', 'city', 'collab_type', 'message', 'consent']
+        fields = ['name', 'phone', 'email', 'city', 'message']
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.company = instance.company or instance.name
+        instance.consent = True
+        if commit:
+            instance.save()
+        return instance
 
 
 class ContactForm(forms.ModelForm):

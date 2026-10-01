@@ -26,7 +26,7 @@
     <div class="card__stock{% if product.is_available %} card__stock--yes{% else %} card__stock--no{% endif %}">
       {% if product.is_available %}{% trans "В наявності" %}{% else %}{% trans "Немає в наявності" %}{% endif %}
     </div>
-    <div class="card__price">{% trans "від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
+    <div class="card__price">{% trans "Від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
     <div class="swatches">
       {% for item in product.preview_shades %}
         <button type="button" class="swatch{% if forloop.first %} is-active{% endif %}" data-swatch="{{ item.shade.id }}" data-hex="{{ item.shade.hex_color }}" aria-label="{{ item.shade.name }}"></button>

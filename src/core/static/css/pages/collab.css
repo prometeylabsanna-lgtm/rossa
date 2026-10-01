@@ -1,0 +1,304 @@
+.collab {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 24px var(--pad-x) var(--section-y);
+  padding-bottom: calc(var(--section-y) + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  .collab {
+    gap: 56px;
+    padding-top: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .collab {
+    gap: 72px;
+    padding-top: 40px;
+  }
+}
+
+.collab__hero {
+  margin: 0;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-surface);
+  border-radius: 0;
+}
+
+.collab__hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(70vh, 720px);
+  object-fit: cover;
+  object-position: center;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .collab__hero-img {
+    max-height: min(68vh, 780px);
+  }
+}
+
+.collab-advantages {
+  text-align: center;
+}
+
+.collab-advantages__title {
+  margin: 0 0 28px;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+@media (min-width: 768px) {
+  .collab-advantages__title {
+    margin-bottom: 40px;
+    font-size: 20px;
+  }
+}
+
+.collab-advantages__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+@media (min-width: 600px) {
+  .collab-advantages__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .collab-advantages__list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+}
+
+.collab-advantages__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.collab-advantages__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  color: var(--color-ink);
+}
+
+.collab-advantages__icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.collab-advantages__label {
+  margin: 0;
+  max-width: 16ch;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+@media (min-width: 1024px) {
+  .collab-advantages__label {
+    font-size: 13px;
+  }
+}
+
+.collab-dealer {
+  max-width: 820px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.collab-dealer__title {
+  margin: 0 0 20px;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+
+@media (min-width: 768px) {
+  .collab-dealer__title {
+    font-size: 34px;
+    margin-bottom: 24px;
+  }
+}
+
+.collab-dealer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.collab-dealer__item {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+  position: relative;
+}
+
+.collab-dealer__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.collab-dealer__item-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-ink);
+  text-transform: lowercase;
+}
+
+.collab-dealer__item-body {
+  display: block;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+@media (min-width: 768px) {
+  .collab-dealer__item-title {
+    font-size: 16px;
+  }
+
+  .collab-dealer__item-body {
+    font-size: 15px;
+  }
+}
+
+.collab-apply {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+@media (min-width: 900px) {
+  .collab-apply {
+    grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: stretch;
+  }
+}
+
+.collab-apply__form {
+  min-width: 0;
+}
+
+.collab-apply__form-title {
+  margin: 0 0 18px;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.form--collab {
+  gap: 16px;
+}
+
+.form--collab .form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form--collab .form__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.form--collab .form__label abbr {
+  margin-left: 2px;
+  text-decoration: none;
+  color: var(--color-accent);
+}
+
+.form--collab input:not([type="checkbox"]):not([type="radio"]),
+.form--collab textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid rgba(26, 24, 23, 0.22);
+  border-radius: 6px;
+  background: var(--color-white);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--color-ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form--collab textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.form--collab .btn {
+  align-self: flex-start;
+  min-width: 160px;
+  margin-top: 4px;
+}
+
+.collab-apply__media {
+  margin: 0;
+  min-height: 240px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.collab-apply__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  max-height: 520px;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (min-width: 900px) {
+  .collab-apply__media,
+  .collab-apply__img {
+    min-height: 100%;
+    max-height: none;
+    height: 100%;
+  }
+}

@@ -75,14 +75,18 @@
 .chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 40px;
-  padding: 9px 18px;
+  min-width: 44px;
+  padding: 9px 14px;
   border-radius: 6px;
   border: 1px solid rgba(26, 24, 23, 0.3);
   font-size: 13px;
+  font-weight: 600;
   background: transparent;
   color: var(--color-text);
   transition: background-color var(--ease), color var(--ease), border-color var(--ease);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .chip:hover {

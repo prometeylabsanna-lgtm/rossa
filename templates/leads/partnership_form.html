@@ -1,27 +1,43 @@
 {% load i18n %}
-<form class="form form--compact"
+<form class="form form--collab"
       method="post"
       action="{% url 'leads:partnership' %}"
       data-qa="lead-form"
       hx-post="{% url 'leads:partnership' %}"
       hx-swap="outerHTML">
   {% csrf_token %}
-  <h2 class="section__title">{% if page %}{{ page.form_title }}{% endif %}</h2>
+  <h2 class="collab-apply__form-title">{% if page and page.form_title %}{{ page.form_title }}{% else %}{% trans "Форма заявки" %}{% endif %}</h2>
   {{ form.non_field_errors }}
-  {{ form.company }}
-  {{ form.company.errors }}
-  {{ form.name }}
-  {{ form.phone }}
-  {{ form.phone.errors }}
-  {{ form.email }}
-  {{ form.email.errors }}
-  {{ form.city }}
-  {{ form.collab_type }}
-  {{ form.message }}
-  <label class="form__check">
-    {{ form.consent }}
-    <span>{{ form.consent.label }}</span>
+
+  <label class="form__field">
+    <span class="form__label">{{ form.name.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
+    {{ form.name }}
+    {{ form.name.errors }}
   </label>
-  {{ form.consent.errors }}
+
+  <label class="form__field">
+    <span class="form__label">{{ form.phone.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
+    {{ form.phone }}
+    {{ form.phone.errors }}
+  </label>
+
+  <label class="form__field">
+    <span class="form__label">{{ form.email.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
+    {{ form.email }}
+    {{ form.email.errors }}
+  </label>
+
+  <label class="form__field">
+    <span class="form__label">{{ form.city.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
+    {{ form.city }}
+    {{ form.city.errors }}
+  </label>
+
+  <label class="form__field">
+    <span class="form__label">{{ form.message.label }}</span>
+    {{ form.message }}
+    {{ form.message.errors }}
+  </label>
+
   <button class="btn btn--solid" type="submit">{% trans "Надіслати" %}</button>
 </form>

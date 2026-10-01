@@ -21,11 +21,11 @@
     <h1>{{ product.name }}</h1>
     <div class="pdp__type">{{ product.type_label }}{% if sku %} · {{ sku }}{% endif %}</div>
     {% if not product.is_available %}<div class="pdp__type">{% trans "Немає в наявності" %}</div>{% endif %}
-    <div class="pdp__price">{% if selected_fabric %}{{ price|uah }}{% else %}{% trans "від" %} {{ product.min_price|uah }}{% endif %} {% trans "грн" %}</div>
+    <div class="pdp__price">{% trans "Від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
     <p class="pdp__meta">{% trans "ціна залежить від тканини" %}</p>
 
     {% if fabrics %}
-      <div class="pdp__label">{% trans "Тканина" %}</div>
+      <div class="pdp__label">{% trans "Категорія тканини" %}</div>
       <div class="chips">
         {% for fabric in fabrics %}
           <a class="chip{% if selected_fabric and fabric.id == selected_fabric.id %} is-active{% endif %}"
@@ -33,9 +33,9 @@
              hx-get="?fabric={{ fabric.id }}"
              hx-target="#pdp-config"
              hx-swap="outerHTML"
-             hx-push-url="true">
+             hx-push-url="true"
+             aria-label="{% trans 'Категорія тканини' %} {{ fabric.name }}">
             {{ fabric.name }}
-            {% if fabric.surcharge %} <span>+{{ fabric.surcharge|uah }} {% trans "грн" %}</span>{% endif %}
           </a>
         {% endfor %}
       </div>
@@ -79,6 +79,52 @@
         <p>{{ product.care }}</p>
       </div>
     {% endif %}
+
+    {% if product.spec_rows %}
+      <div class="pdp__block pdp__block--specs">
+        <p class="pdp__tagline">{% trans "ROSSA — затишок у вашому домі." %}</p>
+        <table class="pdp-specs">
+          <tbody>
+            {% for key, value in product.spec_rows %}
+              <tr>
+                <th scope="row">
+                  {% if key == 'frame' %}{% trans "Каркас" %}
+                  {% elif key == 'filling' %}{% trans "Наповнення" %}
+                  {% elif key == 'mechanism' %}{% trans "Механізм трансформації" %}
+                  {% elif key == 'textile' %}{% trans "Тканина" %}
+                  {% elif key == 'storage' %}{% trans "Ніші для білизни" %}
+                  {% endif %}
+                </th>
+                <td>{{ value }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    <div class="pdp__block pdp__block--help">
+      <h2 class="pdp-help__title">{% trans "Потрібна допомога?" %}</h2>
+      <div class="pdp-help">
+        {% with phone=site_settings.phones.0 %}
+          {% if phone %}
+            <a class="pdp-help__link" href="tel:{{ phone.tel }}">
+              <svg class="pdp-help__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{{ phone.display }}</span>
+            </a>
+          {% endif %}
+        {% endwith %}
+        <a class="pdp-help__link" href="{% url 'core:contacts' %}">
+          <svg class="pdp-help__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          <span>{% trans "Знайти найближчий салон" %}</span>
+        </a>
+      </div>
+    </div>
 
     <input form="order-form" type="hidden" name="product_name" value="{{ product.name }}">
     <input form="order-form" type="hidden" name="product_slug" value="{{ product.slug }}">

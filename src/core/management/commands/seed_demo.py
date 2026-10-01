@@ -255,22 +255,75 @@ class Command(BaseCommand):
         obj.save()
 
     def _collab(self):
-        obj, _ = CollabPage.objects.get_or_create(pk=1, defaults={
+        benefits = [
+            {
+                'icon': 'years',
+                'title_uk': 'Більше 20 років на ринку',
+                'title_ru': 'Более 20 лет на рынке',
+            },
+            {
+                'icon': 'production',
+                'title_uk': 'Власне виробництво',
+                'title_ru': 'Собственное производство',
+            },
+            {
+                'icon': 'guarantee',
+                'title_uk': 'Гарантія на вироби',
+                'title_ru': 'Гарантия на изделия',
+            },
+            {
+                'icon': 'collections',
+                'title_uk': 'Постійне оновлення колекцій',
+                'title_ru': 'Постоянное обновление коллекций',
+            },
+            {
+                'icon': 'design',
+                'title_uk': 'Оригінальний дизайн',
+                'title_ru': 'Оригинальный дизайн',
+            },
+        ]
+        fields = {
             'title_uk': 'Співпраця з ROSSA',
             'title_ru': 'Сотрудничество с ROSSA',
-            'sub_uk': 'Оптові умови для дизайнерів інтер’єру, дилерів та готельного бізнесу.',
-            'sub_ru': 'Оптовые условия для дизайнеров интерьера, дилеров и гостиничного бизнеса.',
-            'form_title_uk': 'Залишити заявку на співпрацю',
-            'form_title_ru': 'Оставить заявку на сотрудничество',
-            'benefits': [
-                {'num': '01', 'title_uk': 'Дилерські ціни', 'title_ru': 'Дилерские цены', 'body_uk': 'Спеціальні умови від обсягу закупівлі.', 'body_ru': 'Специальные условия от объёма закупки.'},
-                {'num': '02', 'title_uk': 'Каталог для дизайнерів', 'title_ru': 'Каталог для дизайнеров', 'body_uk': 'Технічні креслення та зразки тканин на запит.', 'body_ru': 'Технические чертежи и образцы тканей по запросу.'},
-                {'num': '03', 'title_uk': 'Персональний менеджер', 'title_ru': 'Персональный менеджер', 'body_uk': 'Супровід проєкту від замовлення до монтажу.', 'body_ru': 'Сопровождение проекта от заказа до монтажа.'},
+            'sub_uk': '',
+            'sub_ru': '',
+            'form_title_uk': 'Форма заявки',
+            'form_title_ru': 'Форма заявки',
+            'advantages_title_uk': 'Наші переваги',
+            'advantages_title_ru': 'Наши преимущества',
+            'benefits': benefits,
+            'dealer_support_title_uk': 'Підтримка нашого дилера:',
+            'dealer_support_title_ru': 'Поддержка нашего дилера:',
+            'dealer_support': [
+                {
+                    'title_uk': 'постійна комунікація',
+                    'title_ru': 'постоянная коммуникация',
+                    'body_uk': 'Постійний зв’язок та всебічна підтримка: оперативно інформуємо про новини фабрики.',
+                    'body_ru': 'Постоянная связь и всесторонняя поддержка: оперативно информируем о новостях фабрики.',
+                },
+                {
+                    'title_uk': 'маркетингова підтримка',
+                    'title_ru': 'маркетинговая поддержка',
+                    'body_uk': 'Цифрові та промоматеріали у вільному доступі.',
+                    'body_ru': 'Цифровые и промоматериалы в свободном доступе.',
+                },
+                {
+                    'title_uk': 'навчання',
+                    'title_ru': 'обучение',
+                    'body_uk': 'Проводимо навчання менеджерів-консультантів, продавців в онлайн-режимі та надаємо індивідуальний супровід у перші місяці роботи.',
+                    'body_ru': 'Проводим обучение менеджеров-консультантов, продавцов в онлайн-режиме и предоставляем индивидуальное сопровождение в первые месяцы работы.',
+                },
             ],
             'seo_title_uk': 'Співпраця — ROSSA',
+            'seo_title_ru': 'Сотрудничество — ROSSA',
             'seo_description_uk': 'Оптові умови для дилерів, салонів і дизайнерів.',
-        })
-        attach(obj.hero_image, 'slots/collab-hero.webp')
+            'seo_description_ru': 'Оптовые условия для дилеров, салонов и дизайнеров.',
+        }
+        obj, _ = CollabPage.objects.get_or_create(pk=1, defaults=fields)
+        for key, value in fields.items():
+            setattr(obj, key, value)
+        replace_file(obj.hero_image, 'slots/collab-hero.webp')
+        replace_file(obj.form_image, 'slots/collab-form.webp')
         obj.save()
 
     def _legal(self):
@@ -287,48 +340,69 @@ class Command(BaseCommand):
             )
 
     def _fabrics(self):
+        # Категорії тканини 1–7 (без назв матеріалів)
         data = [
-            ('rogozhka', 'Рогожка', 'Рогожка', 0, 0),
-            ('oksamyt', 'Оксамит', 'Бархат', 3200, 1),
-            ('ecoshkira', 'Екошкіра', 'Экокожа', 5800, 2),
+            (f'cat-{n}', str(n), str(n), 0, n - 1)
+            for n in range(1, 8)
         ]
+        keep_slugs = {slug for slug, *_ in data}
+        Fabric.objects.exclude(slug__in=keep_slugs).delete()
+
         out = {}
         for slug, uk, ru, surcharge, sort in data:
             obj, _ = Fabric.objects.get_or_create(slug=slug, defaults={
                 'name_uk': uk, 'name_ru': ru, 'surcharge': surcharge, 'sort': sort,
             })
+            obj.name_uk = uk
+            obj.name_ru = ru
+            obj.surcharge = surcharge
+            obj.sort = sort
+            obj.is_active = True
+            obj.save()
             out[slug] = obj
-        shades = {
-            'rogozhka': [
-                ('taupe', 'Тауп', 'Тауп', '#6B6255'),
-                ('sand', 'Пісок', 'Песок', '#C7BBA3'),
-                ('wine', 'Вино', 'Вино', '#903838'),
-            ],
-            'oksamyt': [
-                ('ivory', 'Айворі', 'Айвори', '#C9BFA5'),
-                ('stone', 'Камінь', 'Камень', '#7C7267'),
-                ('forest', 'Ліс', 'Лес', '#4A5A52'),
-            ],
-            'ecoshkira': [
-                ('cream', 'Крем', 'Крем', '#D8CFC0'),
-                ('graphite', 'Графіт', 'Графит', '#3E4B5C'),
-                ('black', 'Чорний', 'Чёрный', '#1A1817'),
-            ],
-        }
-        for fabric_slug, items in shades.items():
-            fabric = out[fabric_slug]
-            fabric.name_uk = next(uk for s, uk, ru, sur, so in data if s == fabric_slug)
-            fabric.name_ru = next(ru for s, uk, ru, sur, so in data if s == fabric_slug)
-            fabric.save(update_fields=['name_uk', 'name_ru'])
-            for i, (slug, name_uk, name_ru, hex_color) in enumerate(items):
-                shade, _ = Shade.objects.get_or_create(fabric=fabric, slug=slug, defaults={
-                    'name_uk': name_uk, 'name_ru': name_ru, 'hex_color': hex_color, 'sort': i,
-                })
+
+        # По кілька відтінків на категорію (палітра для демо)
+        palette = [
+            ('taupe', 'Тауп', 'Тауп', '#6B6255'),
+            ('sand', 'Пісок', 'Песок', '#C7BBA3'),
+            ('wine', 'Вино', 'Вино', '#903838'),
+            ('ivory', 'Айворі', 'Айвори', '#C9BFA5'),
+            ('stone', 'Камінь', 'Камень', '#7C7267'),
+            ('forest', 'Ліс', 'Лес', '#4A5A52'),
+            ('cream', 'Крем', 'Крем', '#D8CFC0'),
+            ('graphite', 'Графіт', 'Графит', '#3E4B5C'),
+            ('black', 'Чорний', 'Чёрный', '#1A1817'),
+            ('moss', 'Мох', 'Мох', '#6B7B4A'),
+            ('clay', 'Глина', 'Глина', '#A67C52'),
+            ('sky', 'Небо', 'Небо', '#8FA4B8'),
+            ('blush', 'Пудра', 'Пудра', '#C9A9A6'),
+            ('ink', 'Чорнило', 'Чернила', '#2C3340'),
+        ]
+        for idx, (slug, fabric) in enumerate(out.items()):
+            # 2 відтінки на категорію, з циклічної палітри
+            for j in range(2):
+                color = palette[(idx * 2 + j) % len(palette)]
+                shade_slug, name_uk, name_ru, hex_color = color
+                shade, _ = Shade.objects.get_or_create(
+                    fabric=fabric,
+                    slug=f'{shade_slug}-{j + 1}',
+                    defaults={
+                        'name_uk': name_uk,
+                        'name_ru': name_ru,
+                        'hex_color': hex_color,
+                        'sort': j,
+                    },
+                )
                 shade.name_uk = name_uk
                 shade.name_ru = name_ru
                 shade.hex_color = hex_color
-                shade.sort = i
+                shade.sort = j
+                shade.is_active = True
                 shade.save()
+            # Прибрати зайві відтінки цієї категорії
+            Shade.objects.filter(fabric=fabric).exclude(
+                slug__in=[f'{palette[(idx * 2 + j) % len(palette)][0]}-{j + 1}' for j in range(2)]
+            ).delete()
         return out
 
     def _categories(self):
@@ -478,6 +552,20 @@ class Command(BaseCommand):
             product.description_ru = item['description_ru']
             product.care_uk = item['care_uk']
             product.care_ru = item['care_ru']
+            specs = item.get('specs') or {
+                'spec_frame_uk': 'Брус хвойних порід, ДСП класу E1 та пружинна змійка',
+                'spec_frame_ru': 'Брус хвойных пород, ДСП класса E1 и пружинная змейка',
+                'spec_filling_uk': 'Пінополіуретан',
+                'spec_filling_ru': 'Пенополиуретан',
+                'spec_mechanism_uk': 'Відсутній',
+                'spec_mechanism_ru': 'Отсутствует',
+                'spec_textile_uk': 'На вибір покупця з асортименту понад 1000 видів текстилю',
+                'spec_textile_ru': 'На выбор покупателя из ассортимента более 1000 видов текстиля',
+                'spec_storage_uk': 'Відсутні',
+                'spec_storage_ru': 'Отсутствуют',
+            }
+            for field, value in specs.items():
+                setattr(product, field, value)
             attach(product.default_image, item['image'])
             product.save()
             for fabric in fabrics.values():

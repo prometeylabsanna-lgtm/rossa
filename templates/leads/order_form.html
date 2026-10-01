@@ -8,7 +8,7 @@
       hx-swap="outerHTML">
   {% csrf_token %}
   <h2 class="modal__title">{{ product.name }}</h2>
-  <p class="modal__price">{{ price }} {% trans "грн" %}</p>
+  <p class="modal__price">{% trans "Від" %} {{ price }} {% trans "грн" %}</p>
   {{ form.non_field_errors }}
   {% for field in form.hidden_fields %}{{ field }}{% endfor %}
   <label class="visually-hidden" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>

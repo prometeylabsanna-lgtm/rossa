@@ -54,5 +54,14 @@ class ProductAdmin(ModelAdmin):
         (None, {'fields': ('name_uk', 'name_ru', 'slug', 'sku', 'category', 'type_uk', 'type_ru')}),
         ('Ціна та наявність', {'fields': ('base_price', 'badge', 'is_available', 'is_active', 'default_image')}),
         ('Опис', {'fields': ('description_uk', 'description_ru', 'care_uk', 'care_ru', 'dims_uk', 'dims_ru')}),
+        ('Характеристики', {
+            'fields': (
+                'spec_frame_uk', 'spec_frame_ru',
+                'spec_filling_uk', 'spec_filling_ru',
+                'spec_mechanism_uk', 'spec_mechanism_ru',
+                'spec_textile_uk', 'spec_textile_ru',
+                'spec_storage_uk', 'spec_storage_ru',
+            ),
+        }),
         ('SEO', {'fields': ('seo_title_uk', 'seo_title_ru', 'seo_description_uk', 'seo_description_ru')}),
     )

@@ -54,14 +54,14 @@ class PartnershipLead(TimeStampedModel):
         WHOLESALE = 'wholesale', 'Гурт'
 
     status = models.CharField('Статус', max_length=20, choices=LeadStatus.choices, default=LeadStatus.NEW)
-    company = models.CharField('Компанія / ПІБ', max_length=255)
-    name = models.CharField('Контактна особа', max_length=128, blank=True)
+    company = models.CharField('Компанія / ПІБ', max_length=255, blank=True)
+    name = models.CharField('Контактна особа', max_length=128)
     phone = models.CharField('Телефон', max_length=32)
     email = models.EmailField('E-mail')
-    city = models.CharField('Місто', max_length=128, blank=True)
+    city = models.CharField('Місто', max_length=128)
     collab_type = models.CharField('Тип співпраці', max_length=20, choices=CollabType.choices, blank=True)
     message = models.TextField('Повідомлення', blank=True)
-    consent = models.BooleanField('Згода на ПД')
+    consent = models.BooleanField('Згода на ПД', default=True)
     language = models.CharField('Мова', max_length=2, default='uk')
 
     class Meta:
