@@ -29,7 +29,7 @@
     <div class="card__price">{% trans "Від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
     <div class="swatches">
       {% for item in product.preview_shades %}
-        <button type="button" class="swatch{% if forloop.first %} is-active{% endif %}" data-swatch="{{ item.shade.id }}" data-hex="{{ item.shade.hex_color }}" aria-label="{{ item.shade.name }}"></button>
+        <button type="button" class="swatch{% if forloop.first %} is-active{% endif %}" data-swatch="{{ item.shade.id }}" data-hex="{{ item.hex }}" aria-label="{{ item.shade.name }}"></button>
       {% endfor %}
     </div>
   </div>

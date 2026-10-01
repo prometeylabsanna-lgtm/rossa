@@ -449,8 +449,8 @@ class Command(BaseCommand):
 
         # По кілька відтінків на категорію (палітра для демо)
         palette = [
-            ('taupe', 'Тауп', 'Тауп', '#6B6255'),
-            ('sand', 'Пісок', 'Песок', '#C7BBA3'),
+            ('chocolate', 'Шоколад', 'Шоколад', '#3C2415'),
+            ('beige', 'Беж', 'Беж', '#D4C4A8'),
             ('wine', 'Вино', 'Вино', '#903838'),
             ('ivory', 'Айворі', 'Айвори', '#C9BFA5'),
             ('stone', 'Камінь', 'Камень', '#7C7267'),
@@ -547,7 +547,8 @@ class Command(BaseCommand):
                 'description_ru': 'Модульный диван «Милан» позволяет собрать конфигурацию под форму вашей гостиной — от компактного двухместного варианта до большого углового ансамбля. Каркас из массива бука, независимый пружинный блок.',
                 'care_uk': 'Знімні чохли, машинне прання за температури до 30°C. Рекомендовано хімчистку раз на рік.',
                 'care_ru': 'Съёмные чехлы, машинная стирка при температуре до 30°C. Рекомендуется химчистка раз в год.',
-                'image': 'products/milan.png', 'slot': 'p1-a.webp',
+                'image': 'products/milan.webp', 'slot': 'p1-a.webp',
+                'color_model': 'beige',
             },
             {
                 'slug': 'ontario', 'name_uk': 'Онтаріо', 'name_ru': 'Онтарио',
@@ -559,7 +560,8 @@ class Command(BaseCommand):
                 'description_ru': 'Угловой диван «Онтарио» сочетает глубокое сиденье и широкие подлокотники. Идеален для семейного просмотра фильмов или дневного отдыха.',
                 'care_uk': 'Тканина стійка до стирання, знімні подушки, сухе чищення.',
                 'care_ru': 'Ткань устойчива к истиранию, съёмные подушки, сухая чистка.',
-                'image': 'products/ontario.png', 'slot': 'p2-a.webp',
+                'image': 'products/ontario.webp', 'slot': 'p2-a.webp',
+                'color_model': 'green',
             },
             {
                 'slug': 'verona', 'name_uk': 'Верона', 'name_ru': 'Верона',
@@ -571,7 +573,8 @@ class Command(BaseCommand):
                 'description_ru': 'Лаконичный прямой диван «Верона» для небольших пространств. Деревянные ножки, чёткие линии, универсальный масштаб.',
                 'care_uk': 'Знімний чохол, чищення мильним розчином.',
                 'care_ru': 'Съёмный чехол, чистка мыльным раствором.',
-                'image': 'slots/p3-a.webp', 'slot': 'p3-a.webp',
+                'image': 'products/ontario.webp', 'slot': 'p3-a.webp',
+                'color_model': 'green',
             },
             {
                 'slug': 'solo', 'name_uk': 'Соло', 'name_ru': 'Соло',
@@ -607,9 +610,27 @@ class Command(BaseCommand):
                 'description_ru': 'Диван «Локс» — модульная угловая система с возможностью трансформации в спальное место. Подходит для больших гостиных.',
                 'care_uk': 'Знімні чохли, машинне прання, регулярне збивання наповнювача подушок.',
                 'care_ru': 'Съёмные чехлы, машинная стирка, регулярное взбивание наполнителя подушек.',
-                'image': 'slots/p6-a.webp', 'slot': 'p6-a.webp',
+                'image': 'products/milan.webp', 'slot': 'p6-a.webp',
+                'color_model': 'beige',
             },
         ]
+        # Дві моделі диванів × 2 кольори (бежевий/темно-коричневий і зелений/бежевий)
+        color_models = {
+            'beige': {
+                'primary': 'products/milan.webp',
+                'map': {
+                    'beige-2': {'image': 'products/milan.webp', 'hex': '', 'sort': 0},
+                    'chocolate-1': {'image': 'products/milan-dark-brown.webp', 'hex': '', 'sort': 1},
+                },
+            },
+            'green': {
+                'primary': 'products/ontario.webp',
+                'map': {
+                    'chocolate-1': {'image': 'products/ontario.webp', 'hex': '#7A8B6E', 'sort': 0},
+                    'beige-2': {'image': 'products/ontario-beige.webp', 'hex': '', 'sort': 1},
+                },
+            },
+        }
         for item in catalog:
             product, created = Product.objects.get_or_create(slug=item['slug'], defaults={
                 'name_uk': item['name_uk'], 'name_ru': item['name_ru'],
@@ -652,7 +673,10 @@ class Command(BaseCommand):
             }
             for field, value in specs.items():
                 setattr(product, field, value)
-            attach(product.default_image, item['image'])
+            if item.get('color_model'):
+                replace_file(product.default_image, item['image'])
+            else:
+                attach(product.default_image, item['image'])
             product.save()
             # Приблизні ціни по категоріях тканини 1–7 (CMS: ProductFabricPrice)
             approx_extra = {
@@ -677,10 +701,33 @@ class Command(BaseCommand):
                 fp.price = price
                 fp.sku = f'{product.sku}-{fabric.slug[-1].upper()}'
                 fp.save(update_fields=['price', 'sku'])
+            color = color_models.get(item.get('color_model'))
             for shade in Shade.objects.filter(is_active=True):
-                img, created = ProductShadeImage.objects.get_or_create(
-                    product=product, shade=shade, sort=0,
-                )
-                if not img.image:
-                    attach(img.image, f'slots/{item["slot"]}', dest_name=f'{product.slug}-{shade.slug}.webp')
-                    img.save()
+                variant = color['map'].get(shade.slug) if color else None
+                img = ProductShadeImage.objects.filter(product=product, shade=shade).order_by('sort', 'id').first()
+                if not img:
+                    img = ProductShadeImage(product=product, shade=shade, sort=0)
+                if variant:
+                    img.sort = variant['sort']
+                    img.hex_override = variant['hex']
+                    replace_file(
+                        img.image,
+                        variant['image'],
+                        dest_name=f'{product.slug}-{shade.slug}.webp',
+                    )
+                else:
+                    img.hex_override = ''
+                    if not img.image:
+                        attach(
+                            img.image,
+                            f'slots/{item["slot"]}',
+                            dest_name=f'{product.slug}-{shade.slug}.webp',
+                        )
+                    elif color:
+                        # інші категорії тканини — те саме основне фото моделі
+                        replace_file(
+                            img.image,
+                            color['primary'],
+                            dest_name=f'{product.slug}-{shade.slug}.webp',
+                        )
+                img.save()

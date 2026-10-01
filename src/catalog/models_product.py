@@ -152,7 +152,11 @@ class Product(SeoFieldsMixin, TimeStampedModel):
             image = img.image or self.default_image
             if not image:
                 continue
-            seen.append({'shade': img.shade, 'image': image})
+            seen.append({
+                'shade': img.shade,
+                'image': image,
+                'hex': img.display_hex,
+            })
         return seen[:5]
 
 
@@ -192,6 +196,12 @@ class ProductShadeImage(TimeStampedModel):
         related_name='product_images',
     )
     image = models.ImageField('Фото', upload_to='products/shades/', blank=True)
+    hex_override = models.CharField(
+        'HEX кружечка (override)',
+        max_length=7,
+        blank=True,
+        help_text='Якщо задано — замінює колір кружечка лише для цього товару',
+    )
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
 
     class Meta:
@@ -199,3 +209,7 @@ class ProductShadeImage(TimeStampedModel):
         unique_together = [('product', 'shade', 'sort')]
         verbose_name = 'Фото відтінку'
         verbose_name_plural = 'Фото відтінків'
+
+    @property
+    def display_hex(self):
+        return self.hex_override or self.shade.hex_color

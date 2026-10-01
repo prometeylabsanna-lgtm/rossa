@@ -26,6 +26,8 @@ class FabricPriceInline(TabularInline):
 class ShadeImageInline(TabularInline):
     model = ProductShadeImage
     extra = 0
+    fields = ('shade', 'image', 'hex_override', 'sort')
+    autocomplete_fields = ('shade',)
     tab = True
 
 

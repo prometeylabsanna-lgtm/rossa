@@ -182,12 +182,28 @@ def product_detail(request, slug):
         from catalog.models import Fabric
         fabrics = list(Fabric.objects.filter(is_active=True))
     selected_fabric = next((f for f in fabrics if str(f.id) == str(fabric_id)), None) or (fabrics[0] if fabrics else None)
-    shades = list(selected_fabric.shades.filter(is_active=True)) if selected_fabric else []
-    selected_shade = next((s for s in shades if str(s.id) == str(shade_id)), None) or (shades[0] if shades else None)
+    shades_qs = list(selected_fabric.shades.filter(is_active=True)) if selected_fabric else []
+    shade_meta = {
+        img.shade_id: {'hex': img.display_hex, 'sort': img.sort}
+        for img in product.shade_images.all()
+        if img.shade.is_active
+    }
+    shades_qs.sort(key=lambda s: (shade_meta.get(s.id, {}).get('sort', s.sort), s.id))
+    shades = [
+        {
+            'id': s.id,
+            'name': s.name,
+            'hex_color': shade_meta.get(s.id, {}).get('hex', s.hex_color),
+            'obj': s,
+        }
+        for s in shades_qs
+    ]
+    selected_shade = next((s for s in shades if str(s['id']) == str(shade_id)), None) or (shades[0] if shades else None)
+    selected_shade_obj = selected_shade['obj'] if selected_shade else None
     price = product.price_for_fabric(selected_fabric) if selected_fabric else product.min_price
     images = []
-    if selected_shade:
-        images = [img for img in product.shade_images.all() if img.shade_id == selected_shade.id]
+    if selected_shade_obj:
+        images = [img for img in product.shade_images.all() if img.shade_id == selected_shade_obj.id]
     main_image = images[0].image if images else product.default_image
     related_qs = related_products(product, limit=3)
     crumbs = [(_('Головна'), '/'), (_('Каталог'), '/katalog/')]
@@ -214,7 +230,7 @@ def product_detail(request, slug):
             'product_name': product.name,
             'product_slug': product.slug,
             'fabric_name': selected_fabric.name if selected_fabric else '',
-            'shade_name': selected_shade.name if selected_shade else '',
+            'shade_name': selected_shade['name'] if selected_shade else '',
             'sku': sku,
             'price': price,
         }),
