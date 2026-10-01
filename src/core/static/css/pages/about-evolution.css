@@ -105,11 +105,13 @@
   width: 100%;
   height: auto;
   aspect-ratio: 3 / 2;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   background: var(--color-white);
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: scale(1.08);
+  transform: scale(1.08);
+  -webkit-transform-origin: center center;
+  transform-origin: center center;
   transition: -webkit-transform var(--duration-base) var(--ease-out);
   transition: transform var(--duration-base) var(--ease-out);
 }
@@ -122,19 +124,21 @@
 
 @media (hover: hover) and (pointer: fine) {
   .evolution-gallery__item:hover img {
-    -webkit-transform: scale(1.03);
-    transform: scale(1.03);
+    -webkit-transform: scale(1.12);
+    transform: scale(1.12);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .evolution-gallery__item img {
     transition: none;
+    -webkit-transform: scale(1.08);
+    transform: scale(1.08);
   }
 
   .evolution-gallery__item:hover img {
-    -webkit-transform: none;
-    transform: none;
+    -webkit-transform: scale(1.08);
+    transform: scale(1.08);
   }
 }
 

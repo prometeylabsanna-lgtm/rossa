@@ -1,7 +1,8 @@
 .header {
-  position: -webkit-sticky;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 50;
   --header-bg: rgba(10, 10, 10, 0.96);
   background: var(--header-bg);

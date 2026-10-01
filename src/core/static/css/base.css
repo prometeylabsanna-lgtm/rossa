@@ -23,6 +23,7 @@ body {
 
 .page__main {
   flex: 1 0 auto;
+  padding-top: calc(var(--header-offset) + env(safe-area-inset-top, 0px));
 }
 
 h1,
