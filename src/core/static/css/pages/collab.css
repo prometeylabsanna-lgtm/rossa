@@ -311,8 +311,8 @@
 
 @media (min-width: 900px) {
   .collab-apply {
-    grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
-    gap: 40px;
+    grid-template-columns: minmax(380px, 1.7fr) minmax(180px, 0.55fr);
+    gap: 56px;
   }
 }
 
