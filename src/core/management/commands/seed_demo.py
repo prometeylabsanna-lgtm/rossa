@@ -292,6 +292,8 @@ class Command(BaseCommand):
             'values': [],
             'evolution_title_uk': 'Еволюція наших диванів',
             'evolution_title_ru': 'Эволюция наших диванов',
+            'logo_title_uk': 'Еволюція логотипу',
+            'logo_title_ru': 'Эволюция логотипа',
             'seo_title_uk': 'Про нас — ROSSA',
             'seo_title_ru': 'О нас — ROSSA',
             'seo_description_uk': 'Історія фабрики Rossa: від особистого пошуку дому до сучасної меблевої фабрики.',
@@ -324,6 +326,28 @@ class Command(BaseCommand):
                     dest = default_storage.save(dest, File(fh))
                 items.append({'image': f'/media/{dest}', 'label_uk': lu, 'label_ru': lr})
         obj.craft_images = items
+
+        logos = []
+        for year, filename, lu, lr in (
+            ('2005', 'about-logo-2005.webp', 'Логотип 2005', 'Логотип 2005'),
+            ('2016', 'about-logo-2016.webp', 'Логотип 2016', 'Логотип 2016'),
+            ('2026', 'about-logo-2026.webp', 'Логотип 2026', 'Логотип 2026'),
+        ):
+            src = slots_dir / filename
+            dest = f'about/logos/{filename}'
+            if not src.exists():
+                continue
+            if default_storage.exists(dest):
+                default_storage.delete(dest)
+            with src.open('rb') as fh:
+                dest = default_storage.save(dest, File(fh))
+            logos.append({
+                'image': f'/media/{dest}',
+                'year': year,
+                'label_uk': lu,
+                'label_ru': lr,
+            })
+        obj.logo_images = logos
 
         evolution = []
         for n in range(1, 19):

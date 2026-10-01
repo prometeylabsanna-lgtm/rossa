@@ -1,47 +1,64 @@
+.collab__hero {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  width: calc(100% + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
+  margin-left: calc(-1 * env(safe-area-inset-left, 0px));
+  overflow: hidden;
+  background: #0a0a0a;
+  border-radius: 0;
+  height: calc(100vh - var(--header-offset) - env(safe-area-inset-top, 0px));
+  height: calc(100svh - var(--header-offset) - env(safe-area-inset-top, 0px));
+  height: calc(100dvh - var(--header-offset) - env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 768px) {
+  .collab__hero {
+    width: 100%;
+    margin-left: 0;
+    height: min(78vh, 720px);
+    height: min(78dvh, 720px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .collab__hero {
+    height: calc(100vh - var(--header-offset) - env(safe-area-inset-top, 0px));
+    height: calc(100dvh - var(--header-offset) - env(safe-area-inset-top, 0px));
+  }
+}
+
+.collab__hero-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .collab {
   display: flex;
   flex-direction: column;
   gap: 40px;
-  padding: 24px var(--pad-x) var(--section-y);
+  padding: 40px var(--pad-x) var(--section-y);
   padding-bottom: calc(var(--section-y) + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 768px) {
   .collab {
     gap: 56px;
-    padding-top: 32px;
+    padding-top: 48px;
   }
 }
 
 @media (min-width: 1024px) {
   .collab {
     gap: 72px;
-    padding-top: 40px;
-  }
-}
-
-.collab__hero {
-  margin: 0;
-  width: 100%;
-  overflow: hidden;
-  background: var(--color-surface);
-  border-radius: 0;
-}
-
-.collab__hero-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: min(70vh, 720px);
-  object-fit: cover;
-  object-position: center;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-@media (min-width: 768px) {
-  .collab__hero-img {
-    max-height: min(68vh, 780px);
+    padding-top: 56px;
   }
 }
 
@@ -129,8 +146,10 @@
 }
 
 .collab-dealer {
-  max-width: 820px;
-  margin: 0 auto;
+  max-width: 720px;
+  width: 100%;
+  margin: 0;
+  align-self: flex-start;
   text-align: left;
 }
 

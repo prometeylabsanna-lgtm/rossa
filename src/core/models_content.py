@@ -48,6 +48,19 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
     milestones = models.JSONField('Віхи', default=list, blank=True)
     values = models.JSONField('Цінності', default=list, blank=True)
     craft_images = models.JSONField('Фото виробництва', default=list, blank=True)
+    logo_title_uk = models.CharField(
+        'Заголовок логотипів (UK)',
+        max_length=128,
+        blank=True,
+        default='Еволюція логотипу',
+    )
+    logo_title_ru = models.CharField('Заголовок логотипів (RU)', max_length=128, blank=True)
+    logo_images = models.JSONField(
+        'Логотипи (галерея)',
+        default=list,
+        blank=True,
+        help_text='Список: image, year, label_uk, label_ru.',
+    )
     evolution_title_uk = models.CharField(
         'Заголовок еволюції (UK)',
         max_length=128,
@@ -96,6 +109,10 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
     @property
     def milestones_title(self):
         return localized(self, 'milestones_title') or 'Ключові віхи нашої історії'
+
+    @property
+    def logo_title(self):
+        return localized(self, 'logo_title') or 'Еволюція логотипу'
 
     @property
     def evolution_title(self):

@@ -37,6 +37,33 @@
       <img class="about-grid__hero reveal reveal--scale" data-reveal-delay="120" src="{{ page.hero_image.url }}" alt="{{ page.title }}" width="800" height="600">
     {% endif %}
   </div>
+  {% if page.logo_images %}
+    <section class="about-logos" aria-labelledby="about-logos-title">
+      {% if page.logo_title %}
+        <h2 id="about-logos-title" class="about-logos__title reveal reveal--up">{{ page.logo_title }}</h2>
+      {% endif %}
+      <ul class="about-logos__grid">
+        {% for logo in page.logo_images %}
+          <li class="about-logos__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}60">
+            <figure class="about-logos__figure">
+              <img
+                class="about-logos__img{% if logo.year == '2026' %} about-logos__img--dark{% endif %}"
+                src="{{ logo.image }}"
+                alt="{{ logo|loc:'label' }}"
+                width="640"
+                height="360"
+                loading="lazy"
+                decoding="async"
+              >
+              {% if logo.year %}
+                <figcaption class="about-logos__year">{{ logo.year }}</figcaption>
+              {% endif %}
+            </figure>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
   {% if page.craft_images %}
     <div class="craft-mosaic">
       {% for ci in page.craft_images %}

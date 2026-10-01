@@ -5,23 +5,22 @@
   <link rel="stylesheet" href="{% static 'css/pages/collab.css' %}?v={{ static_v }}">
 {% endblock %}
 {% block content %}
-  {% include "includes/breadcrumbs.html" %}
+  <h1 class="visually-hidden">{{ page.title }}</h1>
+
+  {% if page.hero_image %}
+    <figure class="collab__hero reveal reveal--scale">
+      <img
+        class="collab__hero-img"
+        src="{{ page.hero_image.url }}"
+        alt="{{ page.title }}"
+        width="1920"
+        height="1080"
+        decoding="async"
+      >
+    </figure>
+  {% endif %}
+
   <section class="collab">
-    <h1 class="visually-hidden">{{ page.title }}</h1>
-
-    {% if page.hero_image %}
-      <figure class="collab__hero reveal reveal--scale">
-        <img
-          class="collab__hero-img"
-          src="{{ page.hero_image.url }}"
-          alt="{{ page.title }}"
-          width="1600"
-          height="1060"
-          decoding="async"
-        >
-      </figure>
-    {% endif %}
-
     {% if page.benefits %}
       <section class="collab-advantages reveal reveal--up" aria-labelledby="collab-advantages-title">
         <h2 id="collab-advantages-title" class="collab-advantages__title">{{ page.advantages_title }}</h2>

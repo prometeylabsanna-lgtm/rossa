@@ -108,6 +108,12 @@ class AboutPageAdmin(SingletonAdmin):
             ),
         }),
         ('Фото виробництва', {'fields': ('craft_images',)}),
+        ('Логотипи', {
+            'fields': (
+                'logo_title_uk', 'logo_title_ru',
+                'logo_images',
+            ),
+        }),
         ('Еволюція диванів', {
             'fields': (
                 'evolution_title_uk', 'evolution_title_ru',

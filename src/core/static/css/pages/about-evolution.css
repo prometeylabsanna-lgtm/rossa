@@ -137,3 +137,106 @@
     transform: none;
   }
 }
+
+/* Галерея логотипів 2005 / 2016 / 2026 */
+.about-logos {
+  margin: 0 var(--pad-x) var(--section-y);
+  padding: 28px 0 0;
+  border-top: 1px solid rgba(49, 49, 49, 0.12);
+}
+
+@media (min-width: 768px) {
+  .about-logos {
+    margin-bottom: var(--section-y-lg);
+    padding-top: 36px;
+  }
+}
+
+.about-logos__title {
+  margin: 0 0 20px;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+@media (min-width: 768px) {
+  .about-logos__title {
+    margin-bottom: 28px;
+    font-size: 32px;
+  }
+}
+
+.about-logos__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 600px) {
+  .about-logos__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+.about-logos__item {
+  min-width: 0;
+}
+
+.about-logos__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.about-logos__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  object-position: center;
+  background: var(--color-white);
+  border: 1px solid rgba(49, 49, 49, 0.1);
+  border-radius: 6px;
+  padding: 16px;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.about-logos__img--dark {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.08);
+  padding: 0;
+  object-fit: cover;
+}
+
+@supports not (aspect-ratio: 16 / 10) {
+  .about-logos__img {
+    min-height: 160px;
+  }
+}
+
+.about-logos__year {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-accent-soft);
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .about-logos__year {
+    font-size: 26px;
+  }
+}
