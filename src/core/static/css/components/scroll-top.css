@@ -1,13 +1,9 @@
-.page--home .back-float {
-  display: none;
-}
+/* Floating scroll-to-top on long pages */
 
-/* Floating back control on long pages */
-
-.back-float {
+.scroll-top {
   position: fixed;
   z-index: 40;
-  left: max(16px, env(safe-area-inset-left, 0px));
+  right: max(16px, env(safe-area-inset-right, 0px));
   bottom: max(20px, calc(16px + env(safe-area-inset-bottom, 0px)));
   width: 44px;
   height: 44px;
@@ -38,7 +34,7 @@
   box-shadow: 0 6px 20px rgba(26, 24, 23, 0.1);
 }
 
-.back-float.is-visible {
+.scroll-top.is-visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -46,28 +42,36 @@
   transform: translateY(0);
 }
 
-.back-float:focus-visible {
+.scroll-top:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
-.back-float__icon {
+.scroll-top__icon {
   display: block;
   width: 18px;
   height: 18px;
 }
 
 @media (min-width: 768px) {
-  .back-float {
-    left: max(24px, env(safe-area-inset-left, 0px));
+  .scroll-top {
+    right: max(24px, env(safe-area-inset-right, 0px));
     bottom: max(28px, calc(20px + env(safe-area-inset-bottom, 0px)));
     width: 48px;
     height: 48px;
   }
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .scroll-top.is-visible:hover {
+    color: var(--color-accent);
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .back-float {
+  .scroll-top {
     -webkit-transition: none;
     transition: none;
   }

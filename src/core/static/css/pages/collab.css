@@ -7,37 +7,27 @@
   overflow: hidden;
   background: #0a0a0a;
   border-radius: 0;
-  height: min(42vh, 280px);
-  height: min(42svh, 280px);
-  height: min(42dvh, 280px);
+  height: auto;
 }
 
 @media (min-width: 768px) {
   .collab__hero {
     width: 100%;
     margin-left: 0;
-    height: min(48vh, 420px);
-    height: min(48dvh, 420px);
-  }
-}
-
-@media (min-width: 1024px) {
-  .collab__hero {
-    height: min(52vh, 480px);
-    height: min(52dvh, 480px);
   }
 }
 
 .collab__hero-img {
-  position: absolute;
-  inset: 0;
+  position: static;
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
   object-position: center top;
   -webkit-user-select: none;
   user-select: none;
+  vertical-align: top;
 }
 
 .collab {
@@ -300,7 +290,7 @@
   }
 }
 
-/* 3. Форма зліва + картинка справа */
+/* 3. Форма зліва (вужча) + картинка справа (ширша), як на референсі */
 .collab-apply {
   display: grid;
   grid-template-columns: 1fr;
@@ -311,13 +301,15 @@
 
 @media (min-width: 900px) {
   .collab-apply {
-    grid-template-columns: minmax(380px, 1.7fr) minmax(180px, 0.55fr);
-    gap: 56px;
+    grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.45fr);
+    gap: 72px;
+    align-items: stretch;
   }
 }
 
 .collab-apply__form {
   min-width: 0;
+  max-width: 440px;
 }
 
 .collab-apply__form-title {
@@ -378,26 +370,30 @@
 
 .collab-apply__media {
   margin: 0;
-  min-height: 220px;
+  min-width: 0;
+  min-height: 240px;
   background: var(--color-surface);
   overflow: hidden;
+  align-self: stretch;
 }
 
 .collab-apply__img {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 220px;
-  max-height: 420px;
+  min-height: 240px;
   object-fit: cover;
-  object-position: center;
+  object-position: center center;
 }
 
 @media (min-width: 900px) {
-  .collab-apply__media,
+  .collab-apply__media {
+    min-height: 100%;
+  }
+
   .collab-apply__img {
     min-height: 100%;
-    max-height: none;
     height: 100%;
+    max-height: none;
   }
 }
