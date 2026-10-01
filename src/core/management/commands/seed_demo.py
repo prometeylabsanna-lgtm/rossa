@@ -638,45 +638,47 @@ class Command(BaseCommand):
                 'color_model': 'beige',
             },
         ]
-        # Дві моделі диванів × 2 кольори (бежевий/темно-коричневий і зелений/бежевий)
+        # Дві моделі диванів × 2 кольори (лише ці відтінки на кружечках)
         color_models = {
             'beige': {
                 'primary': 'products/milan.webp',
                 'light': 'products/milan.webp',
                 'dark': 'products/milan-dark-brown.webp',
+                'light_hex': '#D4C4A8',
+                'dark_hex': '#3C2415',
                 'map': {
-                    'beige-2': {'image': 'products/milan.webp', 'hex': '', 'sort': 0},
-                    'chocolate-1': {'image': 'products/milan-dark-brown.webp', 'hex': '', 'sort': 1},
+                    'beige-2': {
+                        'image': 'products/milan.webp',
+                        'hex': '#D4C4A8',
+                        'sort': 0,
+                    },
+                    'chocolate-1': {
+                        'image': 'products/milan-dark-brown.webp',
+                        'hex': '#3C2415',
+                        'sort': 1,
+                    },
                 },
             },
             'green': {
                 'primary': 'products/ontario.webp',
                 'light': 'products/ontario-beige.webp',
                 'dark': 'products/ontario.webp',
+                'light_hex': '#D4C4A8',
+                'dark_hex': '#7A8B6E',
                 'map': {
-                    'chocolate-1': {'image': 'products/ontario.webp', 'hex': '#7A8B6E', 'sort': 0},
-                    'beige-2': {'image': 'products/ontario-beige.webp', 'hex': '', 'sort': 1},
+                    'chocolate-1': {
+                        'image': 'products/ontario.webp',
+                        'hex': '#7A8B6E',
+                        'sort': 0,
+                    },
+                    'beige-2': {
+                        'image': 'products/ontario-beige.webp',
+                        'hex': '#D4C4A8',
+                        'sort': 1,
+                    },
                 },
             },
         }
-
-        def _hex_luminance(hex_color: str) -> float:
-            raw = (hex_color or '').lstrip('#')
-            if len(raw) != 6:
-                return 0.5
-            try:
-                r = int(raw[0:2], 16)
-                g = int(raw[2:4], 16)
-                b = int(raw[4:6], 16)
-            except ValueError:
-                return 0.5
-            return (0.299 * r + 0.587 * g + 0.114 * b) / 255
-
-        def _variant_image(color: dict, hex_color: str) -> str:
-            # Світлі кружечки → світле фото, темні → темне/основне
-            if _hex_luminance(hex_color) >= 0.48:
-                return color['light']
-            return color['dark']
 
         for item in catalog:
             product, created = Product.objects.get_or_create(slug=item['slug'], defaults={
@@ -763,11 +765,17 @@ class Command(BaseCommand):
                         dest_name=f'{product.slug}-{shade.slug}.webp',
                     )
                 elif color:
-                    img.sort = shade.sort
-                    img.hex_override = ''
+                    # У кожній категорії тканини завжди пара: темний + світлий колір моделі
+                    if shade.sort == 0:
+                        image_path, swatch_hex = color['dark'], color['dark_hex']
+                        img.sort = 0
+                    else:
+                        image_path, swatch_hex = color['light'], color['light_hex']
+                        img.sort = 1
+                    img.hex_override = swatch_hex
                     replace_file(
                         img.image,
-                        _variant_image(color, shade.hex_color),
+                        image_path,
                         dest_name=f'{product.slug}-{shade.slug}.webp',
                     )
                 else:
