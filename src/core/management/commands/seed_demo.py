@@ -331,7 +331,7 @@ class Command(BaseCommand):
         for year, filename, lu, lr in (
             ('2005', 'about-logo-2005.webp', 'Логотип 2005', 'Логотип 2005'),
             ('2016', 'about-logo-2016.webp', 'Логотип 2016', 'Логотип 2016'),
-            ('2026', 'about-logo-2026.webp', 'Логотип 2026', 'Логотип 2026'),
+            ('2025', 'about-logo-2025.webp', 'Логотип 2025', 'Логотип 2025'),
         ):
             src = slots_dir / filename
             dest = f'about/logos/{filename}'

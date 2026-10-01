@@ -115,6 +115,29 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
         return localized(self, 'logo_title') or 'Еволюція логотипу'
 
     @property
+    def logos_by_year(self):
+        out = {}
+        for item in self.logo_images or []:
+            year = str(item.get('year') or '').strip()
+            if year:
+                out[year] = item
+        return out
+
+    @property
+    def milestone_rows(self):
+        logos = self.logos_by_year
+        rows = []
+        for item in self.milestones or []:
+            year = str(item.get('year') or '').strip()
+            rows.append({
+                'year': year,
+                'body_uk': item.get('body_uk', ''),
+                'body_ru': item.get('body_ru', ''),
+                'logo': logos.get(year),
+            })
+        return rows
+
+    @property
     def evolution_title(self):
         return localized(self, 'evolution_title') or 'Еволюція наших диванів'
 
