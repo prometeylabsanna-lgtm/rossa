@@ -1,3 +1,6 @@
+import os
+
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from catalog.models import Category, Fabric, Product, ProductColor, ProductFabricPrice, ProductShadeImage, Shade
@@ -5,11 +8,16 @@ from core.management.seed_legal_texts import LEGAL_PAGES
 from core.management.seed_media import attach, replace_file
 from core.models import AboutPage, CollabPage, HomePage, LegalPage, SiteSettings, ValueProp
 
+# Лише для тестового Vercel-деплою (не для production).
+_VERCEL_DEMO_USERNAME = 'admin'
+_VERCEL_DEMO_PASSWORD = 'admin'
+
 
 class Command(BaseCommand):
     help = 'Ідемпотентний демо-контент з дизайн-прототипу ROSSA'
 
     def handle(self, *args, **options):
+        self._demo_admin()
         self._settings()
         self._home()
         self._value_props()
@@ -20,6 +28,29 @@ class Command(BaseCommand):
         categories = self._categories()
         self._products(categories, fabrics)
         self.stdout.write(self.style.SUCCESS('seed_demo OK'))
+
+    def _demo_admin(self):
+        settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', '')
+        if not settings_module.endswith('.vercel') and not os.environ.get('VERCEL_BUILD'):
+            return
+
+        User = get_user_model()
+        user, created = User.objects.get_or_create(
+            username=_VERCEL_DEMO_USERNAME,
+            defaults={
+                'email': 'admin@rossa.demo',
+                'is_staff': True,
+                'is_superuser': True,
+                'is_active': True,
+            },
+        )
+        user.is_staff = True
+        user.is_superuser = True
+        user.is_active = True
+        user.set_password(_VERCEL_DEMO_PASSWORD)
+        user.save()
+        action = 'створено' if created else 'оновлено'
+        self.stdout.write(f'Vercel demo admin {action}: {_VERCEL_DEMO_USERNAME}/{_VERCEL_DEMO_PASSWORD}')
 
     def _settings(self):
         fields = {

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from decouple import Csv, config
+from django.templatetags.static import static
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -147,6 +148,30 @@ UNFOLD = {
     'SITE_TITLE': 'ROSSA — панель керування',
     'SITE_HEADER': 'ROSSA',
     'SITE_SYMBOL': 'chair',
+    'SITE_FAVICONS': [
+        {
+            'rel': 'icon',
+            'sizes': 'any',
+            'href': lambda request: static('images/favicon/favicon.ico'),
+        },
+        {
+            'rel': 'icon',
+            'type': 'image/png',
+            'sizes': '32x32',
+            'href': lambda request: static('images/favicon/favicon-32.png'),
+        },
+        {
+            'rel': 'icon',
+            'type': 'image/png',
+            'sizes': '16x16',
+            'href': lambda request: static('images/favicon/favicon-16.png'),
+        },
+        {
+            'rel': 'apple-touch-icon',
+            'sizes': '180x180',
+            'href': lambda request: static('images/favicon/apple-touch-icon.png'),
+        },
+    ],
     'SHOW_HISTORY': True,
     'SIDEBAR': {
         'show_search': True,

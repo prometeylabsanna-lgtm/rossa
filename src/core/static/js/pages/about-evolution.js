@@ -3,22 +3,15 @@
 
   var SELECTOR = '[data-evolution-gallery]';
 
-  function itemHeight(item) {
-    var img = item.querySelector('img');
-    if (!img) return 0;
-    var width = item.clientWidth;
-    if (!width) return 0;
-
-    if (img.naturalWidth && img.naturalHeight) {
-      return width * (img.naturalHeight / img.naturalWidth);
+  function imageMetrics(img) {
+    var nw = img.naturalWidth;
+    var nh = img.naturalHeight;
+    if (!(nw > 0 && nh > 0)) {
+      nw = parseFloat(img.getAttribute('width')) || 0;
+      nh = parseFloat(img.getAttribute('height')) || 0;
     }
-
-    var attrW = parseFloat(img.getAttribute('width'));
-    var attrH = parseFloat(img.getAttribute('height'));
-    if (attrW > 0 && attrH > 0) {
-      return width * (attrH / attrW);
-    }
-    return 0;
+    if (!(nw > 0 && nh > 0)) return null;
+    return { w: nw, h: nh, area: nw * nh, ar: nw / nh };
   }
 
   function sizeGallery(gallery) {
@@ -26,16 +19,20 @@
     if (!items.length) return;
 
     gallery.classList.remove('is-sized');
+    gallery.style.removeProperty('--evolution-item-ar');
     gallery.style.removeProperty('--evolution-item-h');
 
-    var minH = Infinity;
+    var largest = null;
     for (var i = 0; i < items.length; i += 1) {
-      var h = itemHeight(items[i]);
-      if (h > 0 && h < minH) minH = h;
+      var img = items[i].querySelector('img');
+      if (!img) continue;
+      var m = imageMetrics(img);
+      if (!m) continue;
+      if (!largest || m.area > largest.area) largest = m;
     }
-    if (!isFinite(minH) || minH <= 0) return;
+    if (!largest) return;
 
-    gallery.style.setProperty('--evolution-item-h', Math.round(minH) + 'px');
+    gallery.style.setProperty('--evolution-item-ar', String(largest.ar));
     gallery.classList.add('is-sized');
   }
 
