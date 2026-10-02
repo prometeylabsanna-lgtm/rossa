@@ -1,6 +1,5 @@
 (function () {
   const modal = document.querySelector("[data-order-modal]");
-  if (!modal) return;
 
   function formatPrice(value) {
     const n = Number(value);
@@ -34,6 +33,7 @@
   }
 
   function syncOrderForm() {
+    if (!modal) return false;
     const form = modal.querySelector("[data-order-form]") || modal.querySelector("#order-form");
     if (!form) return false;
     const data = readOrderSource();
@@ -54,6 +54,7 @@
   }
 
   function bindOpeners(root) {
+    if (!modal) return;
     (root || document).querySelectorAll("[data-open-order]").forEach((btn) => {
       if (btn.dataset.bound === "1") return;
       btn.dataset.bound = "1";
@@ -67,20 +68,101 @@
     });
   }
 
+  function paintHex(root) {
+    (root || document).querySelectorAll("[data-hex]").forEach((el) => {
+      el.style.backgroundColor = el.dataset.hex;
+    });
+  }
+
+  function updateFabricColorQuery(pdp, colorId) {
+    pdp.querySelectorAll(".chips a.chip").forEach((link) => {
+      try {
+        const url = new URL(link.getAttribute("href") || "", window.location.href);
+        url.searchParams.set("color", colorId);
+        const next = `${url.pathname}${url.search}`;
+        link.setAttribute("href", next);
+        if (link.hasAttribute("hx-get")) link.setAttribute("hx-get", next);
+      } catch (_err) {
+        /* ignore bad href */
+      }
+    });
+  }
+
+  function selectPdpColor(pdp, colorId, shadeName) {
+    const id = String(colorId);
+    pdp.querySelectorAll("[data-pdp-image]").forEach((img) => {
+      img.hidden = img.dataset.pdpImage !== id;
+    });
+    pdp.querySelectorAll("[data-pdp-swatch]").forEach((swatch) => {
+      const active = swatch.dataset.pdpSwatch === id;
+      swatch.classList.toggle("is-active", active);
+      swatch.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    pdp.querySelectorAll("[data-pdp-thumb]").forEach((thumb) => {
+      thumb.classList.toggle("is-active", thumb.dataset.pdpThumb === id);
+    });
+
+    const source = pdp.querySelector("[data-order-source]");
+    if (source && shadeName) source.dataset.shadeName = shadeName;
+
+    updateFabricColorQuery(pdp, id);
+
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("color", id);
+      window.history.replaceState({}, "", url.pathname + url.search);
+    } catch (_err) {
+      /* ignore */
+    }
+  }
+
+  function bindPdpColors(root) {
+    const scope = root && root.querySelector ? root : document;
+    const pdps = [];
+    if (scope.matches && scope.matches("#pdp-config")) pdps.push(scope);
+    scope.querySelectorAll("#pdp-config").forEach((el) => pdps.push(el));
+
+    pdps.forEach((pdp) => {
+      if (pdp.dataset.colorsBound === "1") return;
+      pdp.dataset.colorsBound = "1";
+      paintHex(pdp);
+
+      pdp.addEventListener("click", (event) => {
+        const swatch = event.target.closest("[data-pdp-swatch]");
+        const thumb = event.target.closest("[data-pdp-thumb]");
+        const trigger = swatch || thumb;
+        if (!trigger || !pdp.contains(trigger)) return;
+        event.preventDefault();
+        const id = swatch
+          ? swatch.dataset.pdpSwatch
+          : thumb.dataset.pdpThumb;
+        const shadeName = swatch
+          ? swatch.dataset.shadeName || ""
+          : (pdp.querySelector(`[data-pdp-swatch="${id}"]`) || {}).dataset?.shadeName || "";
+        selectPdpColor(pdp, id, shadeName);
+      });
+    });
+  }
+
   bindOpeners(document);
+  bindPdpColors(document);
+
   document.body.addEventListener("htmx:afterSwap", (event) => {
     bindOpeners(event.target);
-    if (modal.classList.contains("is-open")) {
+    bindPdpColors(event.target);
+    if (modal && modal.classList.contains("is-open")) {
       syncOrderForm();
     }
   });
 
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal || event.target.closest("[data-close-modal]")) {
-      modal.classList.remove("is-open");
-    }
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") modal.classList.remove("is-open");
-  });
+  if (modal) {
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal || event.target.closest("[data-close-modal]")) {
+        modal.classList.remove("is-open");
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") modal.classList.remove("is-open");
+    });
+  }
 })();

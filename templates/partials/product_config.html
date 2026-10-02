@@ -1,17 +1,38 @@
 {% load i18n rossa %}
 <div class="pdp" id="pdp-config">
   <div>
-    <div class="pdp__stage">
-      {% if main_image %}
+    <div class="pdp__stage" data-pdp-stage>
+      {% if colors %}
+        {% for color in colors %}
+          {% if color.image %}
+            <img
+              data-pdp-image="{{ color.id }}"
+              src="{{ color.image.url }}"
+              alt="{{ product.name }}"
+              width="900"
+              height="506"
+              {% if not selected_color or color.id != selected_color.id %}hidden{% endif %}
+              {% if selected_color and color.id != selected_color.id %}loading="lazy"{% endif %}
+            >
+          {% endif %}
+        {% endfor %}
+      {% elif main_image %}
         <img src="{{ main_image.url }}" alt="{{ product.name }}" width="900" height="506">
       {% endif %}
     </div>
-    {% if gallery %}
-      <div class="thumbs">
-        {% for img in gallery %}
-          <button type="button" class="{% if forloop.first %}is-active{% endif %}">
-            <img src="{{ img.image.url }}" alt="" width="96" height="96">
-          </button>
+    {% if colors|length > 1 %}
+      <div class="thumbs" data-pdp-thumbs>
+        {% for color in colors %}
+          {% if color.image %}
+            <button
+              type="button"
+              class="{% if selected_color and color.id == selected_color.id %}is-active{% endif %}"
+              data-pdp-thumb="{{ color.id }}"
+              aria-label="{{ color.name }}"
+            >
+              <img src="{{ color.image.url }}" alt="" width="96" height="96">
+            </button>
+          {% endif %}
         {% endfor %}
       </div>
     {% endif %}
@@ -43,16 +64,17 @@
 
     {% if colors %}
       <div class="pdp__label">{% trans "Відтінок" %}</div>
-      <div class="swatches">
+      <div class="swatches" data-pdp-swatches>
         {% for color in colors %}
-          <a class="swatch swatch--lg{% if selected_color and color.id == selected_color.id %} is-active{% endif %}"
-             href="?{% if selected_fabric %}fabric={{ selected_fabric.id }}&{% endif %}color={{ color.id }}"
-             hx-get="?{% if selected_fabric %}fabric={{ selected_fabric.id }}&{% endif %}color={{ color.id }}"
-             hx-target="#pdp-config"
-             hx-swap="outerHTML"
-             hx-push-url="true"
-             data-hex="{{ color.hex_color }}"
-             aria-label="{{ color.name }}"></a>
+          <button
+            type="button"
+            class="swatch swatch--lg{% if selected_color and color.id == selected_color.id %} is-active{% endif %}"
+            data-pdp-swatch="{{ color.id }}"
+            data-hex="{{ color.hex_color }}"
+            data-shade-name="{{ color.name }}"
+            aria-label="{{ color.name }}"
+            aria-pressed="{% if selected_color and color.id == selected_color.id %}true{% else %}false{% endif %}"
+          ></button>
         {% endfor %}
       </div>
     {% endif %}

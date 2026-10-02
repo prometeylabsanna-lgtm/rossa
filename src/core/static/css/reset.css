@@ -30,6 +30,11 @@ video {
   display: block;
 }
 
+img[hidden],
+video[hidden] {
+  display: none;
+}
+
 button,
 input,
 select,

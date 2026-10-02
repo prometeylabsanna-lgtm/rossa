@@ -7,59 +7,68 @@
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <div class="about-grid">
-    <div class="about-grid__copy">
-      <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
-      {% if page.subtitle %}
-        <p class="about-subtitle reveal reveal--up" data-reveal-delay="60">{{ page.subtitle }}</p>
-      {% endif %}
-      {% if page.body %}
-        <div class="about-body reveal reveal--up" data-reveal-delay="100">
-          {{ page.body|linebreaks }}
-        </div>
-      {% endif %}
-
-      {% if page.milestone_rows %}
-        <section class="about-history" aria-labelledby="about-milestones-title">
-          {% if page.milestones_title %}
-            <h2 id="about-milestones-title" class="about-milestones__title reveal reveal--up">{{ page.milestones_title }}</h2>
-          {% endif %}
-          <div class="about-history__rows milestones" data-draw-dividers>
-            {% for row in page.milestone_rows %}
-              <div class="about-history__row reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
-                <div class="milestone">
-                  <div class="milestone__year">{{ row.year }}</div>
-                  <div class="milestone__body">{{ row|loc:'body' }}</div>
-                </div>
-                {% if row.logo %}
-                  <figure class="about-history__logo">
-                    <img
-                      class="about-history__logo-img{% if row.year == '2025' %} about-history__logo-img--dark{% endif %}"
-                      src="{{ row.logo.image }}"
-                      alt="{{ row.logo|loc:'label' }}"
-                      width="480"
-                      height="270"
-                      loading="lazy"
-                      decoding="async"
-                    >
-                  </figure>
-                {% endif %}
-              </div>
-            {% endfor %}
+    <div class="about-grid__intro">
+      <div class="about-grid__copy">
+        <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
+        {% if page.subtitle %}
+          <p class="about-subtitle reveal reveal--up" data-reveal-delay="60">{{ page.subtitle }}</p>
+        {% endif %}
+        {% if page.body %}
+          <div class="about-body reveal reveal--up" data-reveal-delay="100">
+            {{ page.body|linebreaks }}
           </div>
-        </section>
+        {% endif %}
+      </div>
+
+      {% if page.craft_images %}
+        <div class="craft-mosaic">
+          {% for ci in page.craft_images %}
+            <div class="craft-mosaic__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
+              <img
+                src="{{ ci.image }}"
+                alt="{{ ci|loc:'label' }}"
+                width="400"
+                height="500"
+                loading="lazy"
+                decoding="async"
+              >
+            </div>
+          {% endfor %}
+        </div>
       {% endif %}
     </div>
-  </div>
-  {% if page.craft_images %}
-    <div class="craft-mosaic">
-      {% for ci in page.craft_images %}
-        <div class="craft-mosaic__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00" tabindex="0">
-          <img src="{{ ci.image }}" alt="{{ ci|loc:'label' }}" width="400" height="500" loading="lazy">
-          <span>{{ ci|loc:'label' }}</span>
+
+    {% if page.milestone_rows %}
+      <section class="about-history" aria-labelledby="about-milestones-title">
+        {% if page.milestones_title %}
+          <h2 id="about-milestones-title" class="about-milestones__title reveal reveal--up">{{ page.milestones_title }}</h2>
+        {% endif %}
+        <div class="about-history__rows milestones" data-draw-dividers>
+          {% for row in page.milestone_rows %}
+            <div class="about-history__row reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
+              <div class="milestone">
+                <div class="milestone__year">{{ row.year }}</div>
+                <div class="milestone__body">{{ row|loc:'body' }}</div>
+              </div>
+              {% if row.logo %}
+                <figure class="about-history__logo">
+                  <img
+                    class="about-history__logo-img{% if row.year == '2025' %} about-history__logo-img--dark{% endif %}"
+                    src="{{ row.logo.image }}"
+                    alt="{{ row.logo|loc:'label' }}"
+                    width="480"
+                    height="270"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </figure>
+              {% endif %}
+            </div>
+          {% endfor %}
         </div>
-      {% endfor %}
-    </div>
-  {% endif %}
+      </section>
+    {% endif %}
+  </div>
   {% if page.evolution_images %}
     <section class="evolution-folder" aria-labelledby="evolution-folder-title">
       <div class="evolution-folder__tab reveal reveal--up">

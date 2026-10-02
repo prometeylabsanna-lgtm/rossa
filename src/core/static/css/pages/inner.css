@@ -85,6 +85,29 @@
   }
 }
 
+.about-grid__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .about-grid__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    gap: 40px 48px;
+    align-items: start;
+  }
+}
+
+@media (min-width: 1280px) {
+  .about-grid__intro {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+    gap: 48px 64px;
+  }
+}
+
 .about-grid__copy {
   min-width: 0;
   max-width: none;
@@ -350,56 +373,68 @@
 .craft-mosaic {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px 4px;
-  padding: 0 var(--pad-x) var(--section-y);
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  width: 100%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .craft-mosaic {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    padding-bottom: var(--section-y-lg);
+    gap: 16px;
+    max-width: 420px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .craft-mosaic {
+    gap: 12px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: calc(var(--header-offset) + env(safe-area-inset-top, 0px) + 24px);
   }
 }
 
 .craft-mosaic__item {
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  margin: 0;
 }
 
 .craft-mosaic__item img {
   display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: 5 / 4;
   object-fit: cover;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   transition: transform var(--ease);
-  will-change: transform;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .craft-mosaic__item:hover img {
-    -webkit-transform: translateY(-6px);
-    transform: translateY(-6px);
-  }
-}
-
-.craft-mosaic__item:focus-visible img {
-  -webkit-transform: translateY(-6px);
-  transform: translateY(-6px);
-}
-
-@media (max-width: 767px) {
-  .craft-mosaic__item:focus-visible img {
     -webkit-transform: translateY(-4px);
     transform: translateY(-4px);
   }
 }
 
-.craft-mosaic__item span {
-  display: block;
-  font-size: 13px;
-  opacity: 0.6;
-  margin-top: 10px;
+.craft-mosaic__item:focus-visible img {
+  -webkit-transform: translateY(-4px);
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .craft-mosaic__item img {
+    transition: none;
+  }
+
+  .craft-mosaic__item:hover img,
+  .craft-mosaic__item:focus-visible img {
+    -webkit-transform: none;
+    transform: none;
+  }
 }
 
 .values {

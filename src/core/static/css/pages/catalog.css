@@ -210,12 +210,19 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   background: transparent;
+  overflow: hidden;
 }
 
 .pdp__stage img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.pdp__stage img[hidden] {
+  display: none;
 }
 
 .thumbs {

@@ -189,6 +189,7 @@ def product_detail(request, slug):
             'id': c.id,
             'name': c.name,
             'hex_color': c.hex_color,
+            'image': c.image or product.default_image,
             'obj': c,
         }
         for c in colors_qs
