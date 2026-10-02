@@ -1,6 +1,6 @@
 .footer {
-  background: var(--color-bg);
-  color: var(--color-header);
+  background: var(--chrome-footer-top-bg, var(--color-bg));
+  color: var(--chrome-footer-top-text, var(--color-header));
   padding: 36px var(--pad-x) 0;
   margin-top: auto;
 }
@@ -118,9 +118,14 @@
   justify-content: space-between;
   padding: 14px 0 calc(14px + env(safe-area-inset-bottom, 0px));
   font-size: 12px;
-  opacity: 0.55;
+  opacity: 0.9;
   flex-wrap: wrap;
   gap: 12px;
+  margin: 0 calc(-1 * var(--pad-x));
+  padding-left: var(--pad-x);
+  padding-right: var(--pad-x);
+  background: var(--chrome-footer-bottom-bg, transparent);
+  color: var(--chrome-footer-bottom-text, inherit);
 }
 
 .crumbs {

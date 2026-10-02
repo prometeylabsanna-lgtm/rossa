@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n rossa %}
 {% block body_class %}page--inner{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <section class="contacts">
-    <h1 class="serif-title reveal reveal--up">{% trans "Контакти" %}</h1>
-    <p class="page-intro reveal reveal--up" data-reveal-delay="80">{{ site_settings.hours }}</p>
+    <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
+    <div class="page-intro reveal reveal--up cms-html" data-reveal-delay="80">
+      {% if page.intro %}{{ page.intro|cms_html }}{% else %}{{ site_settings.hours }}{% endif %}
+    </div>
     <div class="contacts__grid">
       <div class="reveal reveal--up" data-reveal-delay="120">
         <div class="info-card">
@@ -57,6 +59,7 @@
         {% endif %}
       </div>
       <div class="contact-form reveal reveal--up" data-reveal-delay="180">
+        {% if page.form_title %}<h2 class="contact-form__title">{{ page.form_title }}</h2>{% endif %}
         {% include "leads/contact_form.html" %}
       </div>
     </div>

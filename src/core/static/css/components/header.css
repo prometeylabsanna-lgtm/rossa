@@ -4,10 +4,10 @@
   left: 0;
   right: 0;
   z-index: 50;
-  --header-bg: rgba(10, 10, 10, 0.96);
+  --header-bg: var(--chrome-header-bg, rgba(10, 10, 10, 0.96));
   background: var(--header-bg);
   padding-top: env(safe-area-inset-top, 0px);
-  color: var(--color-light);
+  color: var(--chrome-header-text, var(--color-light));
   --color-gold: #b67521;
   --color-accent: #b67521;
   -webkit-backdrop-filter: blur(12px);
@@ -15,18 +15,18 @@
 }
 
 .page--home .header {
-  --header-bg: rgba(10, 10, 10, 0.96);
+  --header-bg: var(--chrome-header-bg, rgba(10, 10, 10, 0.96));
   background: var(--header-bg);
 }
 
 .header.is-scrolled {
-  --header-bg: rgba(10, 10, 10, 0.96);
+  --header-bg: var(--chrome-header-bg, rgba(10, 10, 10, 0.96));
   background: var(--header-bg);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .page--home .header.is-scrolled {
-  --header-bg: rgba(10, 10, 10, 0.96);
+  --header-bg: var(--chrome-header-bg, rgba(10, 10, 10, 0.96));
   background: var(--header-bg);
 }
 

@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET
 from leads.forms import ContactForm, PartnershipForm
 
-from core.models import AboutPage, CollabPage, HomePage, LegalPage, SiteSettings, ValueProp
+from core.models import AboutPage, CollabPage, ContactsPage, HomePage, LegalPage, SiteSettings, ValueProp
 
 
 def _seo(request, title, description, image=None):
@@ -95,17 +95,19 @@ def collab(request):
 
 def contacts(request):
     settings = SiteSettings.load()
+    page = ContactsPage.load()
     return render(request, 'pages/contacts.html', {
+        'page': page,
         'form': ContactForm(),
         'map_image': settings.map_image,
         'breadcrumbs': [
             {'label': _('Головна'), 'url': '/', 'has_next': True},
-            {'label': _('Контакти'), 'url': None, 'has_next': False},
+            {'label': page.title or _('Контакти'), 'url': None, 'has_next': False},
         ],
         **_seo(
             request,
-            _('Контакти — ROSSA'),
-            f'{settings.phone}. {settings.address}. {settings.hours}.',
+            page.seo_title or page.title or _('Контакти — ROSSA'),
+            page.seo_description or f'{settings.phone}. {settings.address}. {settings.hours}.',
         ),
     })
 

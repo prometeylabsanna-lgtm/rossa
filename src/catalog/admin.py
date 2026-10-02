@@ -9,6 +9,10 @@ class ChildCategoryInline(TabularInline):
     fk_name = 'parent'
     extra = 0
     fields = ('name_uk', 'name_ru', 'slug', 'sort', 'is_active', 'image')
+    verbose_name = 'Підкатегорія'
+    verbose_name_plural = 'Підкатегорії (2 рівень)'
+    show_change_link = True
+    tab = True
 
 
 class FabricPriceInline(TabularInline):
@@ -53,6 +57,26 @@ class CategoryAdmin(ModelAdmin):
     search_fields = ('name_uk', 'name_ru', 'slug')
     prepopulated_fields = {'slug': ('name_uk',)}
     inlines = [ChildCategoryInline]
+    autocomplete_fields = ('parent',)
+    fieldsets = (
+        ('Основне', {
+            'fields': (
+                'parent',
+                'name_uk', 'name_ru',
+                'slug',
+                'intro_uk', 'intro_ru',
+                'image',
+                'sort', 'is_active',
+            ),
+            'description': (
+                'Батьківська категорія порожня = категорія 1 рівня. '
+                'Якщо обрати батька — це буде підкатегорія (2 рівень).'
+            ),
+        }),
+        ('Для пошуковиків', {
+            'fields': ('seo_title_uk', 'seo_title_ru', 'seo_description_uk', 'seo_description_ru'),
+        }),
+    )
 
 
 @admin.register(Fabric)

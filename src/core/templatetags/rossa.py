@@ -1,4 +1,7 @@
 from django import template
+from django.template.defaultfilters import linebreaks
+from django.utils.html import strip_tags
+from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 
 register = template.Library()
@@ -21,3 +24,15 @@ def uah(value):
     except (TypeError, ValueError):
         return value
     return f'{number:,}'.replace(',', ' ')
+
+
+@register.filter
+def cms_html(value):
+    """TinyMCE HTML as-is; звичайний текст — з переносами рядків."""
+    text = value or ''
+    if not text:
+        return ''
+    stripped = strip_tags(text)
+    if stripped != text.replace('&nbsp;', ' ').strip() or '<' in text:
+        return mark_safe(text)
+    return linebreaks(text)

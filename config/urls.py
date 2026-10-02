@@ -11,6 +11,7 @@ from core.views import healthz, robots_txt
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('tinymce/', include('tinymce.urls')),
     path('i18n/setlang/', set_language, name='set_language'),
     path('healthz/', healthz, name='healthz'),
     path('robots.txt', robots_txt, name='robots'),

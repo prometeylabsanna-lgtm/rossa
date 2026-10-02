@@ -118,6 +118,20 @@ class SiteSettings(TimeStampedModel):
         return localized(self, 'delivery_label')
 
 
+class HeaderSettings(SiteSettings):
+    class Meta:
+        proxy = True
+        verbose_name = 'Шапка сайту'
+        verbose_name_plural = 'Шапка сайту'
+
+
+class FooterSettings(SiteSettings):
+    class Meta:
+        proxy = True
+        verbose_name = 'Підвал сайту'
+        verbose_name_plural = 'Підвал сайту'
+
+
 class HomePage(SeoFieldsMixin, TimeStampedModel):
     hero_title_uk = models.CharField('Hero заголовок (UK)', max_length=255)
     hero_title_ru = models.CharField('Hero заголовок (RU)', max_length=255, blank=True)

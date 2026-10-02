@@ -229,6 +229,59 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
         return localized(self, 'seo_description')
 
 
+class ContactsPage(SeoFieldsMixin, TimeStampedModel):
+    title_uk = models.CharField('Заголовок (UK)', max_length=255, default='Контакти')
+    title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
+    intro_uk = models.TextField('Вступ (UK)', blank=True)
+    intro_ru = models.TextField('Вступ (RU)', blank=True)
+    form_title_uk = models.CharField(
+        'Заголовок форми (UK)',
+        max_length=128,
+        blank=True,
+        default='Напишіть нам',
+    )
+    form_title_ru = models.CharField('Заголовок форми (RU)', max_length=128, blank=True)
+
+    class Meta:
+        verbose_name = 'Контакти'
+        verbose_name_plural = 'Контакти'
+
+    def __str__(self):
+        return self.title_uk
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(
+            pk=1,
+            defaults={'title_uk': 'Контакти', 'intro_uk': ''},
+        )
+        return obj
+
+    @property
+    def title(self):
+        return localized(self, 'title')
+
+    @property
+    def intro(self):
+        return localized(self, 'intro')
+
+    @property
+    def form_title(self):
+        return localized(self, 'form_title')
+
+    @property
+    def seo_title(self):
+        return localized(self, 'seo_title')
+
+    @property
+    def seo_description(self):
+        return localized(self, 'seo_description')
+
+
 class LegalPage(SeoFieldsMixin, TimeStampedModel):
     slug = models.SlugField('URL', unique=True)
     title_uk = models.CharField('Заголовок (UK)', max_length=255)
@@ -259,3 +312,24 @@ class LegalPage(SeoFieldsMixin, TimeStampedModel):
     @property
     def seo_description(self):
         return localized(self, 'seo_description')
+
+
+class DeliveryPage(LegalPage):
+    class Meta:
+        proxy = True
+        verbose_name = 'Доставка'
+        verbose_name_plural = 'Доставка'
+
+
+class OfferPage(LegalPage):
+    class Meta:
+        proxy = True
+        verbose_name = 'Оферта'
+        verbose_name_plural = 'Оферта'
+
+
+class PrivacyPage(LegalPage):
+    class Meta:
+        proxy = True
+        verbose_name = 'Політика конфіденційності'
+        verbose_name_plural = 'Політика конфіденційності'

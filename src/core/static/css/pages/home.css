@@ -84,12 +84,9 @@
   object-position: center top;
 }
 
-@media (min-width: 1024px) {
-  .hero__image,
-  .hero__media img,
-  .hero__media video {
-    object-position: center top;
-  }
+/* Green corner sofa: shift down ~12% so base + logo stay in frame */
+.hero__image--lift {
+  object-position: center 12%;
 }
 
 .hero__caption {

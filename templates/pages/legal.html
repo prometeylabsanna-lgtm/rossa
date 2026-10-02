@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n static rossa %}
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/pages/legal.css' %}?v={{ static_v }}">
 {% endblock %}
@@ -9,7 +9,7 @@
   <article class="legal">
     <h1 class="serif-title reveal reveal--up">{{ page.title }}</h1>
     <div class="legal__card reveal reveal--up" data-reveal-delay="100">
-      <div class="legal__body">{{ page.body|linebreaks }}</div>
+      <div class="legal__body cms-html">{{ page.body|cms_html }}</div>
     </div>
   </article>
 {% endblock %}

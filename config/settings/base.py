@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.humanize',
     'django_htmx',
+    'tinymce',
     'core',
     'catalog',
     'leads',
@@ -114,9 +115,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'default-src': ("'self'",),
-        'script-src': ("'self'",),
-        'style-src': ("'self'", 'https://fonts.googleapis.com'),
-        'font-src': ("'self'", 'https://fonts.gstatic.com'),
+        'script-src': ("'self'", "'unsafe-inline'"),
+        'style-src': ("'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'),
+        'font-src': ("'self'", 'https://fonts.gstatic.com', 'data:'),
         'img-src': ("'self'", 'data:', 'blob:'),
         'media-src': ("'self'",),
         'connect-src': ("'self'",),
@@ -126,46 +127,30 @@ CONTENT_SECURITY_POLICY = {
     }
 }
 
+TINYMCE_DEFAULT_CONFIG = {
+    'height': 320,
+    'menubar': False,
+    'plugins': 'link lists',
+    'toolbar': 'undo redo | bold italic underline | bullist numlist | link | removeformat',
+    'branding': False,
+    'promotion': False,
+}
+
+
+def _unfold_navigation(request=None):
+    from core.admin_nav import build_unfold_navigation
+    return build_unfold_navigation()
+
+
 UNFOLD = {
-    'SITE_TITLE': 'ROSSA',
+    'SITE_TITLE': 'ROSSA — панель керування',
     'SITE_HEADER': 'ROSSA',
     'SITE_SYMBOL': 'chair',
     'SHOW_HISTORY': True,
     'SIDEBAR': {
         'show_search': True,
-        'navigation': [
-            {
-                'title': 'Каталог',
-                'separator': True,
-                'items': [
-                    {'title': 'Категорії', 'icon': 'category', 'link': '/admin/catalog/category/'},
-                    {'title': 'Тканини', 'icon': 'palette', 'link': '/admin/catalog/fabric/'},
-                    {'title': 'Відтінки', 'icon': 'colorize', 'link': '/admin/catalog/shade/'},
-                    {'title': 'Товари', 'icon': 'inventory_2', 'link': '/admin/catalog/product/'},
-                ],
-            },
-            {
-                'title': 'Заявки',
-                'separator': True,
-                'items': [
-                    {'title': 'Замовлення', 'icon': 'shopping_bag', 'link': '/admin/leads/orderrequest/'},
-                    {'title': 'Співпраця', 'icon': 'handshake', 'link': '/admin/leads/partnershiplead/'},
-                    {'title': 'Контакти', 'icon': 'mail', 'link': '/admin/leads/contactlead/'},
-                ],
-            },
-            {
-                'title': 'Вміст сайту',
-                'separator': True,
-                'items': [
-                    {'title': 'Налаштування', 'icon': 'settings', 'link': '/admin/core/sitesettings/'},
-                    {'title': 'Головна', 'icon': 'home', 'link': '/admin/core/homepage/'},
-                    {'title': 'Переваги', 'icon': 'star', 'link': '/admin/core/valueprop/'},
-                    {'title': 'Про нас', 'icon': 'info', 'link': '/admin/core/aboutpage/'},
-                    {'title': 'Співпраця (сторінка)', 'icon': 'groups', 'link': '/admin/core/collabpage/'},
-                    {'title': 'Юридичні сторінки', 'icon': 'gavel', 'link': '/admin/core/legalpage/'},
-                ],
-            },
-        ],
+        'show_all_applications': False,
+        'navigation': _unfold_navigation,
     },
 }
 

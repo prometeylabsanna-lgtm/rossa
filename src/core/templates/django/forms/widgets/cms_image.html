@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div class="rs-cms-image{% if widget.preview_variant == 'icon' %} rs-cms-image--icon{% endif %}" data-cms-image{% if widget.preview_variant == 'icon' %} data-cms-image-variant="icon"{% endif %}>
+  <div class="rs-cms-image__frame{% if not widget.preview_url %} is-empty{% endif %}">
+    <img class="rs-cms-image__preview{% if not widget.preview_url %} is-empty{% endif %}"
+         {% if widget.preview_url %}src="{{ widget.preview_url }}"{% endif %}
+         alt=""
+         {% if widget.preview_variant == 'icon' %}width="48" height="48"{% else %}width="240" height="160"{% endif %}
+         data-cms-image-preview
+         {% if not widget.preview_url %}hidden{% endif %}>
+    {% if not widget.preview_url %}
+      <span class="rs-cms-image__placeholder" data-cms-image-placeholder>{% trans "Немає фото" %}</span>
+    {% elif widget.preview_is_fallback %}
+      <span class="rs-cms-image__fallback-hint" data-cms-image-placeholder>{% trans "Поточне на сайті" %}</span>
+    {% endif %}
+  </div>
+  {% if widget.is_initial and not widget.required %}
+    <label class="rs-cms-image__clear">
+      <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"{% if widget.attrs.disabled %} disabled{% endif %} data-cms-image-clear>
+      {% trans "Очистити" %}
+    </label>
+  {% endif %}
+  <input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %} data-cms-image-input>
+  <p class="rs-cms-image__hint" data-cms-image-name hidden></p>
+</div>

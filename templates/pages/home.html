@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n rossa %}
 
 {% block body_class %}page--home{% endblock %}
 
@@ -10,7 +10,7 @@
         {% for slide in hero_slides %}
           <article class="hero__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide{% if forloop.first %} aria-hidden="false"{% else %} aria-hidden="true"{% endif %}>
             {% if slide.image %}
-              <img class="hero__image" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
+              <img class="hero__image{% if 'slide-2' in slide.image.name %} hero__image--lift{% endif %}" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
             {% endif %}
             {% if slide.image_alt %}
               <div class="hero__caption{% if forloop.first %} reveal reveal--up{% endif %}">
@@ -66,7 +66,7 @@
     <div class="about-band__inner">
       <div class="about-band__copy">
         {% if page.about_title %}<h2 class="about-band__title reveal reveal--up">{{ page.about_title }}</h2>{% endif %}
-        {% if page.about_body %}<p class="about-band__body reveal reveal--up" data-reveal-delay="80">{{ page.about_body }}</p>{% endif %}
+        {% if page.about_body %}<div class="about-band__body reveal reveal--up cms-html" data-reveal-delay="80">{{ page.about_body|cms_html }}</div>{% endif %}
       </div>
       <div class="about-band__media reveal reveal--scale" data-reveal-delay="100">
         {% if page.about_video %}
@@ -122,7 +122,7 @@
     {% endif %}
     <div class="craft__panel">
       <h2 class="craft__title">{{ page.craft_title }}</h2>
-      <p class="craft__body">{{ page.craft_body }}</p>
+      <div class="craft__body cms-html">{{ page.craft_body|cms_html }}</div>
       <a class="craft__link" href="{% url 'core:about' %}">{{ page.craft_link }}</a>
       <div class="craft__cta">
         <p>{{ page.cta_banner_title }}</p>

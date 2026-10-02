@@ -37,7 +37,20 @@
   {% block extra_css %}{% endblock %}
   <noscript><style>.reveal{opacity:1;-webkit-transform:none;transform:none}.about-band__props{opacity:1}.about-band__prop::before,.about-band__prop::after,.milestones::before{-webkit-transform:none;transform:none;-webkit-animation:none;animation:none}</style></noscript>
 </head>
-<body class="page {% block body_class %}{% endblock %}">
+<body
+  class="page {% block body_class %}{% endblock %}"
+  style="
+    --chrome-header-bg: {{ chrome_style.header_bg }};
+    --chrome-header-text: {{ chrome_style.header_text }};
+    --chrome-footer-top-bg: {{ chrome_style.footer_top_bg }};
+    --chrome-footer-top-text: {{ chrome_style.footer_top_text }};
+    --chrome-footer-bottom-bg: {{ chrome_style.footer_bottom_bg }};
+    --chrome-footer-bottom-text: {{ chrome_style.footer_bottom_text }};
+    {% if page_style.bg %}--color-bg: {{ page_style.bg }};{% endif %}
+    {% if page_style.text %}--color-text: {{ page_style.text }};{% endif %}
+    {% if page_style.accent %}--color-accent: {{ page_style.accent }}; --color-gold: {{ page_style.accent }}; --color-accent-soft: {{ page_style.accent }};{% endif %}
+  "
+>
   {% include "includes/header.html" %}
   <main class="page__main">
     {% block content %}{% endblock %}

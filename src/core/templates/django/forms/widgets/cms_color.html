@@ -1,0 +1,14 @@
+{% load i18n %}
+<div class="rs-cms-colorpick" data-cms-colorpick data-default-color="{{ widget.default_color }}">
+  <label class="rs-cms-colorpick__swatch" title="{% trans 'Обрати колір' %}">
+    <span class="rs-cms-colorpick__circle" style="background: {{ widget.value }}" data-cms-color-circle aria-hidden="true"></span>
+    <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %} data-cms-color-native class="rs-cms-colorpick__native" aria-label="{% trans 'Пікер кольору' %}">
+  </label>
+  <input type="text" class="rs-cms-colorpick__hex" data-cms-color-hex maxlength="7" spellcheck="false" autocomplete="off" value="{{ widget.value }}" aria-label="{% trans 'HEX' %}">
+  <button
+    type="button"
+    class="rs-cms-colorpick__default"
+    data-cms-color-default
+    title="{% trans 'Повернути дефолтний колір' %}"
+  >{% trans "Дефолт" %}</button>
+</div>
