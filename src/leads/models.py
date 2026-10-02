@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.mixins import TimeStampedModel
+from core.slug import AutoSlugMixin
 
 
 class LeadStatus(models.TextChoices):
@@ -16,10 +17,14 @@ class Fulfillment(models.TextChoices):
     OWN_CAR = 'own_car', 'Власним авто'
 
 
-class OrderRequest(TimeStampedModel):
+class OrderRequest(AutoSlugMixin, TimeStampedModel):
+    slug_source_field = 'product_name'
+    slug_field_name = 'product_slug'
+    slug_max_length = 128
+
     status = models.CharField('Статус', max_length=20, choices=LeadStatus.choices, default=LeadStatus.NEW)
     product_name = models.CharField('Модель', max_length=255)
-    product_slug = models.SlugField('Slug моделі', max_length=128, blank=True)
+    product_slug = models.SlugField('URL моделі', max_length=128, blank=True)
     fabric_name = models.CharField('Тканина', max_length=128, blank=True)
     shade_name = models.CharField('Відтінок', max_length=128, blank=True)
     sku = models.CharField('Артикул', max_length=64, blank=True)
@@ -34,7 +39,7 @@ class OrderRequest(TimeStampedModel):
         choices=Fulfillment.choices,
         default=Fulfillment.PICKUP,
     )
-    consent = models.BooleanField('Згода на ПД')
+    consent = models.BooleanField('Згода на обробку персональних даних')
     language = models.CharField('Мова', max_length=2, default='uk')
 
     class Meta:
@@ -44,6 +49,10 @@ class OrderRequest(TimeStampedModel):
 
     def __str__(self):
         return f'{self.product_name} — {self.phone}'
+
+    def get_slug_unique_queryset(self):
+        # product_slug — знімок, не унікальний ключ
+        return type(self).objects.none()
 
 
 class PartnershipLead(TimeStampedModel):
@@ -61,7 +70,7 @@ class PartnershipLead(TimeStampedModel):
     city = models.CharField('Місто', max_length=128)
     collab_type = models.CharField('Тип співпраці', max_length=20, choices=CollabType.choices, blank=True)
     message = models.TextField('Повідомлення', blank=True)
-    consent = models.BooleanField('Згода на ПД', default=True)
+    consent = models.BooleanField('Згода на обробку персональних даних', default=True)
     language = models.CharField('Мова', max_length=2, default='uk')
 
     class Meta:
@@ -78,7 +87,7 @@ class ContactLead(TimeStampedModel):
     name = models.CharField('Ім’я', max_length=128)
     phone = models.CharField('Телефон', max_length=32)
     message = models.TextField('Повідомлення')
-    consent = models.BooleanField('Згода на ПД')
+    consent = models.BooleanField('Згода на обробку персональних даних')
     language = models.CharField('Мова', max_length=2, default='uk')
 
     class Meta:

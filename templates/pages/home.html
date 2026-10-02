@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n rossa %}
+{% load i18n static rossa %}
 
 {% block body_class %}page--home{% endblock %}
 
@@ -64,7 +64,7 @@
         {% for v in value_props %}
           <li class="about-band__prop">
             <strong class="about-band__prop-title">{{ v.title }}</strong>
-            {% if v.body %}<p class="about-band__prop-body">{{ v.body }}</p>{% endif %}
+            {% if v.body %}<div class="about-band__prop-body cms-html">{{ v.body|cms_html }}</div>{% endif %}
           </li>
         {% endfor %}
       </ul>
@@ -77,7 +77,13 @@
       {% for cat in featured_categories %}
         <a class="cat-tile reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00" href="{{ cat.get_absolute_url }}">
           <div class="cat-tile__media">
-            {% if cat.image %}<img src="{{ cat.image.url }}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">{% endif %}
+            {% if cat.slug == 'divany' %}
+              <img src="{% static 'images/slots/cat-sofas.webp' %}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">
+            {% elif cat.slug == 'lizhka' %}
+              <img src="{% static 'images/slots/cat-beds.webp' %}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">
+            {% elif cat.slug == 'pufy' %}
+              <img src="{% static 'images/slots/cat-poufs.webp' %}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">
+            {% endif %}
             <span class="cat-tile__label">{{ cat.name }}</span>
           </div>
         </a>

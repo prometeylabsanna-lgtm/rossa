@@ -112,16 +112,9 @@
         <p class="pdp__tagline">{% trans "ROSSA — затишок у вашому домі." %}</p>
         <table class="pdp-specs">
           <tbody>
-            {% for key, value in product.spec_rows %}
+            {% for label, value in product.spec_rows %}
               <tr>
-                <th scope="row">
-                  {% if key == 'frame' %}{% trans "Каркас" %}
-                  {% elif key == 'filling' %}{% trans "Наповнення" %}
-                  {% elif key == 'mechanism' %}{% trans "Механізм трансформації" %}
-                  {% elif key == 'textile' %}{% trans "Тканина" %}
-                  {% elif key == 'storage' %}{% trans "Ніші для білизни" %}
-                  {% endif %}
-                </th>
+                <th scope="row">{{ label }}</th>
                 <td>{{ value }}</td>
               </tr>
             {% endfor %}

@@ -175,11 +175,11 @@
   top: 100%;
   left: -24px;
   background: var(--color-white);
-  grid-template-columns: 260px 260px;
+  grid-template-columns: 200px 340px;
   align-items: stretch;
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.2);
   z-index: 60;
-  min-width: 520px;
+  min-width: 540px;
   color: var(--color-header);
   text-transform: none;
   letter-spacing: 0;

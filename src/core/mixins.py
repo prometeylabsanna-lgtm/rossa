@@ -10,10 +10,10 @@ class TimeStampedModel(models.Model):
 
 
 class SeoFieldsMixin(models.Model):
-    seo_title_uk = models.CharField('SEO title (UK)', max_length=512, blank=True)
-    seo_title_ru = models.CharField('SEO title (RU)', max_length=512, blank=True)
-    seo_description_uk = models.TextField('SEO description (UK)', blank=True)
-    seo_description_ru = models.TextField('SEO description (RU)', blank=True)
+    seo_title_uk = models.CharField('SEO title (ukr)', max_length=512, blank=True)
+    seo_title_ru = models.CharField('SEO title (ru)', max_length=512, blank=True)
+    seo_description_uk = models.TextField('SEO description (ukr)', blank=True)
+    seo_description_ru = models.TextField('SEO description (ru)', blank=True)
 
     class Meta:
         abstract = True

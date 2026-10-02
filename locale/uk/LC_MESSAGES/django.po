@@ -1,0 +1,364 @@
+# Ukrainian translations for Django admin + Unfold UI
+msgid ""
+msgstr ""
+"Project-Id-Version: Rossa\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Type to search"
+msgstr "Введіть для пошуку"
+
+msgid "Search apps and models..."
+msgstr "Пошук розділів і моделей…"
+
+msgid "Filters"
+msgstr "Фільтри"
+
+msgid "Apply Filters"
+msgstr "Застосувати фільтри"
+
+msgid "Reset filters"
+msgstr "Скинути фільтри"
+
+msgid "Clear all filters"
+msgstr "Очистити всі фільтри"
+
+msgid "Toggle filter"
+msgstr "Показати/сховати фільтри"
+
+msgid "No results found"
+msgstr "Результатів не знайдено"
+
+msgid "This page yielded into no results. Create a new item or reset your filters."
+msgstr "На цій сторінці немає результатів. Створіть запис або скиньте фільтри."
+
+msgid "No results matching your query"
+msgstr "Немає результатів за вашим запитом"
+
+msgid "Nothing matched your search"
+msgstr "За вашим пошуком нічого не знайдено"
+
+msgid "Loading more results..."
+msgstr "Завантаження результатів…"
+
+msgid "No data"
+msgstr "Немає даних"
+
+msgid "Add"
+msgstr "Додати"
+
+msgid "Add new item"
+msgstr "Додати новий запис"
+
+msgid "Add row"
+msgstr "Додати рядок"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Save and add another"
+msgstr "Зберегти і додати ще"
+
+msgid "Save and continue editing"
+msgstr "Зберегти і продовжити"
+
+msgid "Save and view"
+msgstr "Зберегти і переглянути"
+
+msgid "Save as new"
+msgstr "Зберегти як новий"
+
+msgid "Delete"
+msgstr "Видалити"
+
+msgid "Change"
+msgstr "Змінити"
+
+msgid "Edit"
+msgstr "Редагувати"
+
+msgid "View"
+msgstr "Перегляд"
+
+msgid "History"
+msgstr "Історія"
+
+msgid "Home"
+msgstr "Головна"
+
+msgid "Filter navigation items"
+msgstr "Фільтр навігації"
+
+msgid "All"
+msgstr "Усі"
+
+msgid "All applications"
+msgstr "Усі розділи"
+
+msgid "Recent actions"
+msgstr "Нещодавні дії"
+
+msgid "Recent searches"
+msgstr "Нещодавні пошуки"
+
+msgid "No recent searches"
+msgstr "Немає нещодавніх пошуків"
+
+msgid "Log in"
+msgstr "Увійти"
+
+msgid "Log out"
+msgstr "Вийти"
+
+msgid "Log in again"
+msgstr "Увійти знову"
+
+msgid "Change password"
+msgstr "Змінити пароль"
+
+msgid "Forgotten your password or username?"
+msgstr "Забули пароль або ім’я користувача?"
+
+msgid "Return to site"
+msgstr "Повернутися на сайт"
+
+msgid "View site"
+msgstr "Переглянути сайт"
+
+msgid "View on site"
+msgstr "Дивитися на сайті"
+
+msgid "Yes"
+msgstr "Так"
+
+msgid "No"
+msgstr "Ні"
+
+msgid "Yes, I’m sure"
+msgstr "Так, я впевнений"
+
+msgid "No, take me back"
+msgstr "Ні, повернутися"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Close"
+msgstr "Закрити"
+
+msgid "Clear"
+msgstr "Очистити"
+
+msgid "Clear selection"
+msgstr "Очистити вибір"
+
+msgid "Select"
+msgstr "Вибрати"
+
+msgid "Select action"
+msgstr "Оберіть дію"
+
+msgid "Select action to run"
+msgstr "Оберіть дію для виконання"
+
+msgid "Run"
+msgstr "Виконати"
+
+msgid "Run the selected action"
+msgstr "Виконати обрану дію"
+
+msgid "Action"
+msgstr "Дія"
+
+msgid "Go back"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Далі"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Show all"
+msgstr "Показати всі"
+
+msgid "Update"
+msgstr "Оновити"
+
+msgid "Submit"
+msgstr "Надіслати"
+
+msgid "Welcome"
+msgstr "Вітаємо"
+
+msgid "Welcome back to"
+msgstr "З поверненням до"
+
+msgid "Dark"
+msgstr "Темна"
+
+msgid "Light"
+msgstr "Світла"
+
+msgid "Toggle dark/light mode"
+msgstr "Перемкнути тему"
+
+msgid "Toggle sidebar"
+msgstr "Показати/сховати бічну панель"
+
+msgid "Open command tool"
+msgstr "Відкрити командний пошук"
+
+msgid "Available shortcuts"
+msgstr "Доступні скорочення"
+
+msgid "Open shortcuts list"
+msgstr "Список скорочень"
+
+msgid "Global shortcuts"
+msgstr "Загальні скорочення"
+
+msgid "Changelist shortcuts"
+msgstr "Скорочення списку"
+
+msgid "Command tool shortcuts"
+msgstr "Скорочення командного пошуку"
+
+msgid "Navigate"
+msgstr "Навігація"
+
+msgid "Permissions"
+msgstr "Права доступу"
+
+msgid "User"
+msgstr "Користувач"
+
+msgid "Group"
+msgstr "Група"
+
+msgid "Name"
+msgstr "Назва"
+
+msgid "Object"
+msgstr "Об’єкт"
+
+msgid "Objects"
+msgstr "Об’єкти"
+
+msgid "Value"
+msgstr "Значення"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Time"
+msgstr "Час"
+
+msgid "Date/time"
+msgstr "Дата/час"
+
+msgid "Date from"
+msgstr "Дата від"
+
+msgid "Date to"
+msgstr "Дата до"
+
+msgid "From"
+msgstr "Від"
+
+msgid "To"
+msgstr "До"
+
+msgid "True"
+msgstr "Так"
+
+msgid "False"
+msgstr "Ні"
+
+msgid "Unknown"
+msgstr "Невідомо"
+
+msgid "New"
+msgstr "Нове"
+
+msgid "Default"
+msgstr "За замовчуванням"
+
+msgid "Reset to default"
+msgstr "Скинути до стандартних"
+
+msgid "You don’t have permission to view or edit anything."
+msgstr "У вас немає прав для перегляду чи редагування."
+
+msgid "You have been successfully logged out from the administration"
+msgstr "Ви успішно вийшли з панелі керування"
+
+msgid "Your password was changed."
+msgstr "Ваш пароль змінено."
+
+msgid "This item will be deleted."
+msgstr "Цей запис буде видалено."
+
+msgid "Create new record"
+msgstr "Створити новий запис"
+
+msgid "Choose file to upload"
+msgstr "Оберіть файл для завантаження"
+
+msgid "Current file"
+msgstr "Поточний файл"
+
+msgid "Image preview"
+msgstr "Попередній перегляд зображення"
+
+msgid "Export"
+msgstr "Експорт"
+
+msgid "Import"
+msgstr "Імпорт"
+
+msgid "Confirm import"
+msgstr "Підтвердити імпорт"
+
+msgid "Summary"
+msgstr "Підсумок"
+
+msgid "System"
+msgstr "Система"
+
+msgid "General"
+msgstr "Загальне"
+
+msgid "Comment"
+msgstr "Коментар"
+
+msgid "Change History"
+msgstr "Історія змін"
+
+msgid "Change reason"
+msgstr "Причина зміни"
+
+msgid "Changed by"
+msgstr "Змінив"
+
+msgid "Old value"
+msgstr "Старе значення"
+
+msgid "New value"
+msgstr "Нове значення"
+
+msgid "Django administration"
+msgstr "Панель керування Django"
+
+msgid "Django site admin"
+msgstr "Адміністрування сайту"
+
+msgid "Thanks for spending some quality time with the web site today."
+msgstr "Дякуємо, що користуєтесь панеллю керування."

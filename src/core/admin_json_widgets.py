@@ -25,8 +25,8 @@ SCHEMA_CRAFT = {
     'add_label': 'Додати фото',
     'fields': (
         {'key': 'image', 'type': 'image', 'label': 'Фото', 'required': True},
-        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (укр)'},
-        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (рос)'},
+        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (ukr)'},
+        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (ru)'},
     ),
 }
 
@@ -37,8 +37,8 @@ SCHEMA_LOGO = {
     'fields': (
         {'key': 'image', 'type': 'image', 'label': 'Фото', 'required': True},
         {'key': 'year', 'type': 'text', 'label': 'Рік'},
-        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (укр)'},
-        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (рос)'},
+        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (ukr)'},
+        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (ru)'},
     ),
 }
 
@@ -48,8 +48,8 @@ SCHEMA_MILESTONES = {
     'add_label': 'Додати віху',
     'fields': (
         {'key': 'year', 'type': 'text', 'label': 'Рік', 'required': True},
-        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (укр)', 'html': True},
-        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (рос)', 'html': True},
+        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (ukr)', 'html': True},
+        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (ru)', 'html': True},
     ),
 }
 
@@ -73,8 +73,8 @@ SCHEMA_BENEFITS = {
             'required': True,
             'choices': BENEFIT_ICON_CHOICES,
         },
-        {'key': 'title_uk', 'type': 'text', 'label': 'Заголовок (укр)', 'required': True},
-        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (рос)'},
+        {'key': 'title_uk', 'type': 'text', 'label': 'Заголовок (ukr)', 'required': True},
+        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (ru)'},
     ),
 }
 
@@ -83,10 +83,10 @@ SCHEMA_DEALER_SUPPORT = {
     'upload_to': '',
     'add_label': 'Додати пункт підтримки',
     'fields': (
-        {'key': 'title_uk', 'type': 'text', 'label': 'Заголовок (укр)', 'required': True},
-        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (рос)'},
-        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (укр)', 'html': True},
-        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (рос)', 'html': True},
+        {'key': 'title_uk', 'type': 'text', 'label': 'Заголовок (ukr)', 'required': True},
+        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (ru)'},
+        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (ukr)', 'html': True},
+        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (ru)', 'html': True},
     ),
 }
 

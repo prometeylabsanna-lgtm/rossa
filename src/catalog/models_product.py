@@ -1,23 +1,24 @@
 from django.db import models
 from django.urls import reverse
 
-from catalog.models_tax import Category, Fabric, Shade
+from catalog.models_tax import Category, Fabric
 from core.mixins import SeoFieldsMixin, TimeStampedModel
+from core.slug import AutoSlugMixin
 from core.utils import localized
 
 
-class Product(SeoFieldsMixin, TimeStampedModel):
+class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
     class Badge(models.TextChoices):
         NEW = 'NEW', 'NEW'
         TOP = 'TOP', 'TOP'
         HIT = 'HIT', 'Хіт'
 
-    slug = models.SlugField('Slug', unique=True)
+    slug = models.SlugField('URL-адреса', unique=True)
     sku = models.CharField('Артикул', max_length=64, blank=True)
-    name_uk = models.CharField('Назва (UK)', max_length=128)
-    name_ru = models.CharField('Назва (RU)', max_length=128, blank=True)
-    type_uk = models.CharField('Тип (UK)', max_length=128, blank=True)
-    type_ru = models.CharField('Тип (RU)', max_length=128, blank=True)
+    name_uk = models.CharField('Назва (ukr)', max_length=128)
+    name_ru = models.CharField('Назва (ru)', max_length=128, blank=True)
+    type_uk = models.CharField('Тип (ukr)', max_length=128, blank=True)
+    type_ru = models.CharField('Тип (ru)', max_length=128, blank=True)
     category = models.ForeignKey(
         Category,
         verbose_name='Категорія',
@@ -28,23 +29,13 @@ class Product(SeoFieldsMixin, TimeStampedModel):
     badge = models.CharField('Бейдж', max_length=8, choices=Badge.choices, blank=True)
     is_available = models.BooleanField('В наявності', default=True)
     is_active = models.BooleanField('Видимий', default=True)
-    description_uk = models.TextField('Опис (UK)', blank=True)
-    description_ru = models.TextField('Опис (RU)', blank=True)
-    care_uk = models.TextField('Догляд (UK)', blank=True)
-    care_ru = models.TextField('Догляд (RU)', blank=True)
-    dims_uk = models.CharField('Розміри (UK)', max_length=255, blank=True)
-    dims_ru = models.CharField('Розміри (RU)', max_length=255, blank=True)
+    description_uk = models.TextField('Опис (ukr)', blank=True)
+    description_ru = models.TextField('Опис (ru)', blank=True)
+    care_uk = models.TextField('Догляд (ukr)', blank=True)
+    care_ru = models.TextField('Догляд (ru)', blank=True)
+    dims_uk = models.CharField('Розміри (ukr)', max_length=255, blank=True)
+    dims_ru = models.CharField('Розміри (ru)', max_length=255, blank=True)
     default_image = models.ImageField('Основне фото', upload_to='products/', blank=True)
-    spec_frame_uk = models.CharField('Характеристика: каркас (UK)', max_length=255, blank=True)
-    spec_frame_ru = models.CharField('Характеристика: каркас (RU)', max_length=255, blank=True)
-    spec_filling_uk = models.CharField('Характеристика: наповнення (UK)', max_length=255, blank=True)
-    spec_filling_ru = models.CharField('Характеристика: наповнення (RU)', max_length=255, blank=True)
-    spec_mechanism_uk = models.CharField('Характеристика: механізм (UK)', max_length=255, blank=True)
-    spec_mechanism_ru = models.CharField('Характеристика: механізм (RU)', max_length=255, blank=True)
-    spec_textile_uk = models.CharField('Характеристика: тканина (UK)', max_length=255, blank=True)
-    spec_textile_ru = models.CharField('Характеристика: тканина (RU)', max_length=255, blank=True)
-    spec_storage_uk = models.CharField('Характеристика: ніші (UK)', max_length=255, blank=True)
-    spec_storage_ru = models.CharField('Характеристика: ніші (RU)', max_length=255, blank=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -80,35 +71,19 @@ class Product(SeoFieldsMixin, TimeStampedModel):
         return localized(self, 'dims')
 
     @property
-    def spec_frame(self):
-        return localized(self, 'spec_frame')
-
-    @property
-    def spec_filling(self):
-        return localized(self, 'spec_filling')
-
-    @property
-    def spec_mechanism(self):
-        return localized(self, 'spec_mechanism')
-
-    @property
-    def spec_textile(self):
-        return localized(self, 'spec_textile')
-
-    @property
-    def spec_storage(self):
-        return localized(self, 'spec_storage')
-
-    @property
     def spec_rows(self):
-        rows = [
-            ('frame', self.spec_frame),
-            ('filling', self.spec_filling),
-            ('mechanism', self.spec_mechanism),
-            ('textile', self.spec_textile),
-            ('storage', self.spec_storage),
-        ]
-        return [(key, value) for key, value in rows if value]
+        rows = []
+        for item in self.characteristics.all():
+            value = item.value
+            if not value:
+                continue
+            char = item.characteristic
+            if char and not char.is_active:
+                continue
+            label = char.name if char else ''
+            if label:
+                rows.append((label, value))
+        return rows
 
     @property
     def seo_title(self):
@@ -132,7 +107,7 @@ class Product(SeoFieldsMixin, TimeStampedModel):
         match = next((fp for fp in self.fabric_prices.all() if fp.fabric_id == fabric.id), None)
         if match:
             return match.price
-        return self.base_price + fabric.surcharge
+        return self.base_price + (fabric.surcharge or 0)
 
     def preview_shades(self):
         """Кружечки на картці: кольори товару (ціна від кольору не залежить)."""
@@ -175,41 +150,31 @@ class ProductFabricPrice(TimeStampedModel):
         verbose_name_plural = 'Ціни тканин'
 
 
-class ProductShadeImage(TimeStampedModel):
-    product = models.ForeignKey(
-        Product,
-        verbose_name='Товар',
-        on_delete=models.CASCADE,
-        related_name='shade_images',
-    )
-    shade = models.ForeignKey(
-        Shade,
-        verbose_name='Відтінок',
-        on_delete=models.CASCADE,
-        related_name='product_images',
-    )
-    image = models.ImageField('Фото', upload_to='products/shades/', blank=True)
-    hex_override = models.CharField(
-        'HEX кружечка (override)',
-        max_length=7,
-        blank=True,
-        help_text='Якщо задано — замінює колір кружечка лише для цього товару',
-    )
+class ProductColorOption(AutoSlugMixin, TimeStampedModel):
+    """Стандартний колір для кружечків (беж, зелений, коричневий…)."""
+
+    slug = models.SlugField('URL-адреса', max_length=64, unique=True)
+    name_uk = models.CharField('Назва (ukr)', max_length=64)
+    name_ru = models.CharField('Назва (ru)', max_length=64, blank=True)
+    hex_color = models.CharField('HEX', max_length=7)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
+    is_active = models.BooleanField('Видимий', default=True)
 
     class Meta:
         ordering = ['sort', 'id']
-        unique_together = [('product', 'shade', 'sort')]
-        verbose_name = 'Фото відтінку (застаріле)'
-        verbose_name_plural = 'Фото відтінків (застаріле)'
+        verbose_name = 'Стандартний колір'
+        verbose_name_plural = 'Стандартні кольори'
+
+    def __str__(self):
+        return f'{self.name_uk} ({self.hex_color})'
 
     @property
-    def display_hex(self):
-        return self.hex_override or self.shade.hex_color
+    def name(self):
+        return localized(self, 'name')
 
 
 class ProductColor(TimeStampedModel):
-    """Колір товару (кружечок). Ціна від кольору не залежить — лише від категорії тканини."""
+    """Колір товару: стандартний кружечок + фото товару цього кольору."""
 
     product = models.ForeignKey(
         Product,
@@ -217,23 +182,78 @@ class ProductColor(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name='colors',
     )
-    slug = models.SlugField('Slug', max_length=64)
-    name_uk = models.CharField('Назва (UK)', max_length=64)
-    name_ru = models.CharField('Назва (RU)', max_length=64, blank=True)
-    hex_color = models.CharField('HEX кружечка', max_length=7)
-    image = models.ImageField('Фото кольору', upload_to='products/colors/', blank=True)
+    color = models.ForeignKey(
+        ProductColorOption,
+        verbose_name='Колір',
+        on_delete=models.PROTECT,
+        related_name='product_colors',
+    )
+    image = models.ImageField(
+        'Фото товару цього кольору',
+        upload_to='products/colors/',
+        blank=True,
+    )
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
     is_active = models.BooleanField('Видимий', default=True)
 
     class Meta:
         ordering = ['sort', 'id']
-        unique_together = [('product', 'slug')]
+        unique_together = [('product', 'color')]
         verbose_name = 'Колір товару'
         verbose_name_plural = 'Кольори товару'
 
     def __str__(self):
-        return f'{self.product.name_uk} / {self.name_uk}'
+        return f'{self.product.name_uk} / {self.color.name_uk}'
 
     @property
     def name(self):
-        return localized(self, 'name')
+        return self.color.name
+
+    @property
+    def name_uk(self):
+        return self.color.name_uk
+
+    @property
+    def name_ru(self):
+        return self.color.name_ru
+
+    @property
+    def hex_color(self):
+        return self.color.hex_color
+
+    @property
+    def slug(self):
+        return self.color.slug
+
+
+class ProductCharacteristic(TimeStampedModel):
+    """Значення характеристики для конкретного товару."""
+
+    product = models.ForeignKey(
+        Product,
+        verbose_name='Товар',
+        on_delete=models.CASCADE,
+        related_name='characteristics',
+    )
+    characteristic = models.ForeignKey(
+        'catalog.Characteristic',
+        verbose_name='Характеристика',
+        on_delete=models.PROTECT,
+        related_name='product_values',
+    )
+    value_uk = models.CharField('Значення (ukr)', max_length=255)
+    value_ru = models.CharField('Значення (ru)', max_length=255, blank=True)
+    sort = models.PositiveSmallIntegerField('Порядок', default=0)
+
+    class Meta:
+        ordering = ['characteristic__sort', 'sort', 'id']
+        unique_together = [('product', 'characteristic')]
+        verbose_name = 'Характеристика товару'
+        verbose_name_plural = 'Характеристики товару'
+
+    def __str__(self):
+        return f'{self.product.name_uk} / {self.characteristic.name_uk}'
+
+    @property
+    def value(self):
+        return localized(self, 'value')

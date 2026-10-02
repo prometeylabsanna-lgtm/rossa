@@ -10,6 +10,7 @@ from catalog.selectors import (
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET
 from leads.forms import OrderForm
@@ -60,7 +61,7 @@ def catalog_index(request):
     return _render_listing(
         request,
         category=None,
-        crumbs=_breadcrumbs([(_('Головна'), '/'), (_('Каталог'), None)]),
+        crumbs=_breadcrumbs([(_('Головна'), reverse('core:home')), (_('Каталог'), None)]),
         seo_title=_('Каталог — ROSSA'),
         seo_description=_('Дивани, ліжка та пуфи власного виробництва.'),
         intro=_('Дивани, ліжка та пуфи власного виробництва. Обирайте тканину та відтінок під ваш інтер’єр.'),
@@ -117,8 +118,8 @@ def _render_listing(request, category, crumbs, seo_title=None, seo_description=N
         page_seo_title = (
             (category.seo_title if category.seo_title else category.name) + ' — ROSSA'
         )
-        page_seo_description = category.seo_description or category.intro or ''
-        page_intro = category.intro or intro
+        page_seo_description = category.seo_description or ''
+        page_intro = intro
     else:
         page_title = _('Каталог')
         page_seo_title = seo_title or (_('Каталог') + ' — ROSSA')
@@ -157,7 +158,7 @@ def category_page(request, path):
     if not slugs:
         raise Http404()
     category = _category_by_path(slugs)
-    crumbs = [(_('Головна'), '/'), (_('Каталог'), '/katalog/')]
+    crumbs = [(_('Головна'), reverse('core:home')), (_('Каталог'), reverse('catalog:index'))]
     chain = []
     node = category
     while node:
@@ -211,7 +212,7 @@ def product_detail(request, slug):
         main_image = product.default_image
 
     related_qs = related_products(product, limit=3)
-    crumbs = [(_('Головна'), '/'), (_('Каталог'), '/katalog/')]
+    crumbs = [(_('Головна'), reverse('core:home')), (_('Каталог'), reverse('catalog:index'))]
     if product.category.parent:
         crumbs.append((product.category.parent.name, product.category.parent.get_absolute_url()))
     crumbs.append((product.category.name, product.category.get_absolute_url()))
@@ -261,7 +262,7 @@ def search(request):
     ctx = {
         'q': q,
         'products': products,
-        'breadcrumbs': _breadcrumbs([(_('Головна'), '/'), (_('Пошук'), None)]),
+        'breadcrumbs': _breadcrumbs([(_('Головна'), reverse('core:home')), (_('Пошук'), None)]),
         'seo_title': _('Пошук — ROSSA'),
         'seo_description': _('Пошук моделей ROSSA за назвою або артикулом.'),
         'canonical_url': request.build_absolute_uri(),

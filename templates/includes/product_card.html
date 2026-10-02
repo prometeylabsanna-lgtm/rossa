@@ -3,7 +3,7 @@
   <a href="{{ product.get_absolute_url }}">
     <div class="card__media">
       {% if product.badge %}
-        <span class="card__badge">{{ product.get_badge_display }}</span>
+        <span class="card__badge">{% if product.badge == 'HIT' %}{% trans "Хіт" %}{% else %}{{ product.get_badge_display }}{% endif %}</span>
       {% endif %}
       {% with shades=product.preview_shades %}
         {% if shades %}

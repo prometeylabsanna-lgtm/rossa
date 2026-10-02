@@ -16,19 +16,12 @@
             <div class="mega__list">
               {% for cat in nav_categories %}
               <a class="mega__link{% if forloop.first %} is-current{% endif %}" href="{{ cat.get_absolute_url }}"
-                data-mega-cat data-preview="{% if cat.image %}{{ cat.image.url }}{% endif %}">{{ cat.name }}</a>
+                data-mega-cat>{{ cat.name }}</a>
               {% for child in cat.children.all %}
               <a class="mega__sub" href="{{ child.get_absolute_url }}">{{ child.name }}</a>
               {% endfor %}
               {% endfor %}
             </div>
-            {% with first=nav_categories.0 %}
-            {% if first and first.image %}
-            <div class="mega__media">
-              <img class="mega__preview" data-mega-preview src="{{ first.image.url }}" alt="">
-            </div>
-            {% endif %}
-            {% endwith %}
           </div>
         </div>
         <a href="{% url 'core:collab' %}"{% if request.resolver_match.namespace == 'core' and request.resolver_match.url_name == 'collab' %} class="is-active" aria-current="page"{% endif %}>{% trans "Співпраця" %}</a>
@@ -72,7 +65,7 @@
         </a>
         <form action="{% url 'set_language' %}" method="post" class="lang" data-qa="lang-switch">
           {% csrf_token %}
-          <input type="hidden" name="next" value="{{ request.path }}">
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <button type="submit" name="language" value="uk"
             class="{% if LANGUAGE_CODE == 'uk' %}is-active{% endif %}">UA</button>
           <span aria-hidden="true">/</span>

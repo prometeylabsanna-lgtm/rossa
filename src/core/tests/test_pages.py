@@ -19,6 +19,8 @@ class PagesSmokeTests(TestCase):
             '/katalog/divany/modulni/',
             '/katalog/lizhka/',
             '/katalog/pufy/',
+            '/ru/katalog/',
+            '/ru/katalog/divany/',
         ]:
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
@@ -48,11 +50,30 @@ class PagesSmokeTests(TestCase):
         response = self.client.get('/tovar/milan/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Мілан')
+        ru = self.client.get('/ru/tovar/milan/')
+        self.assertEqual(ru.status_code, 200)
+        self.assertContains(ru, 'Милан')
 
     def test_info_pages(self):
         for name in ['core:about', 'core:collab', 'core:contacts', 'core:thanks', 'core:delivery', 'core:offer', 'core:privacy']:
             response = self.client.get(reverse(name))
             self.assertEqual(response.status_code, 200, name)
+
+    def test_ru_prefix_and_contacts_copy(self):
+        uk = self.client.get('/kontakty/')
+        ru = self.client.get('/ru/kontakty/')
+        self.assertEqual(uk.status_code, 200)
+        self.assertEqual(ru.status_code, 200)
+        self.assertContains(uk, 'м. Київ, вул. Індустріальна, 12')
+        self.assertContains(ru, 'г. Киев, ул. Индустриальная, 12')
+        self.assertContains(ru, 'Контакты')
+        self.assertContains(ru, 'Напишите нам')
+
+    def test_value_props_render_html_not_tags(self):
+        home = self.client.get('/')
+        self.assertEqual(home.status_code, 200)
+        self.assertNotContains(home, '&lt;p&gt;')
+        self.assertNotContains(home, '<p>&lt;p&gt;')
 
     def test_robots_and_health(self):
         self.assertEqual(self.client.get('/robots.txt').status_code, 200)

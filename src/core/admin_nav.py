@@ -13,11 +13,17 @@ def build_unfold_navigation() -> list[dict]:
                     'title': _('Головна'),
                     'icon': 'home',
                     'link': reverse_lazy('admin:core_homepage_changelist'),
-                },
-                {
-                    'title': _('Переваги на головній'),
-                    'icon': 'star',
-                    'link': reverse_lazy('admin:core_valueprop_changelist'),
+                    'active': lambda request: (
+                        '/admin/core/homepage/' in request.path
+                        or '/admin/core/valueprop/' in request.path
+                    ),
+                    'items': [
+                        {
+                            'title': _('Переваги на головній'),
+                            'icon': 'star',
+                            'link': reverse_lazy('admin:core_valueprop_changelist'),
+                        },
+                    ],
                 },
                 {
                     'title': _('Про нас'),
@@ -77,8 +83,18 @@ def build_unfold_navigation() -> list[dict]:
                     'link': reverse_lazy('admin:catalog_category_changelist'),
                 },
                 {
-                    'title': _('Тканини'),
+                    'title': _('Характеристики'),
+                    'icon': 'list_alt',
+                    'link': reverse_lazy('admin:catalog_characteristic_changelist'),
+                },
+                {
+                    'title': _('Стандартні кольори'),
                     'icon': 'palette',
+                    'link': reverse_lazy('admin:catalog_productcoloroption_changelist'),
+                },
+                {
+                    'title': _('Тканини'),
+                    'icon': 'texture',
                     'link': reverse_lazy('admin:catalog_fabric_changelist'),
                 },
                 {

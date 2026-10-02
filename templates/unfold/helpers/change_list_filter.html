@@ -1,0 +1,24 @@
+{% load i18n admin_list unfold %}
+
+{# Horizontal top filter bar instead of side sheet #}
+<div id="changelist-filter" class="admin-top-filters w-full mb-4">
+    <form id="filter-form" method="get" class="admin-top-filters__form">
+        {% preserve_filters %}
+
+        <div class="admin-top-filters__grid">
+            {% for spec in cl.filter_specs %}
+                <div class="admin-top-filters__item">
+                    {% admin_list_filter cl spec %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if cl.has_active_filters %}
+            <div class="admin-top-filters__actions">
+                <a href="{{ cl.clear_all_filters_qs }}" class="admin-top-filters__clear">
+                    {% trans "Clear all filters" %}
+                </a>
+            </div>
+        {% endif %}
+    </form>
+</div>

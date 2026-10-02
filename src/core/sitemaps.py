@@ -8,6 +8,8 @@ from core.models import LegalPage
 class StaticSitemap(Sitemap):
     changefreq = 'weekly'
     priority = 0.7
+    i18n = True
+    alternates = True
 
     def items(self):
         return [
@@ -26,6 +28,8 @@ class StaticSitemap(Sitemap):
 class CategorySitemap(Sitemap):
     changefreq = 'weekly'
     priority = 0.8
+    i18n = True
+    alternates = True
 
     def items(self):
         return Category.objects.filter(is_active=True).order_by('sort', 'id')
@@ -37,6 +41,8 @@ class CategorySitemap(Sitemap):
 class ProductSitemap(Sitemap):
     changefreq = 'weekly'
     priority = 0.9
+    i18n = True
+    alternates = True
 
     def items(self):
         return Product.objects.filter(is_active=True).order_by('slug')
@@ -58,6 +64,8 @@ LEGAL_URLS = {
 class LegalSitemap(Sitemap):
     changefreq = 'monthly'
     priority = 0.4
+    i18n = True
+    alternates = True
 
     def items(self):
         return LegalPage.objects.filter(is_active=True).order_by('slug')

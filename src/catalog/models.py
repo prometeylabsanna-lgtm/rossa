@@ -1,12 +1,20 @@
-from catalog.models_product import Product, ProductColor, ProductFabricPrice, ProductShadeImage
-from catalog.models_tax import Category, Fabric, Shade
+from catalog.models_product import (
+    Product,
+    ProductCharacteristic,
+    ProductColor,
+    ProductColorOption,
+    ProductFabricPrice,
+)
+from catalog.models_tax import Category, Characteristic, Fabric, Shade
 
 __all__ = [
     'Category',
+    'Characteristic',
     'Fabric',
     'Shade',
     'Product',
     'ProductFabricPrice',
-    'ProductShadeImage',
+    'ProductColorOption',
     'ProductColor',
+    'ProductCharacteristic',
 ]

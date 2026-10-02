@@ -71,7 +71,7 @@ def about(request):
     return render(request, 'pages/about.html', {
         'page': page,
         'breadcrumbs': [
-            {'label': _('Головна'), 'url': '/', 'has_next': True},
+            {'label': _('Головна'), 'url': reverse('core:home'), 'has_next': True},
             {'label': page.title, 'url': None, 'has_next': False},
         ],
         **_seo(request, page.seo_title or page.title, page.seo_description or (page.body or '')[:160]),
@@ -84,7 +84,7 @@ def collab(request):
         'page': page,
         'form': PartnershipForm(page=page),
         'breadcrumbs': [
-            {'label': _('Головна'), 'url': '/', 'has_next': True},
+            {'label': _('Головна'), 'url': reverse('core:home'), 'has_next': True},
             {'label': page.title, 'url': None, 'has_next': False},
         ],
         **_seo(request, page.seo_title or page.title, page.seo_description or page.title),
@@ -99,7 +99,7 @@ def contacts(request):
         'form': ContactForm(),
         'map_image': settings.map_image,
         'breadcrumbs': [
-            {'label': _('Головна'), 'url': '/', 'has_next': True},
+            {'label': _('Головна'), 'url': reverse('core:home'), 'has_next': True},
             {'label': page.title or _('Контакти'), 'url': None, 'has_next': False},
         ],
         **_seo(
@@ -121,7 +121,7 @@ def legal(request, slug):
     return render(request, 'pages/legal.html', {
         'page': page,
         'breadcrumbs': [
-            {'label': _('Головна'), 'url': '/', 'has_next': True},
+            {'label': _('Головна'), 'url': reverse('core:home'), 'has_next': True},
             {'label': page.title, 'url': None, 'has_next': False},
         ],
         **_seo(request, page.seo_title or page.title, page.seo_description or (page.body or '')[:160]),

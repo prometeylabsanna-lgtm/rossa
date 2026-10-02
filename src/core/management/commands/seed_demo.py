@@ -3,11 +3,21 @@ import os
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from catalog.models import Category, Fabric, Product, ProductColor, ProductFabricPrice, ProductShadeImage, Shade
+from catalog.models import (
+    Category,
+    Characteristic,
+    Fabric,
+    Product,
+    ProductCharacteristic,
+    ProductColor,
+    ProductColorOption,
+    ProductFabricPrice,
+    Shade,
+)
 from core.cms_text import ensure_cms_html, ensure_cms_html_in_mapping
 from core.management.seed_legal_texts import LEGAL_PAGES
 from core.management.seed_media import attach, replace_file
-from core.models import AboutPage, CollabPage, HomePage, LegalPage, SiteSettings, ValueProp
+from core.models import AboutPage, CollabPage, ContactsPage, HomePage, LegalPage, SiteSettings, ValueProp
 from core.collab_form_copy import default_collab_form_copy
 
 # Лише для тестового Vercel-деплою (не для production).
@@ -25,6 +35,7 @@ class Command(BaseCommand):
         self._value_props()
         self._about()
         self._collab()
+        self._contacts()
         self._legal()
         fabrics = self._fabrics()
         categories = self._categories()
@@ -466,6 +477,22 @@ class Command(BaseCommand):
         replace_file(obj.form_image, 'slots/collab-form.webp')
         obj.save()
 
+    def _contacts(self):
+        fields = {
+            'title_uk': 'Контакти',
+            'title_ru': 'Контакты',
+            'form_title_uk': 'Напишіть нам',
+            'form_title_ru': 'Напишите нам',
+            'seo_title_uk': 'Контакти — ROSSA',
+            'seo_title_ru': 'Контакты — ROSSA',
+            'seo_description_uk': 'Телефони, адреса салону ROSSA в Києві та форма зворотного зв’язку.',
+            'seo_description_ru': 'Телефоны, адрес салона ROSSA в Киеве и форма обратной связи.',
+        }
+        obj, _ = ContactsPage.objects.get_or_create(pk=1, defaults=fields)
+        for key, value in fields.items():
+            setattr(obj, key, value)
+        obj.save()
+
     def _legal(self):
         for slug, title_uk, title_ru, body_uk, body_ru in LEGAL_PAGES:
             LegalPage.objects.update_or_create(
@@ -532,34 +559,26 @@ class Command(BaseCommand):
     def _categories(self):
         sofas, _ = Category.objects.get_or_create(slug='divany', parent=None, defaults={
             'name_uk': 'Дивани', 'name_ru': 'Диваны', 'sort': 0,
-            'intro_uk': 'Модульні, кутові та прямі дивани власного виробництва з можливістю вибору тканини.',
-            'intro_ru': 'Модульные, угловые и прямые диваны собственного производства с возможностью выбора ткани.',
         })
-        replace_file(sofas.image, 'slots/cat-sofas.webp')
+        sofas.name_uk = 'Дивани'
+        sofas.name_ru = 'Диваны'
+        sofas.sort = 0
         sofas.save()
         beds, _ = Category.objects.get_or_create(slug='lizhka', parent=None, defaults={
             'name_uk': 'Ліжка', 'name_ru': 'Кровати', 'sort': 1,
-            'intro_uk': 'Ліжка з м’яким узголів’ям і надійним каркасом власного виробництва.',
-            'intro_ru': 'Кровати с мягким изголовьем и надёжным каркасом собственного производства.',
         })
         beds.name_uk = 'Ліжка'
         beds.name_ru = 'Кровати'
-        beds.intro_uk = beds.intro_uk or 'Ліжка з м’яким узголів’ям і надійним каркасом власного виробництва.'
-        beds.intro_ru = 'Кровати с мягким изголовьем и надёжным каркасом собственного производства.'
-        replace_file(beds.image, 'slots/cat-beds.webp')
+        beds.sort = 1
         beds.save()
         # Ліжка/Пуфи — листові на старті; підкатегорії можна додати в адмінці пізніше.
         beds.children.all().delete()
         poufs, _ = Category.objects.get_or_create(slug='pufy', parent=None, defaults={
             'name_uk': 'Пуфи', 'name_ru': 'Пуфы', 'sort': 2,
-            'intro_uk': 'Пуфи як доповнення до диванів і окреме м’яке місце для сидіння.',
-            'intro_ru': 'Пуфы как дополнение к диванам и отдельное мягкое место для сидения.',
         })
         poufs.name_uk = 'Пуфи'
         poufs.name_ru = 'Пуфы'
-        poufs.intro_uk = poufs.intro_uk or 'Пуфи як доповнення до диванів і окреме м’яке місце для сидіння.'
-        poufs.intro_ru = 'Пуфы как дополнение к диванам и отдельное мягкое место для сидения.'
-        replace_file(poufs.image, 'slots/cat-poufs.webp')
+        poufs.sort = 2
         poufs.save()
         poufs.children.all().delete()
         # Підкатегорії лише у Диванів (модульні / кутові / прямі).
@@ -573,6 +592,10 @@ class Command(BaseCommand):
             obj, _ = Category.objects.get_or_create(slug=slug, parent=sofas, defaults={
                 'name_uk': uk, 'name_ru': ru, 'sort': sort,
             })
+            obj.name_uk = uk
+            obj.name_ru = ru
+            obj.sort = sort
+            obj.save()
             children[slug] = obj
         return {'sofas': sofas, 'beds': beds, 'poufs': poufs, **children}
 
@@ -677,6 +700,55 @@ class Command(BaseCommand):
             ('green', 1, '#7A8B6E'),
             ('brown', 2, '#3C2415'),
         )
+        color_names = {
+            'beige': ('Беж', 'Беж'),
+            'green': ('Зелений', 'Зелёный'),
+            'brown': ('Коричневий', 'Коричневый'),
+        }
+        color_options = {}
+        for key, sort, hex_color in shade_order:
+            name_uk, name_ru = color_names[key]
+            option, _ = ProductColorOption.objects.get_or_create(
+                slug=key,
+                defaults={
+                    'name_uk': name_uk,
+                    'name_ru': name_ru,
+                    'hex_color': hex_color,
+                    'sort': sort,
+                    'is_active': True,
+                },
+            )
+            option.name_uk = name_uk
+            option.name_ru = name_ru
+            option.hex_color = hex_color
+            option.sort = sort
+            option.is_active = True
+            option.save()
+            color_options[key] = option
+
+        char_defs = (
+            ('frame', 'Каркас', 'Каркас', 0),
+            ('filling', 'Наповнення', 'Наполнение', 1),
+            ('mechanism', 'Механізм трансформації', 'Механизм трансформации', 2),
+            ('textile', 'Тканина', 'Ткань', 3),
+            ('storage', 'Ніші для білизни', 'Ниши для белья', 4),
+        )
+        characteristics = {}
+        for key, name_uk, name_ru, sort in char_defs:
+            char, _ = Characteristic.objects.get_or_create(
+                name_uk=name_uk,
+                defaults={
+                    'name_ru': name_ru,
+                    'sort': sort,
+                    'is_active': True,
+                },
+            )
+            char.name_ru = name_ru
+            char.sort = sort
+            char.is_active = True
+            char.save(update_fields=['name_ru', 'sort', 'is_active'])
+            characteristics[key] = char
+
         for item in catalog:
             product, created = Product.objects.get_or_create(slug=item['slug'], defaults={
                 'name_uk': item['name_uk'], 'name_ru': item['name_ru'],
@@ -705,25 +777,39 @@ class Command(BaseCommand):
             product.description_ru = item['description_ru']
             product.care_uk = item['care_uk']
             product.care_ru = item['care_ru']
-            specs = item.get('specs') or {
-                'spec_frame_uk': 'Брус хвойних порід, ДСП класу E1 та пружинна змійка',
-                'spec_frame_ru': 'Брус хвойных пород, ДСП класса E1 и пружинная змейка',
-                'spec_filling_uk': 'Пінополіуретан',
-                'spec_filling_ru': 'Пенополиуретан',
-                'spec_mechanism_uk': 'Відсутній',
-                'spec_mechanism_ru': 'Отсутствует',
-                'spec_textile_uk': 'На вибір покупця з асортименту понад 1000 видів текстилю',
-                'spec_textile_ru': 'На выбор покупателя из ассортимента более 1000 видов текстиля',
-                'spec_storage_uk': 'Відсутні',
-                'spec_storage_ru': 'Отсутствуют',
-            }
-            for field, value in specs.items():
-                setattr(product, field, value)
             if item.get('color_set'):
                 replace_file(product.default_image, item['image'])
             else:
                 attach(product.default_image, item['image'])
             product.save()
+            specs = item.get('specs') or {
+                'frame': (
+                    'Брус хвойних порід, ДСП класу E1 та пружинна змійка',
+                    'Брус хвойных пород, ДСП класса E1 и пружинная змейка',
+                ),
+                'filling': ('Пінополіуретан', 'Пенополиуретан'),
+                'mechanism': ('Відсутній', 'Отсутствует'),
+                'textile': (
+                    'На вибір покупця з асортименту понад 1000 видів текстилю',
+                    'На выбор покупателя из ассортимента более 1000 видов текстиля',
+                ),
+                'storage': ('Відсутні', 'Отсутствуют'),
+            }
+            for key, (value_uk, value_ru) in specs.items():
+                char = characteristics[key]
+                pc, _ = ProductCharacteristic.objects.get_or_create(
+                    product=product,
+                    characteristic=char,
+                    defaults={
+                        'value_uk': value_uk,
+                        'value_ru': value_ru,
+                        'sort': char.sort,
+                    },
+                )
+                pc.value_uk = value_uk
+                pc.value_ru = value_ru
+                pc.sort = char.sort
+                pc.save(update_fields=['value_uk', 'value_ru', 'sort'])
             # Приблизні ціни по категоріях тканини 1–7 (CMS: ProductFabricPrice)
             approx_extra = {
                 'cat-1': 0,
@@ -748,33 +834,22 @@ class Command(BaseCommand):
                 fp.sku = f'{product.sku}-{fabric.slug[-1].upper()}'
                 fp.save(update_fields=['price', 'sku'])
             color_map = color_sets.get(item.get('color_set'))
-            color_names = {
-                'beige': ('Беж', 'Беж'),
-                'green': ('Зелений', 'Зелёный'),
-                'brown': ('Коричневий', 'Коричневый'),
-            }
             if color_map:
-                keep_slugs = set(color_map.keys())
-                ProductColor.objects.filter(product=product).exclude(slug__in=keep_slugs).delete()
-                for key, sort, hex_color in shade_order:
+                keep_ids = {color_options[key].id for key in color_map}
+                ProductColor.objects.filter(product=product).exclude(color_id__in=keep_ids).delete()
+                for key, sort, _hex in shade_order:
                     path = color_map.get(key)
                     if not path:
                         continue
-                    name_uk, name_ru = color_names[key]
+                    option = color_options[key]
                     color_obj, _ = ProductColor.objects.get_or_create(
                         product=product,
-                        slug=key,
+                        color=option,
                         defaults={
-                            'name_uk': name_uk,
-                            'name_ru': name_ru,
-                            'hex_color': hex_color,
                             'sort': sort,
                             'is_active': True,
                         },
                     )
-                    color_obj.name_uk = name_uk
-                    color_obj.name_ru = name_ru
-                    color_obj.hex_color = hex_color
                     color_obj.sort = sort
                     color_obj.is_active = True
                     replace_file(
@@ -783,35 +858,5 @@ class Command(BaseCommand):
                         dest_name=f'{product.slug}-{key}.webp',
                     )
                     color_obj.save()
-                # дублюємо в ProductShadeImage для сумісності зі старою логікою
-                ProductShadeImage.objects.filter(product=product).exclude(
-                    shade__slug__in=keep_slugs,
-                ).delete()
-                for shade in Shade.objects.filter(is_active=True, slug__in=keep_slugs):
-                    img = ProductShadeImage.objects.filter(product=product, shade=shade).order_by('sort', 'id').first()
-                    if not img:
-                        img = ProductShadeImage(product=product, shade=shade, sort=0)
-                    sort = next(s for key, s, _ in shade_order if key == shade.slug)
-                    hex_ovr = next(h for key, _, h in shade_order if key == shade.slug)
-                    img.sort = sort
-                    img.hex_override = hex_ovr
-                    replace_file(
-                        img.image,
-                        color_map[shade.slug],
-                        dest_name=f'{product.slug}-{shade.slug}.webp',
-                    )
-                    img.save()
             else:
-                for shade in Shade.objects.filter(is_active=True):
-                    img = ProductShadeImage.objects.filter(product=product, shade=shade).order_by('sort', 'id').first()
-                    if not img:
-                        img = ProductShadeImage(product=product, shade=shade, sort=0)
-                    img.sort = shade.sort
-                    img.hex_override = ''
-                    if not img.image:
-                        attach(
-                            img.image,
-                            f'slots/{item["slot"]}',
-                            dest_name=f'{product.slug}-{shade.slug}.webp',
-                        )
-                    img.save()
+                ProductColor.objects.filter(product=product).delete()

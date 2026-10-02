@@ -1,14 +1,28 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin, StackedInline, TabularInline
+from django.utils.html import format_html
+from unfold.admin import TabularInline
 
-from catalog.models import Category, Fabric, Product, ProductColor, ProductFabricPrice, ProductShadeImage, Shade
+from catalog.models import (
+    Category,
+    Characteristic,
+    Fabric,
+    Product,
+    ProductCharacteristic,
+    ProductColor,
+    ProductColorOption,
+    ProductFabricPrice,
+    Shade,
+)
+from core.admin_base import ModelAdmin
+from core.admin_widgets import CmsAdminColorWidget, CmsAdminImageWidget
 
 
 class ChildCategoryInline(TabularInline):
     model = Category
     fk_name = 'parent'
     extra = 0
-    fields = ('name_uk', 'name_ru', 'slug', 'sort', 'is_active', 'image')
+    fields = ('name_uk', 'slug', 'sort', 'is_active')
+    readonly_fields = ('slug',)
     verbose_name = 'Підкатегорія'
     verbose_name_plural = 'Підкатегорії (2 рівень)'
     show_change_link = True
@@ -30,23 +44,40 @@ class FabricPriceInline(TabularInline):
 class ProductColorInline(TabularInline):
     model = ProductColor
     extra = 1
-    fields = ('slug', 'name_uk', 'name_ru', 'hex_color', 'image', 'sort', 'is_active')
-    prepopulated_fields = {'slug': ('name_uk',)}
+    fields = ('color', 'image', 'sort', 'is_active')
     ordering = ('sort', 'id')
     tab = True
     verbose_name = 'Колір'
-    verbose_name_plural = 'Кольори товару (кружечки)'
+    verbose_name_plural = 'Кольори товару'
+    show_change_link = True
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'color':
+            from catalog.models import ProductColorOption
+            kwargs['queryset'] = ProductColorOption.objects.filter(is_active=True).order_by('sort', 'id')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'image':
+            kwargs['widget'] = CmsAdminImageWidget()
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
-class ShadeImageInline(TabularInline):
-    model = ProductShadeImage
+class ProductCharacteristicInline(TabularInline):
+    model = ProductCharacteristic
     extra = 0
-    fields = ('shade', 'image', 'hex_override', 'sort')
-    autocomplete_fields = ('shade',)
+    fields = ('characteristic', 'value_uk', 'value_ru', 'sort')
+    ordering = ('characteristic__sort', 'sort', 'id')
+    autocomplete_fields = ('characteristic',)
     tab = True
-    classes = ('collapse',)
-    verbose_name = 'Застаріле фото відтінку'
-    verbose_name_plural = 'Застарілі фото відтінків'
+    verbose_name = 'Характеристика'
+    verbose_name_plural = 'Характеристики'
+    show_change_link = True
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'characteristic':
+            kwargs['queryset'] = Characteristic.objects.filter(is_active=True).order_by('sort', 'id')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Category)
@@ -55,43 +86,165 @@ class CategoryAdmin(ModelAdmin):
     list_editable = ('sort', 'is_active')
     list_filter = ('is_active', 'parent')
     search_fields = ('name_uk', 'name_ru', 'slug')
-    prepopulated_fields = {'slug': ('name_uk',)}
+    readonly_fields = ('slug',)
     inlines = [ChildCategoryInline]
     autocomplete_fields = ('parent',)
     fieldsets = (
-        ('Основне', {
+        ('Контент (ukr)', {
+            'classes': ('tab',),
             'fields': (
                 'parent',
-                'name_uk', 'name_ru',
+                'name_uk',
                 'slug',
-                'intro_uk', 'intro_ru',
-                'image',
-                'sort', 'is_active',
+                'sort',
+                'is_active',
+                'seo_title_uk',
+                'seo_description_uk',
             ),
             'description': (
                 'Батьківська категорія порожня = категорія 1 рівня. '
-                'Якщо обрати батька — це буде підкатегорія (2 рівень).'
+                'Якщо обрати батька — це буде підкатегорія (2 рівень). '
+                'URL-адреса генерується з назви (ukr) автоматично.'
             ),
         }),
-        ('Для пошуковиків', {
-            'fields': ('seo_title_uk', 'seo_title_ru', 'seo_description_uk', 'seo_description_ru'),
+        ('Контент (ru)', {
+            'classes': ('tab',),
+            'fields': (
+                'name_ru',
+                'seo_title_ru',
+                'seo_description_ru',
+            ),
+        }),
+    )
+
+
+@admin.register(Characteristic)
+class CharacteristicAdmin(ModelAdmin):
+    list_display = ('name_uk', 'name_ru', 'sort', 'is_active')
+    list_editable = ('sort', 'is_active')
+    list_filter = ('is_active',)
+    search_fields = ('name_uk', 'name_ru')
+    ordering = ('sort', 'id')
+    fieldsets = (
+        ('Контент (ukr)', {
+            'classes': ('tab',),
+            'fields': (
+                'name_uk',
+                'sort',
+                'is_active',
+            ),
+            'description': (
+                'Типи характеристик для карток товарів. '
+                'У товарі обираєте тип зі списку і вказуєте значення.'
+            ),
+        }),
+        ('Контент (ru)', {
+            'classes': ('tab',),
+            'fields': ('name_ru',),
         }),
     )
 
 
 @admin.register(Fabric)
 class FabricAdmin(ModelAdmin):
-    list_display = ('name_uk', 'surcharge', 'sort', 'is_active')
+    list_display = ('name_uk', 'slug', 'surcharge', 'sort', 'is_active')
     list_editable = ('sort', 'is_active')
+    list_filter = ('is_active',)
     search_fields = ('name_uk', 'name_ru', 'slug')
+    readonly_fields = ('slug',)
     ordering = ('sort', 'id')
+    fieldsets = (
+        ('Контент (ukr)', {
+            'classes': ('tab',),
+            'fields': (
+                'name_uk',
+                'slug',
+                'surcharge',
+                'sort',
+                'is_active',
+            ),
+        }),
+        ('Контент (ru)', {
+            'classes': ('tab',),
+            'fields': ('name_ru',),
+        }),
+    )
 
 
 @admin.register(Shade)
 class ShadeAdmin(ModelAdmin):
-    list_display = ('name_uk', 'fabric', 'hex_color', 'sort', 'is_active')
+    list_display = ('name_uk', 'fabric', 'slug', 'hex_color', 'sort', 'is_active')
     list_filter = ('fabric', 'is_active')
     search_fields = ('name_uk', 'name_ru', 'slug')
+    readonly_fields = ('slug',)
+    autocomplete_fields = ('fabric',)
+    fieldsets = (
+        ('Контент (ukr)', {
+            'classes': ('tab',),
+            'fields': (
+                'fabric',
+                'name_uk',
+                'slug',
+                'hex_color',
+                'swatch',
+                'sort',
+                'is_active',
+            ),
+        }),
+        ('Контент (ru)', {
+            'classes': ('tab',),
+            'fields': ('name_ru',),
+        }),
+    )
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'hex_color':
+            kwargs['widget'] = CmsAdminColorWidget(default_color='#D4C4A8')
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+
+@admin.register(ProductColorOption)
+class ProductColorOptionAdmin(ModelAdmin):
+    list_display = ('swatch_preview', 'name_uk', 'name_ru', 'hex_color', 'slug', 'sort', 'is_active')
+    list_editable = ('sort', 'is_active')
+    list_filter = ('is_active',)
+    search_fields = ('name_uk', 'name_ru', 'slug', 'hex_color')
+    readonly_fields = ('slug',)
+    ordering = ('sort', 'id')
+    fieldsets = (
+        ('Контент (ukr)', {
+            'classes': ('tab',),
+            'fields': (
+                'name_uk',
+                'slug',
+                'hex_color',
+                'sort',
+                'is_active',
+            ),
+            'description': (
+                'Стандартні кольори для кружечків товарів. '
+                'Новий колір можна додати пікером і використовувати в інших моделях.'
+            ),
+        }),
+        ('Контент (ru)', {
+            'classes': ('tab',),
+            'fields': ('name_ru',),
+        }),
+    )
+
+    @admin.display(description='')
+    def swatch_preview(self, obj):
+        hex_color = (obj.hex_color or '').strip() or '#ccc'
+        return format_html(
+            '<span style="display:inline-block;width:1.25rem;height:1.25rem;'
+            'border-radius:999px;background:{};border:1px solid #d0cdc8;"></span>',
+            hex_color,
+        )
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'hex_color':
+            kwargs['widget'] = CmsAdminColorWidget(default_color='#D4C4A8')
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 @admin.register(Product)
@@ -99,26 +252,49 @@ class ProductAdmin(ModelAdmin):
     list_display = ('name_uk', 'category', 'base_price', 'badge', 'is_available', 'is_active')
     list_filter = ('category', 'badge', 'is_available', 'is_active')
     search_fields = ('name_uk', 'name_ru', 'sku')
-    prepopulated_fields = {'slug': ('name_uk',)}
-    inlines = [FabricPriceInline, ProductColorInline, ShadeImageInline]
+    readonly_fields = ('slug',)
+    inlines = [FabricPriceInline, ProductColorInline, ProductCharacteristicInline]
     fieldsets = (
-        (None, {'fields': ('name_uk', 'name_ru', 'slug', 'sku', 'category', 'type_uk', 'type_ru')}),
-        ('Ціна та наявність', {
-            'fields': ('base_price', 'badge', 'is_available', 'is_active', 'default_image'),
-            'description': (
-                'Ціна залежить лише від категорії тканини (вкладка цін 1–7). '
-                'Кольори (кружечки) додавайте у вкладці кольорів — на ціну не впливають.'
-            ),
-        }),
-        ('Опис', {'fields': ('description_uk', 'description_ru', 'care_uk', 'care_ru', 'dims_uk', 'dims_ru')}),
-        ('Характеристики', {
+        ('Контент (ukr)', {
+            'classes': ('tab',),
             'fields': (
-                'spec_frame_uk', 'spec_frame_ru',
-                'spec_filling_uk', 'spec_filling_ru',
-                'spec_mechanism_uk', 'spec_mechanism_ru',
-                'spec_textile_uk', 'spec_textile_ru',
-                'spec_storage_uk', 'spec_storage_ru',
+                'name_uk',
+                'slug',
+                'sku',
+                'category',
+                'type_uk',
+                'base_price',
+                'badge',
+                'is_available',
+                'is_active',
+                'default_image',
+                'description_uk',
+                'care_uk',
+                'dims_uk',
+                'seo_title_uk',
+                'seo_description_uk',
+            ),
+            'description': (
+                'URL-адреса генерується з назви (ukr) автоматично. '
+                'Ціна залежить від категорії тканини (вкладка цін 1–7). '
+                'Характеристики — окрема вкладка нижче.'
             ),
         }),
-        ('SEO', {'fields': ('seo_title_uk', 'seo_title_ru', 'seo_description_uk', 'seo_description_ru')}),
+        ('Контент (ru)', {
+            'classes': ('tab',),
+            'fields': (
+                'name_ru',
+                'type_ru',
+                'description_ru',
+                'care_ru',
+                'dims_ru',
+                'seo_title_ru',
+                'seo_description_ru',
+            ),
+        }),
     )
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'default_image':
+            kwargs['widget'] = CmsAdminImageWidget()
+        return super().formfield_for_dbfield(db_field, request, **kwargs)

@@ -5,7 +5,7 @@ FACET_STACK = C (без фасетів атрибутів; лише дерево
 
 Межа CMS ↔ DB:
 - CMS: SiteSettings, HomePage, ValueProp, AboutPage, CollabPage, LegalPage
-- DB catalog: Category, Fabric, Shade, Product, ProductFabricPrice, ProductShadeImage
+- DB catalog: Category, Characteristic, Fabric, Shade, Product, ProductFabricPrice, ProductColorOption, ProductColor, ProductCharacteristic
 - DB leads: OrderRequest, PartnershipLead, ContactLead
 
 ## core
@@ -25,11 +25,14 @@ FACET_STACK = C (без фасетів атрибутів; лише дерево
 | Таблиця | Призначення |
 |---|---|
 | Category | дерево: Дивани → Модульні/Кутові/Прямі; Ліжка; Пуфи |
+| Characteristic | типи характеристик (каркас, наповнення…) |
 | Fabric | довідник тканин, surcharge |
 | Shade | відтінок тканини, hex / swatch |
 | Product | модель, категорія, бейдж, SEO, base_price |
 | ProductFabricPrice | ціна моделі × тканина |
-| ProductShadeImage | фото моделі на відтінок (+ gallery_order) |
+| ProductColorOption | стандартні кольори кружечків (беж/зелений/коричневий…) |
+| ProductColor | колір товару + фото моделі цього кольору |
+| ProductCharacteristic | значення характеристики на товарі (тип + UK/RU) |
 
 ## leads
 

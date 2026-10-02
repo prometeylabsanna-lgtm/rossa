@@ -4,7 +4,9 @@ from django import forms
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from unfold.admin import ModelAdmin, TabularInline
+from unfold.admin import TabularInline
+
+from core.admin_base import ModelAdmin
 
 from core.admin_mixins import (
     STYLE_TAB,
@@ -139,7 +141,7 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = HomePageForm
     inlines = (HeroSlideInline,)
     fieldsets = (
-        ('Контент (укр)', {
+        ('Контент (ukr)', {
             'classes': ('tab',),
             'fields': (
                 'section_categories_uk',
@@ -156,7 +158,7 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'seo_description_uk',
             ),
         }),
-        ('Контент (ру)', {
+        ('Контент (ru)', {
             'classes': ('tab',),
             'fields': (
                 'section_categories_ru',
@@ -183,7 +185,7 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
 class AboutPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = AboutPageForm
     fieldsets = (
-        ('Контент (укр)', {
+        ('Контент (ukr)', {
             'classes': ('tab',),
             'fields': (
                 'title_uk',
@@ -193,23 +195,29 @@ class AboutPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'milestones',
                 'craft_images',
                 'logo_images',
-                'evolution_title_uk',
-                'evolution_images',
                 'seo_title_uk',
                 'seo_description_uk',
             ),
         }),
-        ('Контент (ру)', {
+        ('Контент (ru)', {
             'classes': ('tab',),
             'fields': (
                 'title_ru',
                 'subtitle_ru',
                 'body_ru',
                 'milestones_title_ru',
-                'evolution_title_ru',
                 'seo_title_ru',
                 'seo_description_ru',
             ),
+        }),
+        ('Еволюція диванів', {
+            'classes': ('tab',),
+            'fields': (
+                'evolution_title_uk',
+                'evolution_title_ru',
+                'evolution_images',
+            ),
+            'description': 'Окремий блок на сторінці «Про нас»: заголовки мовами та галерея.',
         }),
         ('Оформлення', STYLE_TAB),
     )
@@ -223,7 +231,7 @@ class AboutPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
 class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = CollabPageForm
     fieldsets = (
-        ('Контент (укр)', {
+        ('Контент (ukr)', {
             'classes': ('tab',),
             'fields': (
                 'title_uk',
@@ -239,7 +247,7 @@ class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'seo_description_uk',
             ),
         }),
-        ('Контент (ру)', {
+        ('Контент (ru)', {
             'classes': ('tab',),
             'fields': (
                 'title_ru',
@@ -262,7 +270,7 @@ class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
 class ContactsPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = ContactsPageForm
     fieldsets = (
-        ('Контент (укр)', {
+        ('Контент (ukr)', {
             'classes': ('tab',),
             'fields': (
                 'title_uk',
@@ -271,7 +279,7 @@ class ContactsPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'seo_description_uk',
             ),
         }),
-        ('Контент (ру)', {
+        ('Контент (ru)', {
             'classes': ('tab',),
             'fields': (
                 'title_ru',
@@ -293,7 +301,7 @@ class LegalSlugAdmin(CmsWidgetsAdminMixin, ModelAdmin):
     slug = ''
 
     fieldsets = (
-        ('Контент (укр)', {
+        ('Контент (ukr)', {
             'classes': ('tab',),
             'fields': (
                 'title_uk',
@@ -303,7 +311,7 @@ class LegalSlugAdmin(CmsWidgetsAdminMixin, ModelAdmin):
                 'seo_description_uk',
             ),
         }),
-        ('Контент (ру)', {
+        ('Контент (ru)', {
             'classes': ('tab',),
             'fields': (
                 'title_ru',
@@ -376,7 +384,7 @@ class ValuePropAdmin(CmsWidgetsAdminMixin, ModelAdmin):
     list_display = ('number', 'title_uk', 'sort', 'is_active')
     list_editable = ('sort', 'is_active')
     fieldsets = (
-        ('Контент (укр)', {
+        ('Контент (ukr)', {
             'classes': ('tab',),
             'fields': (
                 'number',
@@ -386,7 +394,7 @@ class ValuePropAdmin(CmsWidgetsAdminMixin, ModelAdmin):
                 'is_active',
             ),
         }),
-        ('Контент (ру)', {
+        ('Контент (ru)', {
             'classes': ('tab',),
             'fields': (
                 'title_ru',

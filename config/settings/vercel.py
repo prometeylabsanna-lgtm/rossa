@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'core.middleware_vercel.VercelBootstrapMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'core.middleware_admin.AdminForceUkrainianMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

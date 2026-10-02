@@ -2,10 +2,11 @@ from django.db import models
 from django.urls import reverse
 
 from core.mixins import SeoFieldsMixin, TimeStampedModel
+from core.slug import AutoSlugMixin
 from core.utils import localized
 
 
-class Category(SeoFieldsMixin, TimeStampedModel):
+class Category(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
     parent = models.ForeignKey(
         'self',
         verbose_name='Батьківська',
@@ -14,12 +15,9 @@ class Category(SeoFieldsMixin, TimeStampedModel):
         on_delete=models.CASCADE,
         related_name='children',
     )
-    slug = models.SlugField('Slug', max_length=64)
-    name_uk = models.CharField('Назва (UK)', max_length=128)
-    name_ru = models.CharField('Назва (RU)', max_length=128, blank=True)
-    intro_uk = models.TextField('Вступ (UK)', blank=True)
-    intro_ru = models.TextField('Вступ (RU)', blank=True)
-    image = models.ImageField('Фото плитки', upload_to='categories/', blank=True)
+    slug = models.SlugField('URL-адреса', max_length=64)
+    name_uk = models.CharField('Назва (ukr)', max_length=128)
+    name_ru = models.CharField('Назва (ru)', max_length=128, blank=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
     is_active = models.BooleanField('Видима', default=True)
 
@@ -32,13 +30,12 @@ class Category(SeoFieldsMixin, TimeStampedModel):
     def __str__(self):
         return self.name_uk
 
+    def get_slug_unique_queryset(self):
+        return type(self).objects.filter(parent=self.parent)
+
     @property
     def name(self):
         return localized(self, 'name')
-
-    @property
-    def intro(self):
-        return localized(self, 'intro')
 
     @property
     def seo_title(self):
@@ -49,13 +46,15 @@ class Category(SeoFieldsMixin, TimeStampedModel):
         return localized(self, 'seo_description')
 
     def get_absolute_url(self):
+        from django.urls import reverse
+
         parts = [self.slug]
         node = self.parent
         while node:
             parts.append(node.slug)
             node = node.parent
         path = '/'.join(reversed(parts))
-        return f'/katalog/{path}/'
+        return reverse('catalog:category', kwargs={'path': path})
 
     @property
     def label_path(self):
@@ -67,11 +66,11 @@ class Category(SeoFieldsMixin, TimeStampedModel):
         return ' · '.join(reversed(names))
 
 
-class Fabric(TimeStampedModel):
-    slug = models.SlugField('Slug', unique=True)
-    name_uk = models.CharField('Назва (UK)', max_length=128)
-    name_ru = models.CharField('Назва (RU)', max_length=128, blank=True)
-    surcharge = models.PositiveIntegerField('Націнка, грн', default=0)
+class Fabric(AutoSlugMixin, TimeStampedModel):
+    slug = models.SlugField('URL-адреса', unique=True)
+    name_uk = models.CharField('Назва (ukr)', max_length=128)
+    name_ru = models.CharField('Назва (ru)', max_length=128, blank=True)
+    surcharge = models.PositiveIntegerField('Націнка, грн', default=0, blank=True, null=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
     is_active = models.BooleanField('Видима', default=True)
 
@@ -83,21 +82,26 @@ class Fabric(TimeStampedModel):
     def __str__(self):
         return self.name_uk
 
+    def save(self, *args, **kwargs):
+        if self.surcharge is None:
+            self.surcharge = 0
+        super().save(*args, **kwargs)
+
     @property
     def name(self):
         return localized(self, 'name')
 
 
-class Shade(TimeStampedModel):
+class Shade(AutoSlugMixin, TimeStampedModel):
     fabric = models.ForeignKey(
         Fabric,
         verbose_name='Тканина',
         on_delete=models.CASCADE,
         related_name='shades',
     )
-    slug = models.SlugField('Slug', max_length=64)
-    name_uk = models.CharField('Назва (UK)', max_length=128)
-    name_ru = models.CharField('Назва (RU)', max_length=128, blank=True)
+    slug = models.SlugField('URL-адреса', max_length=64)
+    name_uk = models.CharField('Назва (ukr)', max_length=128)
+    name_ru = models.CharField('Назва (ru)', max_length=128, blank=True)
     hex_color = models.CharField('HEX', max_length=7)
     swatch = models.ImageField('Міні-фото кружечка', upload_to='shades/', blank=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
@@ -111,6 +115,30 @@ class Shade(TimeStampedModel):
 
     def __str__(self):
         return f'{self.fabric.name_uk} / {self.name_uk}'
+
+    def get_slug_unique_queryset(self):
+        return type(self).objects.filter(fabric_id=self.fabric_id)
+
+    @property
+    def name(self):
+        return localized(self, 'name')
+
+
+class Characteristic(TimeStampedModel):
+    """Тип характеристики товару (каркас, наповнення…)."""
+
+    name_uk = models.CharField('Назва (ukr)', max_length=128)
+    name_ru = models.CharField('Назва (ru)', max_length=128, blank=True)
+    sort = models.PositiveSmallIntegerField('Порядок', default=0)
+    is_active = models.BooleanField('Активна', default=True)
+
+    class Meta:
+        ordering = ['sort', 'id']
+        verbose_name = 'Характеристика'
+        verbose_name_plural = 'Характеристики'
+
+    def __str__(self):
+        return self.name_uk
 
     @property
     def name(self):

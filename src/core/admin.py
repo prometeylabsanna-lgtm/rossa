@@ -3,8 +3,9 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
-from unfold.admin import ModelAdmin
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
+
+from core.admin_base import ModelAdmin
 
 # Імпорт реєструє ModelAdmin сторінок / шапки / підвалу.
 import core.admin_chrome  # noqa: F401

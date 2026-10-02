@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
@@ -23,10 +24,14 @@ urlpatterns = [
         {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap',
     ),
+]
+
+urlpatterns += i18n_patterns(
     path('', include('catalog.urls')),
     path('', include('leads.urls')),
     path('', include('core.urls')),
-]
+    prefix_default_language=False,
+)
 
 handler404 = 'core.views.page_not_found'
 

@@ -7,10 +7,10 @@ from core.utils import localized
 
 class ValueProp(TimeStampedModel):
     number = models.CharField('Номер', max_length=8)
-    title_uk = models.CharField('Заголовок (UK)', max_length=128)
-    title_ru = models.CharField('Заголовок (RU)', max_length=128, blank=True)
-    body_uk = models.TextField('Текст (UK)')
-    body_ru = models.TextField('Текст (RU)', blank=True)
+    title_uk = models.CharField('Заголовок (ukr)', max_length=128)
+    title_ru = models.CharField('Заголовок (ru)', max_length=128, blank=True)
+    body_uk = models.TextField('Текст (ukr)')
+    body_ru = models.TextField('Текст (ru)', blank=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
     is_active = models.BooleanField('Видимий', default=True)
 
@@ -32,19 +32,19 @@ class ValueProp(TimeStampedModel):
 
 
 class AboutPage(SeoFieldsMixin, TimeStampedModel):
-    title_uk = models.CharField('Заголовок (UK)', max_length=255)
-    title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
-    subtitle_uk = models.CharField('Підзаголовок (UK)', max_length=255, blank=True)
-    subtitle_ru = models.CharField('Підзаголовок (RU)', max_length=255, blank=True)
-    body_uk = models.TextField('Текст (UK)')
-    body_ru = models.TextField('Текст (RU)', blank=True)
+    title_uk = models.CharField('Заголовок (ukr)', max_length=255)
+    title_ru = models.CharField('Заголовок (ru)', max_length=255, blank=True)
+    subtitle_uk = models.CharField('Підзаголовок (ukr)', max_length=255, blank=True)
+    subtitle_ru = models.CharField('Підзаголовок (ru)', max_length=255, blank=True)
+    body_uk = models.TextField('Текст (ukr)')
+    body_ru = models.TextField('Текст (ru)', blank=True)
     milestones_title_uk = models.CharField(
-        'Заголовок віх (UK)',
+        'Заголовок віх (ukr)',
         max_length=128,
         blank=True,
         default='Ключові віхи нашої історії',
     )
-    milestones_title_ru = models.CharField('Заголовок віх (RU)', max_length=128, blank=True)
+    milestones_title_ru = models.CharField('Заголовок віх (ru)', max_length=128, blank=True)
     milestones = models.JSONField('Віхи', default=list, blank=True)
     craft_images = models.JSONField('Фото виробництва', default=list, blank=True)
     logo_images = models.JSONField(
@@ -54,12 +54,12 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
         help_text='Рядки: фото, рік, підписи. Без JSON.',
     )
     evolution_title_uk = models.CharField(
-        'Заголовок еволюції (UK)',
+        'Заголовок еволюції (ukr)',
         max_length=128,
         blank=True,
         default='Еволюція наших диванів',
     )
-    evolution_title_ru = models.CharField('Заголовок еволюції (RU)', max_length=128, blank=True)
+    evolution_title_ru = models.CharField('Заголовок еволюції (ru)', max_length=128, blank=True)
     evolution_images = models.JSONField(
         'Еволюція диванів',
         default=list,
@@ -139,10 +139,10 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
 
 
 class CollabPage(SeoFieldsMixin, TimeStampedModel):
-    title_uk = models.CharField('Заголовок (UK)', max_length=255)
-    title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
-    form_title_uk = models.CharField('Заголовок форми (UK)', max_length=128, blank=True)
-    form_title_ru = models.CharField('Заголовок форми (RU)', max_length=128, blank=True)
+    title_uk = models.CharField('Заголовок (ukr)', max_length=255)
+    title_ru = models.CharField('Заголовок (ru)', max_length=255, blank=True)
+    form_title_uk = models.CharField('Заголовок форми (ukr)', max_length=128, blank=True)
+    form_title_ru = models.CharField('Заголовок форми (ru)', max_length=128, blank=True)
     form_fields = models.JSONField(
         'Поля форми',
         default=default_collab_form_copy,
@@ -151,8 +151,8 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
     )
     hero_image = models.ImageField('Hero фото', upload_to='collab/', blank=True)
     form_image = models.ImageField('Фото біля форми', upload_to='collab/', blank=True)
-    advantages_title_uk = models.CharField('Заголовок переваг (UK)', max_length=128, blank=True, default='Наші переваги')
-    advantages_title_ru = models.CharField('Заголовок переваг (RU)', max_length=128, blank=True)
+    advantages_title_uk = models.CharField('Заголовок переваг (ukr)', max_length=128, blank=True, default='Наші переваги')
+    advantages_title_ru = models.CharField('Заголовок переваг (ru)', max_length=128, blank=True)
     benefits = models.JSONField(
         'Переваги',
         default=list,
@@ -160,12 +160,12 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
         help_text='Додавайте рядки кнопкою нижче. Іконку обирайте зі списку.',
     )
     dealer_support_title_uk = models.CharField(
-        'Заголовок підтримки дилера (UK)',
+        'Заголовок підтримки дилера (ukr)',
         max_length=128,
         blank=True,
         default='Підтримка нашого дилера:',
     )
-    dealer_support_title_ru = models.CharField('Заголовок підтримки дилера (RU)', max_length=128, blank=True)
+    dealer_support_title_ru = models.CharField('Заголовок підтримки дилера (ru)', max_length=128, blank=True)
     dealer_support = models.JSONField(
         'Підтримка дилера',
         default=list,
@@ -225,15 +225,15 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
 
 
 class ContactsPage(SeoFieldsMixin, TimeStampedModel):
-    title_uk = models.CharField('Заголовок (UK)', max_length=255, default='Контакти')
-    title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
+    title_uk = models.CharField('Заголовок (ukr)', max_length=255, default='Контакти')
+    title_ru = models.CharField('Заголовок (ru)', max_length=255, blank=True)
     form_title_uk = models.CharField(
-        'Заголовок форми (UK)',
+        'Заголовок форми (ukr)',
         max_length=128,
         blank=True,
         default='Напишіть нам',
     )
-    form_title_ru = models.CharField('Заголовок форми (RU)', max_length=128, blank=True)
+    form_title_ru = models.CharField('Заголовок форми (ru)', max_length=128, blank=True)
 
     class Meta:
         verbose_name = 'Контакти'
@@ -250,7 +250,12 @@ class ContactsPage(SeoFieldsMixin, TimeStampedModel):
     def load(cls):
         obj, _ = cls.objects.get_or_create(
             pk=1,
-            defaults={'title_uk': 'Контакти'},
+            defaults={
+                'title_uk': 'Контакти',
+                'title_ru': 'Контакты',
+                'form_title_uk': 'Напишіть нам',
+                'form_title_ru': 'Напишите нам',
+            },
         )
         return obj
 
@@ -273,10 +278,10 @@ class ContactsPage(SeoFieldsMixin, TimeStampedModel):
 
 class LegalPage(SeoFieldsMixin, TimeStampedModel):
     slug = models.SlugField('URL', unique=True)
-    title_uk = models.CharField('Заголовок (UK)', max_length=255)
-    title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
-    body_uk = models.TextField('Текст (UK)')
-    body_ru = models.TextField('Текст (RU)', blank=True)
+    title_uk = models.CharField('Заголовок (ukr)', max_length=255)
+    title_ru = models.CharField('Заголовок (ru)', max_length=255, blank=True)
+    body_uk = models.TextField('Текст (ukr)')
+    body_ru = models.TextField('Текст (ru)', blank=True)
     is_active = models.BooleanField('Видима', default=True)
 
     class Meta:

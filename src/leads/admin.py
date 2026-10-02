@@ -1,6 +1,6 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin
 
+from core.admin_base import ModelAdmin
 from leads.models import ContactLead, OrderRequest, PartnershipLead
 
 
@@ -9,7 +9,7 @@ class OrderRequestAdmin(ModelAdmin):
     list_display = ('created_at', 'product_name', 'fabric_name', 'shade_name', 'price', 'name', 'phone', 'status')
     list_filter = ('status', 'fulfillment')
     search_fields = ('product_name', 'name', 'phone', 'email', 'sku')
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'product_slug')
     list_editable = ('status',)
 
 

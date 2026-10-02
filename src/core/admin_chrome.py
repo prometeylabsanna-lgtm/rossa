@@ -4,8 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from unfold.admin import ModelAdmin
-
+from core.admin_base import ModelAdmin
 from core.admin_mixins import CmsWidgetsAdminMixin, SingletonAdminMixin, clean_color
 from core.admin_widgets import CmsAdminColorWidget
 from core.models import FooterSettings, HeaderSettings, SiteSettings
@@ -149,7 +148,7 @@ class HeaderSettingsAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin)
 class FooterSettingsAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = FooterSettingsForm
     fieldsets = (
-        ('Контент (укр)', {
+        ('Контент (ukr)', {
             'classes': ('tab',),
             'fields': (
                 'logo',
@@ -165,7 +164,7 @@ class FooterSettingsAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin)
                 'delivery_label_uk',
             ),
         }),
-        ('Контент (ру)', {
+        ('Контент (ru)', {
             'classes': ('tab',),
             'fields': (
                 'address_ru',

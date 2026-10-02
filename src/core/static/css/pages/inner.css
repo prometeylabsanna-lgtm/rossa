@@ -444,10 +444,12 @@
 
 .contacts .serif-title {
   margin: 0;
+  text-align: center;
 }
 
 .contacts .page-intro {
   margin-top: 12px;
+  text-align: center;
 }
 
 .contacts__grid {

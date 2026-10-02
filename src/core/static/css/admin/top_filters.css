@@ -1,0 +1,64 @@
+/* Top changelist dropdown filters */
+
+.admin-top-filters {
+  width: 100%;
+}
+
+.admin-top-filters__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.admin-top-filters__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.admin-top-filters__item {
+  flex: 1 1 10rem;
+  min-width: 9rem;
+  max-width: 16rem;
+}
+
+.admin-top-filters__item .mb-4 {
+  margin-bottom: 0;
+}
+
+.admin-top-filters__item label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.admin-top-filters__item select,
+.admin-top-filters__item .admin-top-filter__select {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-top-filters__actions {
+  flex: 0 0 auto;
+  padding-bottom: 0.15rem;
+}
+
+.admin-top-filters__clear {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .admin-top-filters__item {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}

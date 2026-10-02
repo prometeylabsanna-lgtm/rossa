@@ -1,0 +1,14 @@
+{% load unfold %}
+
+{% with tabs=adminform|tabs %}
+    {% if tabs %}
+        {% for fieldset in tabs %}
+            {% with slug=fieldset.name|unicoded_slugify %}
+                <div class="{% fieldset_rows_classes %}{% if fieldset.name %} fieldset-{{ slug }}{% endif %}"
+                     x-show="activeTab == '{% if forloop.first %}general{% else %}fieldset-{{ slug }}{% endif %}'">
+                    {% include 'admin/includes/fieldset.html' with stacked=1 %}
+                </div>
+            {% endwith %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
