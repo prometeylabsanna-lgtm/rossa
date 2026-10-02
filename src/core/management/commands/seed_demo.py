@@ -598,8 +598,8 @@ class Command(BaseCommand):
                 'description_ru': 'Кровать «Соло» с мягким тканевым изголовьем и массивной основой с ламелями. Бесшумный подъёмный механизм для хранения постельного белья.',
                 'care_uk': 'Узголів’я знімне, сухе чищення тканини раз на пів року.',
                 'care_ru': 'Изголовье съёмное, сухая чистка ткани раз в полгода.',
-                'image': 'products/solo-beige.webp', 'slot': 'p4-a.webp',
-                'color_set': 'solo',
+                'image': 'products/milan.webp', 'slot': 'p4-a.webp',
+                'color_set': 'milan',
             },
             {
                 'slug': 'kyoto', 'name_uk': 'Кіото', 'name_ru': 'Киото',
@@ -611,8 +611,8 @@ class Command(BaseCommand):
                 'description_ru': 'Компактный пуф «Киото» — дополнительное место для сидения или подставка для ног. Легко переставляется по комнате.',
                 'care_uk': 'Знімний чохол, машинне прання.',
                 'care_ru': 'Съёмный чехол, машинная стирка.',
-                'image': 'products/kyoto-beige.webp', 'slot': 'p5-a.webp',
-                'color_set': 'kyoto',
+                'image': 'products/milan.webp', 'slot': 'p5-a.webp',
+                'color_set': 'milan',
             },
             {
                 'slug': 'loks', 'name_uk': 'Локс', 'name_ru': 'Локс',
@@ -640,16 +640,7 @@ class Command(BaseCommand):
                 'green': 'products/ontario.webp',
                 'brown': 'products/ontario-dark-brown.webp',
             },
-            'solo': {
-                'beige': 'products/solo-beige.webp',
-                'green': 'products/solo-green.webp',
-                'brown': 'products/solo-brown.webp',
-            },
-            'kyoto': {
-                'beige': 'products/kyoto-beige.webp',
-                'green': 'products/kyoto-green.webp',
-                'brown': 'products/kyoto-brown.webp',
-            },
+            # solo / kyoto / loks / milan — однакові фото, як у Локс
         }
         shade_order = (
             ('beige', 0, '#D4C4A8'),
