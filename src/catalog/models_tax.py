@@ -7,6 +7,13 @@ from core.utils import localized
 
 
 class Category(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
+    # Статичні превʼю для меню / плиток (поле image прибрано).
+    MENU_IMAGE_STATIC = {
+        'divany': 'images/slots/cat-sofas.webp',
+        'lizhka': 'images/slots/cat-beds.webp',
+        'pufy': 'images/slots/cat-poufs.webp',
+    }
+
     parent = models.ForeignKey(
         'self',
         verbose_name='Батьківська',
@@ -32,6 +39,10 @@ class Category(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
 
     def get_slug_unique_queryset(self):
         return type(self).objects.filter(parent=self.parent)
+
+    @property
+    def menu_image_static(self) -> str:
+        return self.MENU_IMAGE_STATIC.get(self.slug, '')
 
     @property
     def name(self):

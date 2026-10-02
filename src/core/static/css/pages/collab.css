@@ -43,6 +43,38 @@
   user-select: none;
 }
 
+.collab__hero-crumbs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 14px max(var(--pad-x), env(safe-area-inset-left, 0px)) 0;
+  pointer-events: none;
+}
+
+.collab__hero-crumbs .crumbs {
+  padding: 0;
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+}
+
+.collab__hero-crumbs .crumbs a {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.collab__hero-crumbs .crumbs a:hover {
+  color: #fff;
+}
+
+@media (min-width: 768px) {
+  .collab__hero-crumbs {
+    padding-top: 18px;
+  }
+}
+
 .collab {
   display: flex;
   flex-direction: column;

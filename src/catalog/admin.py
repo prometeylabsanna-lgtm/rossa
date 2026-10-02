@@ -39,6 +39,7 @@ class ProductAdminForm(forms.ModelForm):
         queryset=Category.objects.none(),
         required=False,
         empty_label='— оберіть підкатегорію —',
+        widget=forms.Select(attrs={'class': 'rs-admin-btn-select'}),
     )
 
     class Meta:
@@ -346,6 +347,12 @@ class ProductAdmin(ModelAdmin):
             ),
         }),
     )
+
+    @property
+    def media(self):
+        return super().media + forms.Media(
+            css={'all': ('css/admin/product_form.css',)},
+        )
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'default_image':

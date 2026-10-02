@@ -34,11 +34,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SERVE_MEDIA = True
 
 # Збірка (локально / Vercel build): файли в репо.
-# Runtime на Vercel: SQLite у /tmp (записуваний), медіа — з пакета (read-only).
+# Runtime на Vercel: SQLite у /tmp (записуваний), медіа — запис у /tmp, читання з media_demo.
 _IS_VERCEL_RUNTIME = bool(os.environ.get('VERCEL')) and not bool(os.environ.get('VERCEL_BUILD'))
 
 _DB_TEMPLATE = BASE_DIR / 'db.vercel.sqlite3'
 _MEDIA_PACKAGED = BASE_DIR / 'media_demo'
+MEDIA_PACKAGED_ROOT = _MEDIA_PACKAGED
 
 if _IS_VERCEL_RUNTIME:
     DATABASES = {
@@ -47,7 +48,20 @@ if _IS_VERCEL_RUNTIME:
             'NAME': '/tmp/rossa.sqlite3',
         }
     }
-    MEDIA_ROOT = _MEDIA_PACKAGED if _MEDIA_PACKAGED.exists() else Path('/tmp/media')
+    MEDIA_ROOT = Path('/tmp/media')
+    STORAGES = {
+        'default': {
+            'BACKEND': 'core.storage_vercel.VercelMediaStorage',
+            'OPTIONS': {
+                'location': str(MEDIA_ROOT),
+                'base_url': MEDIA_URL,
+                'packaged_root': str(_MEDIA_PACKAGED),
+            },
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
 else:
     DATABASES = {
         'default': {
@@ -56,6 +70,14 @@ else:
         }
     }
     MEDIA_ROOT = _MEDIA_PACKAGED
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,15 +95,6 @@ MIDDLEWARE = [
     'django_htmx.middleware.HtmxMiddleware',
     'csp.middleware.CSPMiddleware',
 ]
-
-STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-    },
-    'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
-    },
-}
 
 LOGGING['root']['level'] = 'INFO'  # noqa: F405
 

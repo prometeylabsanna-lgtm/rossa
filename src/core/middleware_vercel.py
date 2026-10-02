@@ -123,6 +123,12 @@ def _ensure_runtime_db(*, force: bool = False) -> None:
     if not str(db_name).startswith('/tmp/'):
         return
 
+    # Записуваний MEDIA_ROOT для адмін-аплоадів.
+    try:
+        Path(settings.MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
+    except OSError:
+        logger.exception('Cannot create MEDIA_ROOT %s', settings.MEDIA_ROOT)
+
     runtime = Path(db_name)
     template = _db_template_path()
     healthy = (not force) and _db_is_healthy(runtime)

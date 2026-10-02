@@ -17,7 +17,12 @@
         height="937"
         decoding="async"
       >
+      <div class="collab__hero-crumbs">
+        {% include "includes/breadcrumbs.html" %}
+      </div>
     </figure>
+  {% else %}
+    {% include "includes/breadcrumbs.html" %}
   {% endif %}
 
   <section class="collab">

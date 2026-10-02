@@ -1,0 +1,42 @@
+/* Select «Тип» — звичайна кнопка замість dashed Unfold-стилю */
+select.rs-admin-btn-select {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 28rem;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.55rem 2.4rem 0.55rem 0.9rem;
+  border: 1px solid rgba(128, 128, 128, 0.45);
+  border-style: solid;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23504e4c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  background-size: 12px 8px;
+  color: #2b2928;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+select.rs-admin-btn-select:hover {
+  border-color: rgba(152, 96, 48, 0.55);
+}
+
+select.rs-admin-btn-select:focus {
+  outline: 2px solid rgba(152, 96, 48, 0.35);
+  outline-offset: 1px;
+  border-color: #986030;
+}
+
+@media (max-width: 767px) {
+  select.rs-admin-btn-select {
+    max-width: none;
+  }
+}
