@@ -7,15 +7,34 @@ from django.forms.widgets import ClearableFileInput
 from tinymce.widgets import TinyMCE
 from unfold.widgets import INPUT_CLASSES, TEXTAREA_CLASSES
 
+from core.cms_text import ensure_cms_html
+
 TINYMCE_SIMPLE = {
-    'height': 320,
+    'height': 360,
     'menubar': False,
     'plugins': 'link lists',
     'toolbar': 'undo redo | bold italic underline | bullist numlist | link | removeformat',
     'branding': False,
     'promotion': False,
-    'content_style': 'body { font-family: system-ui, sans-serif; font-size: 16px; line-height: 1.5; }',
+    'forced_root_block': 'p',
+    'newline_behavior': 'block',
+    'content_style': (
+        'body { font-family: system-ui, -apple-system, sans-serif; font-size: 16px; '
+        'line-height: 1.55; padding: 8px 12px; }'
+        'p { margin: 0 0 0.9em; }'
+        'p:last-child { margin-bottom: 0; }'
+    ),
 }
+
+
+class CmsTinyMCE(TinyMCE):
+    """TinyMCE: plain text з \\n\\n відкривається вже як абзаци."""
+
+    def format_value(self, value):
+        raw = super().format_value(value)
+        if raw in (None, ''):
+            return ''
+        return ensure_cms_html(str(raw))
 
 
 def cms_control_classes(base_classes: list[str], extra_class: str = '') -> str:
@@ -116,5 +135,5 @@ class CmsAdminColorWidget(AdminTextInputWidget):
         return context
 
 
-def tinymce_widget() -> TinyMCE:
-    return TinyMCE(mce_attrs=TINYMCE_SIMPLE)
+def tinymce_widget() -> CmsTinyMCE:
+    return CmsTinyMCE(mce_attrs=TINYMCE_SIMPLE)

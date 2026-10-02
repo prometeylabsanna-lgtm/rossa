@@ -4,13 +4,15 @@
 {% block extrahead %}
   {{ block.super }}
   <link rel="stylesheet" href="{% static 'css/admin/site_content.css' %}">
-  <script src="{% static 'js/admin/cms_lang_switch.js' %}" defer></script>
+  <link rel="stylesheet" href="{% static 'css/admin/cms_json_list.css' %}">
   <script src="{% static 'js/admin/cms_image_preview.js' %}" defer></script>
+  <script src="{% static 'js/admin/cms_json_list.js' %}" defer></script>
+  <script src="{% static 'js/admin/cms_tinymce_tabs.js' %}" defer></script>
 {% endblock %}
 
 {% block content_title %}
   {{ block.super }}
   <p class="help" style="margin-top:0.35rem">
-    {% trans "Вкладка «Контент» — тексти й фото. Вкладка «Оформлення» — кольори цієї сторінки. Мову текстів перемикайте кнопками «Українська / Російська»." %}
+    {% trans "Вкладка «Контент (укр)» / «Контент (ру)» — тексти відповідною мовою. «Оформлення» — кольори сторінки." %}
   </p>
 {% endblock %}

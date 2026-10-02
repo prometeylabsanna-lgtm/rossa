@@ -50,7 +50,7 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
         'Логотипи (галерея)',
         default=list,
         blank=True,
-        help_text='Список: image, year, label_uk, label_ru.',
+        help_text='Рядки: фото, рік, підписи. Без JSON.',
     )
     evolution_title_uk = models.CharField(
         'Заголовок еволюції (UK)',
@@ -63,7 +63,7 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
         'Еволюція диванів',
         default=list,
         blank=True,
-        help_text='Список: image (URL). Порядок = порядок показу.',
+        help_text='Галерея фото. Порядок = порядок показу.',
     )
 
     class Meta:
@@ -152,7 +152,7 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
         'Переваги',
         default=list,
         blank=True,
-        help_text='Список: icon (years|production|guarantee|collections|design), title_uk, title_ru',
+        help_text='Додавайте рядки кнопкою нижче. Іконку обирайте зі списку.',
     )
     dealer_support_title_uk = models.CharField(
         'Заголовок підтримки дилера (UK)',
@@ -165,7 +165,7 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
         'Підтримка дилера',
         default=list,
         blank=True,
-        help_text='Список: title_uk, title_ru, body_uk, body_ru',
+        help_text='Додавайте пункти кнопкою нижче — без JSON.',
     )
 
     class Meta:

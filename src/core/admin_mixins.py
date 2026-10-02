@@ -6,6 +6,7 @@ from django import forms
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.admin_json_widgets import cms_json_list_widget
 from core.admin_widgets import (
     CmsAdminColorWidget,
     CmsAdminImageWidget,
@@ -25,6 +26,15 @@ RICH_TEXT_FIELDS = {
     'intro_uk', 'intro_ru',
     'sub_uk', 'sub_ru',
     'description_uk', 'description_ru',
+}
+
+JSON_LIST_FIELDS = {
+    'evolution_images',
+    'craft_images',
+    'logo_images',
+    'milestones',
+    'benefits',
+    'dealer_support',
 }
 
 
@@ -98,6 +108,12 @@ class CmsWidgetsAdminMixin:
         if db_field.name in RICH_TEXT_FIELDS:
             kwargs['widget'] = tinymce_widget()
             return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+        if db_field.name in JSON_LIST_FIELDS:
+            widget = cms_json_list_widget(db_field.name)
+            if widget is not None:
+                kwargs['widget'] = widget
+                return super().formfield_for_dbfield(db_field, request, **kwargs)
 
         if isinstance(db_field, (models.CharField, models.SlugField)) and not isinstance(db_field, models.TextField):
             kwargs.setdefault('widget', CmsAdminTextInputWidget())

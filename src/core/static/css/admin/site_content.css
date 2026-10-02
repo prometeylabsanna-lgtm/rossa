@@ -1,37 +1,3 @@
-.rs-cms-langs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0 0 1.25rem;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  padding: 0.5rem 0;
-}
-
-.rs-cms-langs__btn {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0.4rem 0.85rem;
-  border: 1px solid rgba(128, 128, 128, 0.45);
-  border-radius: 0.5rem;
-  background: transparent;
-  color: inherit;
-  font-size: 15px;
-  -webkit-tap-highlight-color: transparent;
-  cursor: pointer;
-}
-
-.rs-cms-langs__btn.is-active {
-  border-color: #986030;
-  background: rgba(152, 96, 48, 0.12);
-}
-
-body.cms-lang-uk [data-cms-lang="ru"],
-body.cms-lang-ru [data-cms-lang="uk"] {
-  display: none;
-}
-
 .rs-cms-image {
   display: grid;
   gap: 0.5rem;

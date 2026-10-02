@@ -14,7 +14,7 @@
           <p class="about-subtitle reveal reveal--up" data-reveal-delay="60">{{ page.subtitle }}</p>
         {% endif %}
         {% if page.body %}
-          <div class="about-body reveal reveal--up" data-reveal-delay="100">
+          <div class="about-body cms-html reveal reveal--up" data-reveal-delay="100">
             {{ page.body|cms_html }}
           </div>
         {% endif %}
@@ -61,7 +61,7 @@
               {% endif %}
               <div class="milestone">
                 <div class="milestone__year">{{ row.year }}</div>
-                <div class="milestone__body">{{ row|loc:'body'|cms_html }}</div>
+                <div class="milestone__body cms-html">{{ row|loc:'body'|cms_html }}</div>
               </div>
             </div>
           {% endfor %}

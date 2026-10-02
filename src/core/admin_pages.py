@@ -56,6 +56,31 @@ class AboutPageForm(PageStyleFieldsMixin, forms.ModelForm):
         model = AboutPage
         fields = '__all__'
 
+    def clean_evolution_images(self):
+        items = self.cleaned_data.get('evolution_images') or []
+        return [i for i in items if str(i.get('image') or '').strip()]
+
+    def clean_craft_images(self):
+        items = self.cleaned_data.get('craft_images') or []
+        return [i for i in items if str(i.get('image') or '').strip()]
+
+    def clean_logo_images(self):
+        items = self.cleaned_data.get('logo_images') or []
+        return [i for i in items if str(i.get('image') or '').strip()]
+
+    def clean_milestones(self):
+        from core.cms_text import ensure_cms_html_in_mapping
+        items = self.cleaned_data.get('milestones') or []
+        out = []
+        for item in items:
+            year = str(item.get('year') or '').strip()
+            if not year and not str(item.get('body_uk') or '').strip() and not str(item.get('body_ru') or '').strip():
+                continue
+            cleaned = ensure_cms_html_in_mapping(item, 'body_uk', 'body_ru')
+            cleaned['year'] = year
+            out.append(cleaned)
+        return out
+
 
 class CollabPageForm(PageStyleFieldsMixin, forms.ModelForm):
     style_page_key = PageStyle.PAGE_COLLAB
@@ -102,21 +127,36 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = HomePageForm
     inlines = (HeroSlideInline,)
     fieldsets = (
-        ('Контент', {
+        ('Контент (укр)', {
             'classes': ('tab',),
             'fields': (
-                'section_categories_uk', 'section_categories_ru',
-                'section_bestsellers_uk', 'section_bestsellers_ru',
-                'about_title_uk', 'about_title_ru',
-                'about_body_uk', 'about_body_ru',
+                'section_categories_uk',
+                'section_bestsellers_uk',
+                'about_title_uk',
+                'about_body_uk',
                 'about_video',
-                'craft_title_uk', 'craft_title_ru',
-                'craft_body_uk', 'craft_body_ru',
-                'craft_link_uk', 'craft_link_ru',
+                'craft_title_uk',
+                'craft_body_uk',
+                'craft_link_uk',
                 'craft_image',
-                'cta_banner_title_uk', 'cta_banner_title_ru',
-                'seo_title_uk', 'seo_title_ru',
-                'seo_description_uk', 'seo_description_ru',
+                'cta_banner_title_uk',
+                'seo_title_uk',
+                'seo_description_uk',
+            ),
+        }),
+        ('Контент (ру)', {
+            'classes': ('tab',),
+            'fields': (
+                'section_categories_ru',
+                'section_bestsellers_ru',
+                'about_title_ru',
+                'about_body_ru',
+                'craft_title_ru',
+                'craft_body_ru',
+                'craft_link_ru',
+                'cta_banner_title_ru',
+                'seo_title_ru',
+                'seo_description_ru',
             ),
         }),
         ('Оформлення', STYLE_TAB),
@@ -131,20 +171,32 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
 class AboutPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = AboutPageForm
     fieldsets = (
-        ('Контент', {
+        ('Контент (укр)', {
             'classes': ('tab',),
             'fields': (
-                'title_uk', 'title_ru',
-                'subtitle_uk', 'subtitle_ru',
-                'body_uk', 'body_ru',
-                'milestones_title_uk', 'milestones_title_ru',
+                'title_uk',
+                'subtitle_uk',
+                'body_uk',
+                'milestones_title_uk',
                 'milestones',
                 'craft_images',
                 'logo_images',
-                'evolution_title_uk', 'evolution_title_ru',
+                'evolution_title_uk',
                 'evolution_images',
-                'seo_title_uk', 'seo_title_ru',
-                'seo_description_uk', 'seo_description_ru',
+                'seo_title_uk',
+                'seo_description_uk',
+            ),
+        }),
+        ('Контент (ру)', {
+            'classes': ('tab',),
+            'fields': (
+                'title_ru',
+                'subtitle_ru',
+                'body_ru',
+                'milestones_title_ru',
+                'evolution_title_ru',
+                'seo_title_ru',
+                'seo_description_ru',
             ),
         }),
         ('Оформлення', STYLE_TAB),
@@ -159,20 +211,32 @@ class AboutPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
 class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = CollabPageForm
     fieldsets = (
-        ('Контент', {
+        ('Контент (укр)', {
             'classes': ('tab',),
             'fields': (
-                'title_uk', 'title_ru',
-                'sub_uk', 'sub_ru',
+                'title_uk',
+                'sub_uk',
                 'hero_image',
-                'advantages_title_uk', 'advantages_title_ru',
+                'advantages_title_uk',
                 'benefits',
-                'dealer_support_title_uk', 'dealer_support_title_ru',
+                'dealer_support_title_uk',
                 'dealer_support',
-                'form_title_uk', 'form_title_ru',
+                'form_title_uk',
                 'form_image',
-                'seo_title_uk', 'seo_title_ru',
-                'seo_description_uk', 'seo_description_ru',
+                'seo_title_uk',
+                'seo_description_uk',
+            ),
+        }),
+        ('Контент (ру)', {
+            'classes': ('tab',),
+            'fields': (
+                'title_ru',
+                'sub_ru',
+                'advantages_title_ru',
+                'dealer_support_title_ru',
+                'form_title_ru',
+                'seo_title_ru',
+                'seo_description_ru',
             ),
         }),
         ('Оформлення', STYLE_TAB),
@@ -187,14 +251,24 @@ class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
 class ContactsPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = ContactsPageForm
     fieldsets = (
-        ('Контент', {
+        ('Контент (укр)', {
             'classes': ('tab',),
             'fields': (
-                'title_uk', 'title_ru',
-                'intro_uk', 'intro_ru',
-                'form_title_uk', 'form_title_ru',
-                'seo_title_uk', 'seo_title_ru',
-                'seo_description_uk', 'seo_description_ru',
+                'title_uk',
+                'intro_uk',
+                'form_title_uk',
+                'seo_title_uk',
+                'seo_description_uk',
+            ),
+        }),
+        ('Контент (ру)', {
+            'classes': ('tab',),
+            'fields': (
+                'title_ru',
+                'intro_ru',
+                'form_title_ru',
+                'seo_title_ru',
+                'seo_description_ru',
             ),
         }),
         ('Оформлення', STYLE_TAB),
@@ -210,14 +284,23 @@ class LegalSlugAdmin(CmsWidgetsAdminMixin, ModelAdmin):
     slug = ''
 
     fieldsets = (
-        ('Контент', {
+        ('Контент (укр)', {
             'classes': ('tab',),
             'fields': (
-                'title_uk', 'title_ru',
-                'body_uk', 'body_ru',
+                'title_uk',
+                'body_uk',
                 'is_active',
-                'seo_title_uk', 'seo_title_ru',
-                'seo_description_uk', 'seo_description_ru',
+                'seo_title_uk',
+                'seo_description_uk',
+            ),
+        }),
+        ('Контент (ру)', {
+            'classes': ('tab',),
+            'fields': (
+                'title_ru',
+                'body_ru',
+                'seo_title_ru',
+                'seo_description_ru',
             ),
         }),
         ('Оформлення', STYLE_TAB),
@@ -284,13 +367,21 @@ class ValuePropAdmin(CmsWidgetsAdminMixin, ModelAdmin):
     list_display = ('number', 'title_uk', 'sort', 'is_active')
     list_editable = ('sort', 'is_active')
     fieldsets = (
-        ('Контент', {
+        ('Контент (укр)', {
             'classes': ('tab',),
             'fields': (
                 'number',
-                'title_uk', 'title_ru',
-                'body_uk', 'body_ru',
-                'sort', 'is_active',
+                'title_uk',
+                'body_uk',
+                'sort',
+                'is_active',
+            ),
+        }),
+        ('Контент (ру)', {
+            'classes': ('tab',),
+            'fields': (
+                'title_ru',
+                'body_ru',
             ),
         }),
     )

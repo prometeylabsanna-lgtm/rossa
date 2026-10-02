@@ -149,20 +149,30 @@ class HeaderSettingsAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin)
 class FooterSettingsAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
     form = FooterSettingsForm
     fieldsets = (
-        ('Контент', {
+        ('Контент (укр)', {
             'classes': ('tab',),
             'fields': (
                 'logo',
                 'phone', 'phone_2', 'phone_3',
                 'email',
-                'address_uk', 'address_ru',
-                'hours_uk', 'hours_ru',
-                'footer_tagline_uk', 'footer_tagline_ru',
+                'address_uk',
+                'hours_uk',
+                'footer_tagline_uk',
                 'telegram_url', 'telegram_handle',
                 'instagram_url', 'facebook_url', 'tiktok_url',
                 'map_image',
-                'guarantee_uk', 'guarantee_ru',
-                'delivery_label_uk', 'delivery_label_ru',
+                'guarantee_uk',
+                'delivery_label_uk',
+            ),
+        }),
+        ('Контент (ру)', {
+            'classes': ('tab',),
+            'fields': (
+                'address_ru',
+                'hours_ru',
+                'footer_tagline_ru',
+                'guarantee_ru',
+                'delivery_label_ru',
             ),
         }),
         ('Оформлення', {

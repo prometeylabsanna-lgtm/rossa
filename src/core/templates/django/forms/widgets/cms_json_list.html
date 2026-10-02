@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="rs-cms-json"
+     data-cms-json
+     data-cms-json-kind="{{ widget.kind }}"
+     data-cms-json-upload="{{ widget.upload_to }}"
+     data-cms-json-schema="{{ widget.schema_json|escape }}"
+     data-cms-json-items="{{ widget.items_json|escape }}">
+  <input type="hidden"
+         name="{{ widget.name }}"
+         value="{{ widget.value }}"
+         {% include "django/forms/widgets/attrs.html" %}
+         data-cms-json-input>
+  <div class="rs-cms-json__list" data-cms-json-list></div>
+  <button type="button" class="rs-cms-json__add" data-cms-json-add>
+    {{ widget.add_label }}
+  </button>
+  <p class="rs-cms-json__hint help">{% trans "Превʼю, завантаження, стрілки порядку та видалення. Зміни застосуються після «Зберегти»." %}</p>
+</div>

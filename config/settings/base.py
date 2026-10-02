@@ -130,12 +130,20 @@ CONTENT_SECURITY_POLICY = {
 }
 
 TINYMCE_DEFAULT_CONFIG = {
-    'height': 320,
+    'height': 360,
     'menubar': False,
     'plugins': 'link lists',
     'toolbar': 'undo redo | bold italic underline | bullist numlist | link | removeformat',
     'branding': False,
     'promotion': False,
+    'forced_root_block': 'p',
+    'newline_behavior': 'block',
+    'content_style': (
+        'body { font-family: system-ui, -apple-system, sans-serif; font-size: 16px; '
+        'line-height: 1.55; padding: 8px 12px; }'
+        'p { margin: 0 0 0.9em; }'
+        'p:last-child { margin-bottom: 0; }'
+    ),
 }
 
 
