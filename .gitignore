@@ -4,6 +4,7 @@ venv/
 __pycache__/
 *.py[cod]
 *.sqlite3
+!db.vercel.sqlite3
 .DS_Store
 staticfiles/
 media/

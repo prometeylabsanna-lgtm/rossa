@@ -19,6 +19,5 @@ deploy
 docker-compose*.yml
 db.sqlite3
 media
-*.mo
 .idea
 .vscode
