@@ -46,4 +46,25 @@ if [ -d media_demo ] && [ "$(ls -A media_demo 2>/dev/null || true)" ]; then
   cp -a media_demo/. public/media/
 fi
 
+python3 - <<'PY'
+import sys
+from pathlib import Path
+
+required = [
+    Path('media_demo/brand/rossa-logo.png'),
+    Path('media_demo/brand/contact-map.webp'),
+    Path('media_demo/home/craft.jpg'),
+    Path('media_demo/home/slides/slide-1.webp'),
+    Path('media_demo/home/video/about-showroom.mp4'),
+    Path('media_demo/products/milan.webp'),
+    Path('public/media/brand/rossa-logo.png'),
+    Path('public/media/home/video/about-showroom.mp4'),
+]
+missing = [str(p) for p in required if not p.exists()]
+if missing:
+    print('ERROR: missing media after seed/copy:', ', '.join(missing), file=sys.stderr)
+    sys.exit(1)
+print('Vercel media OK:', sum(1 for _ in Path('media_demo').rglob('*') if _.is_file()), 'files')
+PY
+
 echo "Vercel build OK: db.vercel.sqlite3 + media_demo + public/media + staticfiles"

@@ -1,6 +1,7 @@
 """Project Unfold ModelAdmin: top dropdown filters + sensible defaults."""
 
 from django import forms
+from django.contrib.admin.views.main import ChangeList
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
 
@@ -9,6 +10,15 @@ from core.admin_filters import (
     default_param_for_field,
     resolve_list_filter_item,
 )
+
+
+class RossaChangeList(ChangeList):
+    """Ігнорує службовий `_f` (маркер дефолтних фільтрів), щоб Django не шукав таке поле."""
+
+    def get_filters_params(self, params=None):
+        lookup_params = super().get_filters_params(params)
+        lookup_params.pop(FILTER_INIT_PARAM, None)
+        return lookup_params
 
 
 class ModelAdmin(UnfoldModelAdmin):
@@ -25,6 +35,9 @@ class ModelAdmin(UnfoldModelAdmin):
             css={'all': ('css/admin/top_filters.css',)},
             js=('js/admin/cms_payload_guard.js',),
         )
+
+    def get_changelist(self, request, **kwargs):
+        return RossaChangeList
 
     def get_list_filter(self, request: HttpRequest):
         raw = list(super().get_list_filter(request) or [])

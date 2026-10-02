@@ -139,13 +139,9 @@ class Command(BaseCommand):
             if getattr(obj, key, None) != value:
                 setattr(obj, key, value)
                 updated = True
-        if not obj.about_video:
-            replace_file(obj.about_video, 'home/video/about-showroom.mp4')
-            updated = True
-        if updated:
-            obj.save()
-        else:
-            obj.save()
+        # Відео: завжди ensure на диску (на Vercel БД може мати шлях без файлу).
+        replace_file(obj.about_video, 'home/video/about-showroom.mp4')
+        obj.save()
         self._hero_slides(obj)
 
     def _hero_slides(self, page):
