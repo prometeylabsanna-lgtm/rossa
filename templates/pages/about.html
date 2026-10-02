@@ -46,10 +46,6 @@
         <div class="about-history__rows milestones" data-draw-dividers>
           {% for row in page.milestone_rows %}
             <div class="about-history__row reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
-              <div class="milestone">
-                <div class="milestone__year">{{ row.year }}</div>
-                <div class="milestone__body">{{ row|loc:'body'|cms_html }}</div>
-              </div>
               {% if row.logo %}
                 <figure class="about-history__logo">
                   <img
@@ -63,6 +59,10 @@
                   >
                 </figure>
               {% endif %}
+              <div class="milestone">
+                <div class="milestone__year">{{ row.year }}</div>
+                <div class="milestone__body">{{ row|loc:'body'|cms_html }}</div>
+              </div>
             </div>
           {% endfor %}
         </div>
