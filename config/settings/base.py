@@ -147,7 +147,7 @@ def _unfold_navigation(request=None):
 UNFOLD = {
     'SITE_TITLE': 'ROSSA — панель керування',
     'SITE_HEADER': 'ROSSA',
-    'SITE_SYMBOL': 'chair',
+    'SITE_SYMBOL': 'crown',
     'SITE_FAVICONS': [
         {
             'rel': 'icon',
@@ -172,6 +172,36 @@ UNFOLD = {
             'href': lambda request: static('images/favicon/apple-touch-icon.png'),
         },
     ],
+    'COLORS': {
+        # Beige page surface — matches --color-surface (#f1efec)
+        'base': {
+            '50': '#f1efec',
+            '100': '#e8e6e3',
+            '200': '#dcdad7',
+            '300': '#c6c4c1',
+            '400': '#9b9997',
+            '500': '#7b7977',
+            '600': '#656362',
+            '700': '#504e4c',
+            '800': '#3a3837',
+            '900': '#2b2928',
+            '950': '#232120',
+        },
+        # Brown accent — matches --color-accent (#986030)
+        'primary': {
+            '50': '#faf7f5',
+            '100': '#f3ece6',
+            '200': '#e5d7cb',
+            '300': '#d1b7a2',
+            '400': '#b7906e',
+            '500': '#b07a45',
+            '600': '#986030',
+            '700': '#7d4f27',
+            '800': '#633e1f',
+            '900': '#4c3018',
+            '950': '#2e1d0e',
+        },
+    },
     'SHOW_HISTORY': True,
     'SIDEBAR': {
         'show_search': True,
