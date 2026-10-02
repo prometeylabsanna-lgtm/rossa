@@ -222,6 +222,7 @@ class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'dealer_support_title_uk',
                 'dealer_support',
                 'form_title_uk',
+                'form_fields',
                 'form_image',
                 'seo_title_uk',
                 'seo_description_uk',

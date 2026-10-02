@@ -82,7 +82,7 @@ def collab(request):
     page = CollabPage.load()
     return render(request, 'pages/collab.html', {
         'page': page,
-        'form': PartnershipForm(),
+        'form': PartnershipForm(page=page),
         'breadcrumbs': [
             {'label': _('Головна'), 'url': '/', 'has_next': True},
             {'label': page.title, 'url': None, 'has_next': False},

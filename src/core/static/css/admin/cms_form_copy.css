@@ -1,0 +1,22 @@
+.rs-cms-form-copy {
+  max-width: 48rem;
+}
+
+.rs-cms-form-copy__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.rs-cms-form-copy__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 0.75rem;
+}
+
+@media (max-width: 767px) {
+  .rs-cms-form-copy__grid {
+    grid-template-columns: 1fr;
+  }
+}

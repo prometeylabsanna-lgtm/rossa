@@ -39,5 +39,5 @@
     {{ form.message.errors }}
   </label>
 
-  <button class="btn btn--solid" type="submit">{% trans "Надіслати" %}</button>
+  <button class="btn btn--solid" type="submit">{% if form.submit_label %}{{ form.submit_label }}{% else %}{% trans "Надіслати" %}{% endif %}</button>
 </form>

@@ -47,7 +47,10 @@ def order_submit(request):
 
 @require_POST
 def partnership_submit(request):
-    form = PartnershipForm(request.POST)
+    from core.models import CollabPage
+
+    page = CollabPage.load()
+    form = PartnershipForm(request.POST, page=page)
     if form.is_valid():
         obj = form.save(commit=False)
         obj.language = current_lang()
@@ -65,8 +68,7 @@ def partnership_submit(request):
         return _ok_redirect(request, 'core:thanks')
     return render(request, 'leads/partnership_form.html', {
         'form': form,
-        'form_title': form.data.get('company', ''),
-        'page': type('P', (), {'form_title': ''})(),
+        'page': page,
     }, status=400)
 
 

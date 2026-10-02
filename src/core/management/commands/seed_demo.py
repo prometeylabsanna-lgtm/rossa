@@ -8,6 +8,7 @@ from core.cms_text import ensure_cms_html, ensure_cms_html_in_mapping
 from core.management.seed_legal_texts import LEGAL_PAGES
 from core.management.seed_media import attach, replace_file
 from core.models import AboutPage, CollabPage, HomePage, LegalPage, SiteSettings, ValueProp
+from core.collab_form_copy import default_collab_form_copy
 
 # Лише для тестового Vercel-деплою (не для production).
 _VERCEL_DEMO_USERNAME = 'admin'
@@ -417,6 +418,7 @@ class Command(BaseCommand):
             'sub_ru': '',
             'form_title_uk': 'Форма заявки',
             'form_title_ru': 'Форма заявки',
+            'form_fields': default_collab_form_copy(),
             'advantages_title_uk': 'Наші переваги',
             'advantages_title_ru': 'Наши преимущества',
             'benefits': benefits,

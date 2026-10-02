@@ -1,0 +1,15 @@
+{% load i18n %}
+<div class="rs-cms-json rs-cms-form-copy"
+     data-cms-form-copy
+     data-cms-form-schema="{{ widget.schema_json|escape }}"
+     data-cms-form-items="{{ widget.items_json|escape }}">
+  <input type="hidden"
+         name="{{ widget.name }}"
+         value="{{ widget.value }}"
+         {% include "django/forms/widgets/attrs.html" %}
+         data-cms-form-input>
+  <div class="rs-cms-json__list" data-cms-form-list></div>
+  <p class="rs-cms-json__hint help">
+    {% trans "Підписи й підказки полів форми. Зміни застосуються після «Зберегти»." %}
+  </p>
+</div>

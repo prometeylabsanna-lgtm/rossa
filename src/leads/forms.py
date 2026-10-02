@@ -91,6 +91,22 @@ class PartnershipForm(forms.ModelForm):
         model = PartnershipLead
         fields = ['name', 'phone', 'email', 'city', 'message']
 
+    def __init__(self, *args, page=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.page = page
+        self.submit_label = _('Надіслати')
+        if page is None:
+            return
+        self.submit_label = getattr(page, 'form_submit_label', None) or self.submit_label
+        for key in ('name', 'phone', 'email', 'city', 'message'):
+            copy = page.field_copy(key) if hasattr(page, 'field_copy') else {}
+            label = (copy.get('label') or '').strip()
+            placeholder = (copy.get('placeholder') or '').strip()
+            if label:
+                self.fields[key].label = label
+            if placeholder:
+                self.fields[key].widget.attrs['placeholder'] = placeholder
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.company = instance.company or instance.name

@@ -1,5 +1,6 @@
 from django.db import models
 
+from core.collab_form_copy import default_collab_form_copy, resolve_form_field_copy
 from core.mixins import SeoFieldsMixin, TimeStampedModel
 from core.utils import localized
 
@@ -144,6 +145,12 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
     sub_ru = models.TextField('Вступ (RU)', blank=True)
     form_title_uk = models.CharField('Заголовок форми (UK)', max_length=128, blank=True)
     form_title_ru = models.CharField('Заголовок форми (RU)', max_length=128, blank=True)
+    form_fields = models.JSONField(
+        'Поля форми',
+        default=default_collab_form_copy,
+        blank=True,
+        help_text='Підписи та підказки полів заявки (укр / рос).',
+    )
     hero_image = models.ImageField('Hero фото', upload_to='collab/', blank=True)
     form_image = models.ImageField('Фото біля форми', upload_to='collab/', blank=True)
     advantages_title_uk = models.CharField('Заголовок переваг (UK)', max_length=128, blank=True, default='Наші переваги')
@@ -198,6 +205,13 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
     @property
     def form_title(self):
         return localized(self, 'form_title')
+
+    def field_copy(self, field_key: str) -> dict[str, str]:
+        return resolve_form_field_copy(self.form_fields, field_key)
+
+    @property
+    def form_submit_label(self) -> str:
+        return self.field_copy('submit')['label'] or 'Надіслати'
 
     @property
     def advantages_title(self):

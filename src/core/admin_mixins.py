@@ -6,6 +6,7 @@ from django import forms
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.admin_form_copy_widgets import CmsFormCopyWidget
 from core.admin_json_widgets import cms_json_list_widget
 from core.admin_widgets import (
     CmsAdminColorWidget,
@@ -35,6 +36,10 @@ JSON_LIST_FIELDS = {
     'milestones',
     'benefits',
     'dealer_support',
+}
+
+FORM_COPY_FIELDS = {
+    'form_fields',
 }
 
 
@@ -114,6 +119,10 @@ class CmsWidgetsAdminMixin:
             if widget is not None:
                 kwargs['widget'] = widget
                 return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+        if db_field.name in FORM_COPY_FIELDS:
+            kwargs['widget'] = CmsFormCopyWidget()
+            return super().formfield_for_dbfield(db_field, request, **kwargs)
 
         if isinstance(db_field, (models.CharField, models.SlugField)) and not isinstance(db_field, models.TextField):
             kwargs.setdefault('widget', CmsAdminTextInputWidget())
