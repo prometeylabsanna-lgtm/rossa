@@ -1,12 +1,27 @@
 from pathlib import Path
 
 from catalog.models import Category
+from django.conf import settings as django_settings
 from django.db.models import Prefetch
+from django.urls import translate_url
 
 from core.models import SiteSettings
 from core.page_styles import get_chrome_style_vars, get_page_style_vars
 
 _STATIC_ROOT = Path(__file__).resolve().parent / 'static'
+
+
+def _language_switch_urls(request) -> dict[str, str]:
+    """URL тієї ж сторінки іншою мовою (без POST/CSRF)."""
+    full_path = request.get_full_path()
+    current = getattr(request, 'LANGUAGE_CODE', 'uk')[:2]
+    urls: dict[str, str] = {}
+    for code, _label in django_settings.LANGUAGES:
+        if code == current:
+            urls[code] = full_path
+        else:
+            urls[code] = translate_url(full_path, code)
+    return urls
 
 
 def site_globals(request):
@@ -32,6 +47,7 @@ def site_globals(request):
         'site_settings': settings,
         'nav_categories': nav_categories,
         'current_language': getattr(request, 'LANGUAGE_CODE', 'uk')[:2],
+        'lang_urls': _language_switch_urls(request),
         'static_v': static_v,
         'page_style': get_page_style_vars(request),
         'chrome_style': get_chrome_style_vars(),

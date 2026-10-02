@@ -6,7 +6,6 @@
       hx-post="{% url 'leads:contact' %}"
       hx-swap="outerHTML">
   {% csrf_token %}
-  <div class="contact-form__title">{% trans "Повідомлення" %}</div>
   {{ form.non_field_errors }}
   {{ form.name }}
   {{ form.name.errors }}

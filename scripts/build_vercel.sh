@@ -6,6 +6,7 @@ export DJANGO_SETTINGS_MODULE=config.settings.vercel
 export VERCEL_BUILD=1
 export PYTHONPATH="${PYTHONPATH:-}:src"
 
+python3 manage.py compilemessages --ignore=.venv --ignore=venv || true
 python3 manage.py migrate --noinput
 python3 manage.py seed_demo
 python3 manage.py collectstatic --noinput

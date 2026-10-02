@@ -75,21 +75,21 @@
   </div>
   <div class="footer__bottom">
     <div class="footer__bottom-row">
-      <div>{% trans "© 2026 ROSSA. Усі права захищені." %}</div>
-      <a href="{% url 'core:privacy' %}">{% trans "Оферта та політика конфіденційності" %}</a>
+      <div class="footer__copy">{% trans "© 2026 ROSSA. Усі права захищені." %}</div>
+      <p class="site-footer__credit">
+        {% trans "Створено в" %}
+        {% if request.resolver_match.url_name == 'home' %}
+          <a
+            class="site-footer__credit-link"
+            href="https://www.prometeylabs.com/internet-shop-v2/"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >PrometeyLabs</a>
+        {% else %}
+          <span class="site-footer__credit-name">PrometeyLabs</span>
+        {% endif %}
+      </p>
+      <a class="footer__legal" href="{% url 'core:privacy' %}">{% trans "Оферта та політика конфіденційності" %}</a>
     </div>
-    <p class="site-footer__credit">
-      {% trans "Створено в" %}
-      {% if request.resolver_match.url_name == 'home' %}
-        <a
-          class="site-footer__credit-link"
-          href="https://www.prometeylabs.com/internet-shop-v2/"
-          target="_blank"
-          rel="nofollow noopener noreferrer"
-        >PrometeyLabs</a>
-      {% else %}
-        <span class="site-footer__credit-name">PrometeyLabs</span>
-      {% endif %}
-    </p>
   </div>
 </footer>

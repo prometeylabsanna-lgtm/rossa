@@ -10,6 +10,7 @@ media/
 media_demo/
 public/media/
 *.mo
+!locale/**/LC_MESSAGES/*.mo
 .pytest_cache/
 .coverage
 htmlcov/

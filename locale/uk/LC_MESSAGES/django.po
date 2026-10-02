@@ -357,6 +357,19 @@ msgstr "Нове значення"
 msgid "Django administration"
 msgstr "Панель керування Django"
 
+# Рід іменників у related-widget (колір — чоловічий рід)
+msgid "Add another %(model)s"
+msgstr "Додати ще один %(model)s"
+
+msgid "Change selected %(model)s"
+msgstr "Змінити обраний %(model)s"
+
+msgid "Delete selected %(model)s"
+msgstr "Видалити обраний %(model)s"
+
+msgid "View selected %(model)s"
+msgstr "Переглянути обраний %(model)s"
+
 msgid "Django site admin"
 msgstr "Адміністрування сайту"
 

@@ -286,7 +286,7 @@
   margin-left: 2px;
 }
 
-.lang button {
+.lang a {
   color: var(--color-light);
   font-size: 12px;
   font-weight: 600;
@@ -295,6 +295,10 @@
   min-height: var(--tap);
   padding: 4px;
   opacity: 0.45;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -415,7 +419,7 @@
   }
 
   .icon-btn,
-  .lang button {
+  .lang a {
     min-width: 40px;
   }
 

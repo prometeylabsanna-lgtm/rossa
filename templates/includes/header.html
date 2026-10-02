@@ -63,15 +63,15 @@
               stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </a>
-        <form action="{% url 'set_language' %}" method="post" class="lang" data-qa="lang-switch">
-          {% csrf_token %}
-          <input type="hidden" name="next" value="{{ request.get_full_path }}">
-          <button type="submit" name="language" value="uk"
-            class="{% if LANGUAGE_CODE == 'uk' %}is-active{% endif %}">UA</button>
+        <nav class="lang" data-qa="lang-switch" aria-label="{% trans 'Мова' %}">
+          <a href="{{ lang_urls.uk }}" hreflang="uk" lang="uk"
+            class="{% if LANGUAGE_CODE == 'uk' %}is-active{% endif %}"
+            {% if LANGUAGE_CODE == 'uk' %}aria-current="true"{% endif %}>UA</a>
           <span aria-hidden="true">/</span>
-          <button type="submit" name="language" value="ru"
-            class="{% if LANGUAGE_CODE == 'ru' %}is-active{% endif %}">RU</button>
-        </form>
+          <a href="{{ lang_urls.ru }}" hreflang="ru" lang="ru"
+            class="{% if LANGUAGE_CODE == 'ru' %}is-active{% endif %}"
+            {% if LANGUAGE_CODE == 'ru' %}aria-current="true"{% endif %}>RU</a>
+        </nav>
       </div>
     </div>
   </div>

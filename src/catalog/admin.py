@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import TabularInline
@@ -15,6 +16,62 @@ from catalog.models import (
 )
 from core.admin_base import ModelAdmin
 from core.admin_widgets import CmsAdminColorWidget, CmsAdminImageWidget
+
+
+def _subcategory_queryset():
+    return (
+        Category.objects
+        .filter(parent__isnull=False)
+        .select_related('parent')
+        .order_by('parent__sort', 'parent_id', 'sort', 'id')
+    )
+
+
+def _subcategory_label(obj: Category) -> str:
+    if obj.parent_id:
+        return f'{obj.parent.name_uk} → {obj.name_uk}'
+    return obj.name_uk
+
+
+class ProductAdminForm(forms.ModelForm):
+    type_subcategory = forms.ModelChoiceField(
+        label='Тип',
+        queryset=Category.objects.none(),
+        required=False,
+        empty_label='— оберіть підкатегорію —',
+    )
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        qs = _subcategory_queryset()
+        field = self.fields['type_subcategory']
+        field.queryset = qs
+        field.label_from_instance = _subcategory_label
+
+        initial = None
+        instance = self.instance
+        if instance and instance.pk:
+            if instance.type_uk:
+                initial = qs.filter(name_uk=instance.type_uk).first()
+            if initial is None and instance.category_id and instance.category.parent_id:
+                initial = qs.filter(pk=instance.category_id).first()
+        if initial is not None:
+            field.initial = initial.pk
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        sub = self.cleaned_data.get('type_subcategory')
+        if sub:
+            instance.type_uk = sub.name_uk
+            instance.type_ru = sub.name_ru or ''
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class ChildCategoryInline(TabularInline):
@@ -249,10 +306,11 @@ class ProductColorOptionAdmin(ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
+    form = ProductAdminForm
     list_display = ('name_uk', 'category', 'base_price', 'badge', 'is_available', 'is_active')
     list_filter = ('category', 'badge', 'is_available', 'is_active')
     search_fields = ('name_uk', 'name_ru', 'sku')
-    readonly_fields = ('slug',)
+    readonly_fields = ('slug', 'type_ru')
     inlines = [FabricPriceInline, ProductColorInline, ProductCharacteristicInline]
     fieldsets = (
         ('Контент (ukr)', {
@@ -262,7 +320,7 @@ class ProductAdmin(ModelAdmin):
                 'slug',
                 'sku',
                 'category',
-                'type_uk',
+                'type_subcategory',
                 'base_price',
                 'badge',
                 'is_available',
@@ -276,6 +334,7 @@ class ProductAdmin(ModelAdmin):
             ),
             'description': (
                 'URL-адреса генерується з назви (ukr) автоматично. '
+                'Тип — підкатегорія зі списку (назви ukr/ru підставляються автоматично). '
                 'Ціна залежить від категорії тканини (вкладка цін 1–7). '
                 'Характеристики — окрема вкладка нижче.'
             ),

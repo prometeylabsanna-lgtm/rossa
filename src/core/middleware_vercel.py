@@ -9,17 +9,38 @@ from pathlib import Path
 from django.conf import settings
 
 
+def _db_template_path() -> Path:
+    return Path(settings.BASE_DIR) / 'db.vercel.sqlite3'
+
+
+def _template_signature() -> str:
+    template = _db_template_path()
+    if not template.exists():
+        return 'none'
+    st = template.stat()
+    return f'{int(st.st_mtime)}:{st.st_size}'
+
+
 def _ensure_runtime_db() -> None:
     db_name = settings.DATABASES['default']['NAME']
     if not str(db_name).startswith('/tmp/'):
         return
     runtime = Path(db_name)
+    template = _db_template_path()
+
+    if template.exists():
+        need_copy = not runtime.exists()
+        if runtime.exists():
+            # Новий деплой: шаблон зі збірки свіжіший за /tmp → перезаписуємо.
+            need_copy = template.stat().st_mtime > runtime.stat().st_mtime
+        if need_copy:
+            runtime.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(template, runtime)
+            return
+
     if runtime.exists():
         return
-    template = Path(settings.BASE_DIR) / 'db.vercel.sqlite3'
-    if template.exists():
-        shutil.copy2(template, runtime)
-        return
+
     from django.core.management import call_command
 
     call_command('migrate', '--noinput', verbosity=0)
@@ -28,17 +49,20 @@ def _ensure_runtime_db() -> None:
 
 def _ensure_ready() -> None:
     marker = Path('/tmp/rossa_ready')
-    if marker.exists() and Path(settings.DATABASES['default']['NAME']).exists():
+    runtime = Path(settings.DATABASES['default']['NAME'])
+    sig = _template_signature()
+
+    if marker.exists() and runtime.exists() and marker.read_text().strip() == sig:
         return
 
     lock_path = Path('/tmp/rossa_init.lock')
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     with lock_path.open('w') as lock_file:
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
-        if marker.exists() and Path(settings.DATABASES['default']['NAME']).exists():
+        if marker.exists() and runtime.exists() and marker.read_text().strip() == sig:
             return
         _ensure_runtime_db()
-        marker.touch()
+        marker.write_text(sig)
 
 
 class VercelBootstrapMiddleware:
@@ -62,7 +86,7 @@ class VercelBootstrapMiddleware:
 
 
 class VercelHostMiddleware:
-    """Дозволяє поточний *.vercel.app хост у CSRF_TRUSTED_ORIGINS і ALLOWED_HOSTS."""
+    """Додає поточний *.vercel.app хост у CSRF_TRUSTED_ORIGINS і ALLOWED_HOSTS."""
 
     def __init__(self, get_response):
         self.get_response = get_response

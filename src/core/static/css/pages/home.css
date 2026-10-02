@@ -299,8 +299,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
   gap: 18px;
   padding: 36px 24px 40px;
   background: var(--color-nav);
@@ -348,7 +348,7 @@
 }
 
 .about-band__body {
-  margin: 0 auto;
+  margin: 0;
   max-width: 36ch;
   font-family: var(--font-serif);
   font-size: 17px;
@@ -484,10 +484,10 @@
   font-weight: 400;
   line-height: 1.5;
   color: rgba(26, 24, 23, 0.78);
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   word-break: normal;
-  hyphens: auto;
-  -webkit-hyphens: auto;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .about-band__prop:nth-child(2) { --draw-i: 1; }

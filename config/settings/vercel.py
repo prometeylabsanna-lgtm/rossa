@@ -16,7 +16,8 @@ ALLOWED_HOSTS = [
     'testserver',
 ]
 
-CSRF_TRUSTED_ORIGINS = []
+# Wildcard для preview/production *.vercel.app (Django 4.0+).
+CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app']
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = False
@@ -24,6 +25,9 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 # SQLite у /tmp не шариться між інстансами Vercel — сесії лише в підписаній cookie.
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+# Ліміт Vercel Function body ≈ 4.5 МБ — ріжемо раніше з зрозумілою помилкою Django.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

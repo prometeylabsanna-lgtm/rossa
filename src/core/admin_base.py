@@ -21,7 +21,10 @@ class ModelAdmin(UnfoldModelAdmin):
 
     @property
     def media(self):
-        return super().media + forms.Media(css={'all': ('css/admin/top_filters.css',)})
+        return super().media + forms.Media(
+            css={'all': ('css/admin/top_filters.css',)},
+            js=('js/admin/cms_payload_guard.js',),
+        )
 
     def get_list_filter(self, request: HttpRequest):
         raw = list(super().get_list_filter(request) or [])
