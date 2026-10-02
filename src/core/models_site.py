@@ -142,15 +142,15 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     about_body_uk = models.TextField('Про ROSSA — текст (UK)', blank=True)
     about_body_ru = models.TextField('Про ROSSA — текст (RU)', blank=True)
     about_video = models.FileField('Про ROSSA — відео', upload_to='home/video/', blank=True)
-    craft_title_uk = models.CharField('Craft заголовок (UK)', max_length=255)
-    craft_title_ru = models.CharField('Craft заголовок (RU)', max_length=255, blank=True)
-    craft_body_uk = models.TextField('Craft текст (UK)')
-    craft_body_ru = models.TextField('Craft текст (RU)', blank=True)
-    craft_link_uk = models.CharField('Craft посилання (UK)', max_length=128, blank=True)
-    craft_link_ru = models.CharField('Craft посилання (RU)', max_length=128, blank=True)
+    craft_title_uk = models.CharField('Заголовок блоку «виробництво» (UK)', max_length=255)
+    craft_title_ru = models.CharField('Заголовок блоку «виробництво» (RU)', max_length=255, blank=True)
+    craft_body_uk = models.TextField('Текст блоку «виробництво» (UK)')
+    craft_body_ru = models.TextField('Текст блоку «виробництво» (RU)', blank=True)
+    craft_link_uk = models.CharField('Текст посилання «Про нас» (UK)', max_length=128, blank=True)
+    craft_link_ru = models.CharField('Текст посилання «Про нас» (RU)', max_length=128, blank=True)
     craft_image = models.ImageField('Фото майстерні', upload_to='home/', blank=True)
-    cta_banner_title_uk = models.CharField('Банер CTA (UK)', max_length=255, blank=True)
-    cta_banner_title_ru = models.CharField('Банер CTA (RU)', max_length=255, blank=True)
+    cta_banner_title_uk = models.CharField('Текст банера-запрошення (UK)', max_length=255, blank=True)
+    cta_banner_title_ru = models.CharField('Текст банера-запрошення (RU)', max_length=255, blank=True)
 
     class Meta:
         verbose_name = 'Головна'

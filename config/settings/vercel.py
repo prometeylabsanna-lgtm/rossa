@@ -22,6 +22,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+# SQLite у /tmp не шариться між інстансами Vercel — сесії лише в підписаній cookie.
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
