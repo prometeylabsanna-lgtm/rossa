@@ -48,7 +48,7 @@
             <div class="about-history__row reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
               <div class="milestone">
                 <div class="milestone__year">{{ row.year }}</div>
-                <div class="milestone__body">{{ row|loc:'body' }}</div>
+                <div class="milestone__body">{{ row|loc:'body'|cms_html }}</div>
               </div>
               {% if row.logo %}
                 <figure class="about-history__logo">
@@ -75,7 +75,7 @@
         <h2 id="evolution-folder-title" class="evolution-folder__title">{{ page.evolution_title }}</h2>
       </div>
       <div class="evolution-folder__panel">
-        <div class="evolution-gallery">
+        <div class="evolution-gallery" data-evolution-gallery>
           {% for item in page.evolution_images %}
             <figure class="evolution-gallery__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}40">
               <img
@@ -92,4 +92,7 @@
       </div>
     </section>
   {% endif %}
+{% endblock %}
+{% block extra_js %}
+  <script src="{% static 'js/pages/about-evolution.js' %}?v={{ static_v }}" defer></script>
 {% endblock %}

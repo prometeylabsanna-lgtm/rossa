@@ -115,7 +115,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'default-src': ("'self'",),
-        'script-src': ("'self'", "'unsafe-inline'"),
+        # unsafe-eval потрібен для Alpine.js у django-unfold (x-show / x-data).
+        'script-src': ("'self'", "'unsafe-inline'", "'unsafe-eval'"),
         'style-src': ("'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'),
         'font-src': ("'self'", 'https://fonts.gstatic.com', 'data:'),
         'img-src': ("'self'", 'data:', 'blob:'),

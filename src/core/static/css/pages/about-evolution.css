@@ -93,9 +93,19 @@
 }
 
 .evolution-gallery__item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
   margin: 0;
+  height: var(--evolution-item-h, auto);
   overflow: hidden;
-  background: var(--color-white);
+  background: transparent;
   border-radius: 6px;
   -webkit-tap-highlight-color: transparent;
 }
@@ -104,42 +114,17 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
+  max-width: 100%;
+  -o-object-fit: contain;
+  object-fit: contain;
+  -o-object-position: center;
   object-position: center;
-  background: var(--color-white);
-  -webkit-transform: scale(1.08);
-  transform: scale(1.08);
-  -webkit-transform-origin: center center;
-  transform-origin: center center;
-  transition: -webkit-transform var(--duration-base) var(--ease-out);
-  transition: transform var(--duration-base) var(--ease-out);
+  background: transparent;
 }
 
-@supports not (aspect-ratio: 3 / 2) {
-  .evolution-gallery__item img {
-    min-height: 160px;
-  }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .evolution-gallery__item:hover img {
-    -webkit-transform: scale(1.12);
-    transform: scale(1.12);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .evolution-gallery__item img {
-    transition: none;
-    -webkit-transform: scale(1.08);
-    transform: scale(1.08);
-  }
-
-  .evolution-gallery__item:hover img {
-    -webkit-transform: scale(1.08);
-    transform: scale(1.08);
-  }
+.evolution-gallery.is-sized .evolution-gallery__item img {
+  width: 100%;
+  height: 100%;
 }
 
 /* Логотипи інтегровані в блок віх (.about-history) — див. inner.css */

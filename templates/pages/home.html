@@ -96,7 +96,7 @@
       {% for cat in featured_categories %}
         <a class="cat-tile reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00" href="{{ cat.get_absolute_url }}">
           <div class="cat-tile__media">
-            {% if cat.image %}<img src="{{ cat.image.url }}" alt="{{ cat.name }}" width="600" height="800" loading="lazy">{% endif %}
+            {% if cat.image %}<img src="{{ cat.image.url }}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">{% endif %}
             <span class="cat-tile__label">{{ cat.name }}</span>
           </div>
         </a>
