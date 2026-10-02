@@ -133,14 +133,6 @@ class FooterSettings(SiteSettings):
 
 
 class HomePage(SeoFieldsMixin, TimeStampedModel):
-    hero_title_uk = models.CharField('Hero заголовок (UK)', max_length=255)
-    hero_title_ru = models.CharField('Hero заголовок (RU)', max_length=255, blank=True)
-    hero_sub_uk = models.TextField('Hero підзаголовок (UK)')
-    hero_sub_ru = models.TextField('Hero підзаголовок (RU)', blank=True)
-    cta_catalog_uk = models.CharField('CTA каталог (UK)', max_length=64, default='Дивитись каталог')
-    cta_catalog_ru = models.CharField('CTA каталог (RU)', max_length=64, blank=True)
-    hero_poster = models.ImageField('Кадр / постер hero', upload_to='home/', blank=True)
-    hero_video = models.FileField('Відео hero', upload_to='home/video/', blank=True)
     section_categories_uk = models.CharField('Категорії (UK)', max_length=128, default='Категорії')
     section_categories_ru = models.CharField('Категорії (RU)', max_length=128, blank=True)
     section_bestsellers_uk = models.CharField('Хіти (UK)', max_length=128, default='Популярні моделі')
@@ -159,7 +151,6 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     craft_image = models.ImageField('Фото майстерні', upload_to='home/', blank=True)
     cta_banner_title_uk = models.CharField('Банер CTA (UK)', max_length=255, blank=True)
     cta_banner_title_ru = models.CharField('Банер CTA (RU)', max_length=255, blank=True)
-    is_active = models.BooleanField('Активна', default=True)
 
     class Meta:
         verbose_name = 'Головна'
@@ -175,24 +166,10 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     @classmethod
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1, defaults={
-            'hero_title_uk': 'Меблі, створені для дому',
-            'hero_sub_uk': 'М’які меблі з натуральних матеріалів. Індивідуальний пошив, доставка по всій Україні.',
             'craft_title_uk': 'Кожна деталь має значення',
             'craft_body_uk': '',
         })
         return obj
-
-    @property
-    def hero_title(self):
-        return localized(self, 'hero_title')
-
-    @property
-    def hero_sub(self):
-        return localized(self, 'hero_sub')
-
-    @property
-    def cta_catalog(self):
-        return localized(self, 'cta_catalog')
 
     @property
     def section_categories(self):
@@ -243,14 +220,8 @@ class HeroSlide(TimeStampedModel):
         verbose_name='Головна',
     )
     image = models.ImageField('Зображення', upload_to='home/slides/')
-    title_uk = models.CharField('Заголовок (UK)', max_length=120)
-    title_ru = models.CharField('Заголовок (RU)', max_length=120, blank=True)
-    subtitle_uk = models.CharField('Підпис (UK)', max_length=255, blank=True)
-    subtitle_ru = models.CharField('Підпис (RU)', max_length=255, blank=True)
-    image_alt_uk = models.CharField('Alt зображення (UK)', max_length=160, blank=True)
-    image_alt_ru = models.CharField('Alt зображення (RU)', max_length=160, blank=True)
-    cta_uk = models.CharField('Кнопка (UK)', max_length=64, default='Дивитись каталог')
-    cta_ru = models.CharField('Кнопка (RU)', max_length=64, blank=True)
+    image_alt_uk = models.CharField('Підпис / alt (UK)', max_length=160, blank=True)
+    image_alt_ru = models.CharField('Підпис / alt (RU)', max_length=160, blank=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
     is_active = models.BooleanField('Активний', default=True)
 
@@ -260,20 +231,8 @@ class HeroSlide(TimeStampedModel):
         ordering = ('sort', 'id')
 
     def __str__(self):
-        return self.title_uk
-
-    @property
-    def title(self):
-        return localized(self, 'title')
-
-    @property
-    def subtitle(self):
-        return localized(self, 'subtitle')
+        return self.image_alt_uk or f'Слайд {self.sort + 1}'
 
     @property
     def image_alt(self):
-        return localized(self, 'image_alt') or self.title
-
-    @property
-    def cta(self):
-        return localized(self, 'cta')
+        return localized(self, 'image_alt')

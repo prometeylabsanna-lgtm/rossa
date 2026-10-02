@@ -10,8 +10,6 @@ def visible_products():
         .prefetch_related(
             'fabric_prices__fabric',
             'colors',
-            'shade_images__shade',
-            'shade_images__shade__fabric',
         )
         .annotate(min_fabric_price=Min('fabric_prices__price'))
     )

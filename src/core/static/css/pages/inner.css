@@ -437,65 +437,6 @@
   }
 }
 
-.values {
-  background: var(--color-nav);
-  padding: 56px var(--pad-x);
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-
-@media (min-width: 768px) {
-  .values {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 72px var(--pad-x);
-  }
-}
-
-@media (min-width: 1024px) {
-  .values {
-    grid-template-columns: repeat(4, 1fr);
-    padding: 80px var(--pad-x);
-  }
-}
-
-.value-card {
-  background: var(--color-bg);
-  padding: 28px 24px;
-  position: relative;
-  transition: transform var(--ease), box-shadow var(--ease);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .value-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-  }
-}
-
-.value-card h2 {
-  font-size: 19px;
-  font-weight: 700;
-  max-width: 80%;
-}
-
-.value-card__num {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  font-family: var(--font-serif);
-  font-size: 26px;
-  color: var(--color-accent-soft);
-}
-
-.value-card p {
-  font-size: 14px;
-  color: var(--color-text);
-  line-height: 1.6;
-  margin-top: 4px;
-  opacity: 0.8;
-}
-
 .contacts {
   padding: 40px var(--pad-x) var(--section-y-lg);
 }

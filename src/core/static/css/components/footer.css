@@ -30,12 +30,10 @@
 }
 
 .footer__logo {
-  height: 64px;
+  height: 72px;
   width: auto;
-  -webkit-transform: scaleX(1.08);
-  transform: scaleX(1.08);
-  -webkit-transform-origin: left center;
-  transform-origin: left center;
+  max-width: 110px;
+  object-fit: contain;
 }
 
 .footer__tagline {

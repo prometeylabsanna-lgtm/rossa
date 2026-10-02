@@ -6,41 +6,22 @@
 {% block content %}
   <section class="hero" data-hero-slider{% if hero_slides|length > 1 %} data-autoplay="6000"{% endif %}>
     <div class="hero__track" data-hero-track>
-      {% if hero_slides %}
-        {% for slide in hero_slides %}
-          <article class="hero__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide{% if forloop.first %} aria-hidden="false"{% else %} aria-hidden="true"{% endif %}>
-            {% if slide.image %}
-              <img class="hero__image{% if 'slide-2' in slide.image.name %} hero__image--lift{% endif %}" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
-            {% endif %}
-            {% if slide.image_alt %}
-              <div class="hero__caption{% if forloop.first %} reveal reveal--up{% endif %}">
-                {% if forloop.first %}
-                  <h1 class="hero__caption-text">{{ slide.image_alt }}</h1>
-                {% else %}
-                  <p class="hero__caption-text">{{ slide.image_alt }}</p>
-                {% endif %}
-              </div>
-            {% endif %}
-          </article>
-        {% endfor %}
-      {% else %}
-        <article class="hero__slide is-active" data-hero-slide aria-hidden="false">
-          <div class="hero__media">
-            {% if page.hero_video %}
-              <video autoplay muted loop playsinline poster="{% if page.hero_poster %}{{ page.hero_poster.url }}{% endif %}">
-                <source src="{{ page.hero_video.url }}">
-              </video>
-            {% elif page.hero_poster %}
-              <img class="hero__image" src="{{ page.hero_poster.url }}" alt="{{ page.hero_title }}" width="1920" height="1080">
-            {% endif %}
-          </div>
-          {% if page.hero_title %}
-            <div class="hero__caption reveal reveal--up">
-              <h1 class="hero__caption-text">{{ page.hero_title }}</h1>
+      {% for slide in hero_slides %}
+        <article class="hero__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide{% if forloop.first %} aria-hidden="false"{% else %} aria-hidden="true"{% endif %}>
+          {% if slide.image %}
+            <img class="hero__image{% if 'slide-2' in slide.image.name %} hero__image--lift{% endif %}" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
+          {% endif %}
+          {% if slide.image_alt %}
+            <div class="hero__caption{% if forloop.first %} reveal reveal--up{% endif %}">
+              {% if forloop.first %}
+                <h1 class="hero__caption-text">{{ slide.image_alt }}</h1>
+              {% else %}
+                <p class="hero__caption-text">{{ slide.image_alt }}</p>
+              {% endif %}
             </div>
           {% endif %}
         </article>
-      {% endif %}
+      {% endfor %}
     </div>
 
     {% if hero_slides|length > 1 %}

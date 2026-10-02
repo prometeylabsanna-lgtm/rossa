@@ -18,17 +18,28 @@
     var items = gallery.querySelectorAll('.evolution-gallery__item');
     if (!items.length) return;
 
-    gallery.classList.remove('is-sized');
-    gallery.style.removeProperty('--evolution-item-ar');
-    gallery.style.removeProperty('--evolution-item-h');
-
     var largest = null;
     for (var i = 0; i < items.length; i += 1) {
       var img = items[i].querySelector('img');
       if (!img) continue;
       var m = imageMetrics(img);
       if (!m) continue;
-      if (!largest || m.area > largest.area) largest = m;
+      // Prefer real decoded pixels over placeholder attrs when available
+      var fromNatural = img.naturalWidth > 0 && img.naturalHeight > 0;
+      if (!largest) {
+        largest = m;
+        largest.fromNatural = fromNatural;
+        continue;
+      }
+      if (fromNatural && !largest.fromNatural) {
+        largest = m;
+        largest.fromNatural = true;
+        continue;
+      }
+      if (fromNatural === !!largest.fromNatural && m.area > largest.area) {
+        largest = m;
+        largest.fromNatural = fromNatural;
+      }
     }
     if (!largest) return;
 
@@ -50,6 +61,7 @@
     for (var i = 0; i < imgs.length; i += 1) {
       imgs[i].addEventListener('load', schedule, { passive: true });
       imgs[i].addEventListener('error', schedule, { passive: true });
+      if (imgs[i].complete) schedule();
     }
 
     schedule();

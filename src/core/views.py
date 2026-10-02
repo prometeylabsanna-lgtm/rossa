@@ -48,8 +48,6 @@ def home(request):
     og = None
     if first_slide and first_slide.image:
         og = first_slide.image.url
-    elif page.hero_poster:
-        og = page.hero_poster.url
     elif settings.logo:
         og = settings.logo.url
     context = {
@@ -61,7 +59,7 @@ def home(request):
         **_seo(
             request,
             page.seo_title or 'ROSSA — м’які меблі',
-            page.seo_description or page.hero_sub,
+            page.seo_description or '',
             og,
         ),
     }

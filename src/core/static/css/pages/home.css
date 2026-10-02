@@ -71,10 +71,7 @@
   transition: opacity 0.45s var(--reveal-easing);
 }
 
-.hero__image,
-.hero__media,
-.hero__media img,
-.hero__media video {
+.hero__image {
   position: absolute;
   inset: 0;
   width: 100%;

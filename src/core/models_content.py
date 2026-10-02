@@ -37,7 +37,6 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
     subtitle_ru = models.CharField('Підзаголовок (RU)', max_length=255, blank=True)
     body_uk = models.TextField('Текст (UK)')
     body_ru = models.TextField('Текст (RU)', blank=True)
-    hero_image = models.ImageField('Головне фото', upload_to='about/', blank=True)
     milestones_title_uk = models.CharField(
         'Заголовок віх (UK)',
         max_length=128,
@@ -46,15 +45,7 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
     )
     milestones_title_ru = models.CharField('Заголовок віх (RU)', max_length=128, blank=True)
     milestones = models.JSONField('Віхи', default=list, blank=True)
-    values = models.JSONField('Цінності', default=list, blank=True)
     craft_images = models.JSONField('Фото виробництва', default=list, blank=True)
-    logo_title_uk = models.CharField(
-        'Заголовок логотипів (UK)',
-        max_length=128,
-        blank=True,
-        default='Еволюція логотипу',
-    )
-    logo_title_ru = models.CharField('Заголовок логотипів (RU)', max_length=128, blank=True)
     logo_images = models.JSONField(
         'Логотипи (галерея)',
         default=list,
@@ -109,10 +100,6 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
     @property
     def milestones_title(self):
         return localized(self, 'milestones_title') or 'Ключові віхи нашої історії'
-
-    @property
-    def logo_title(self):
-        return localized(self, 'logo_title') or 'Еволюція логотипу'
 
     @property
     def logos_by_year(self):

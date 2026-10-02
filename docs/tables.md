@@ -13,11 +13,12 @@ FACET_STACK = C (без фасетів атрибутів; лише дерево
 | Таблиця | Призначення |
 |---|---|
 | SiteSettings pk=1 | телефон, email, адреса, Telegram, логотип, години |
-| HomePage pk=1 | hero, craft, CTA-тексти UA/RU, відео/постер |
+| HomePage pk=1 | секції, craft, about-band, SEO UA/RU |
 | ValueProp | переваги головної (n, title, body, sort) |
-| AboutPage pk=1 | історія, фото, milestones JSON, values JSON |
+| AboutPage pk=1 | історія, craft/logo/evolution JSON, milestones |
 | CollabPage pk=1 | вступ, benefits JSON |
 | LegalPage | slug: otrymannya / oferta / privacy |
+| HeroSlide | слайди банера головної (image, alt, sort) |
 
 ## catalog
 

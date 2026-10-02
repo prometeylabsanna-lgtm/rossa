@@ -31,9 +31,9 @@ class HeroSlideInline(TabularInline):
     model = HeroSlide
     extra = 0
     fields = (
-        'image', 'title_uk', 'title_ru', 'subtitle_uk', 'subtitle_ru',
+        'image',
         'image_alt_uk', 'image_alt_ru',
-        'cta_uk', 'cta_ru', 'sort', 'is_active',
+        'sort', 'is_active',
     )
     ordering = ('sort', 'id')
     tab = True
@@ -105,10 +105,6 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
         ('Контент', {
             'classes': ('tab',),
             'fields': (
-                'hero_title_uk', 'hero_title_ru',
-                'hero_sub_uk', 'hero_sub_ru',
-                'cta_catalog_uk', 'cta_catalog_ru',
-                'hero_poster', 'hero_video',
                 'section_categories_uk', 'section_categories_ru',
                 'section_bestsellers_uk', 'section_bestsellers_ru',
                 'about_title_uk', 'about_title_ru',
@@ -121,7 +117,6 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'cta_banner_title_uk', 'cta_banner_title_ru',
                 'seo_title_uk', 'seo_title_ru',
                 'seo_description_uk', 'seo_description_ru',
-                'is_active',
             ),
         }),
         ('Оформлення', STYLE_TAB),
@@ -142,15 +137,12 @@ class AboutPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'title_uk', 'title_ru',
                 'subtitle_uk', 'subtitle_ru',
                 'body_uk', 'body_ru',
-                'hero_image',
                 'milestones_title_uk', 'milestones_title_ru',
                 'milestones',
                 'craft_images',
-                'logo_title_uk', 'logo_title_ru',
                 'logo_images',
                 'evolution_title_uk', 'evolution_title_ru',
                 'evolution_images',
-                'values',
                 'seo_title_uk', 'seo_title_ru',
                 'seo_description_uk', 'seo_description_ru',
             ),

@@ -87,27 +87,23 @@
 }
 
 .header__logo img {
-  height: 68px;
+  height: 56px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
-  -webkit-transform: scaleX(1.1);
-  transform: scaleX(1.1);
-  -webkit-transform-origin: center center;
-  transform-origin: center center;
 }
 
 @media (min-width: 768px) {
   .header__logo img {
-    height: 86px;
-    max-width: 275px;
+    height: 72px;
+    max-width: 110px;
   }
 }
 
 @media (min-width: 1024px) {
   .header__logo img {
-    height: 93px;
-    max-width: 310px;
+    height: 80px;
+    max-width: 120px;
   }
 }
 
@@ -424,6 +420,6 @@
   }
 
   .header__logo img {
-    height: 68px;
+    height: 56px;
   }
 }

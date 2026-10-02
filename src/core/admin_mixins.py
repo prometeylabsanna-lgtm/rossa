@@ -20,7 +20,6 @@ _HEX_RE = re.compile(r'^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$')
 
 RICH_TEXT_FIELDS = {
     'body_uk', 'body_ru',
-    'hero_sub_uk', 'hero_sub_ru',
     'about_body_uk', 'about_body_ru',
     'craft_body_uk', 'craft_body_ru',
     'intro_uk', 'intro_ru',

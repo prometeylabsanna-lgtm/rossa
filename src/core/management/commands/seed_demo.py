@@ -83,12 +83,6 @@ class Command(BaseCommand):
 
     def _home(self):
         obj, _ = HomePage.objects.get_or_create(pk=1, defaults={
-            'hero_title_uk': 'Меблі, створені для дому',
-            'hero_title_ru': 'Мебель, созданная для дома',
-            'hero_sub_uk': 'М’які меблі з натуральних матеріалів. Індивідуальний пошив, доставка по всій Україні.',
-            'hero_sub_ru': 'Мягкая мебель из натуральных материалов. Индивидуальный пошив, доставка по всей Украине.',
-            'cta_catalog_uk': 'Дивитись каталог',
-            'cta_catalog_ru': 'Смотреть каталог',
             'section_categories_uk': 'Категорії',
             'section_categories_ru': 'Категории',
             'section_bestsellers_uk': 'Популярні моделі',
@@ -106,7 +100,6 @@ class Command(BaseCommand):
             'seo_description_uk': 'Дивани, ліжка та пуфи. Індивідуальний пошив тканини, доставка по Україні.',
             'seo_description_ru': 'Диваны, кровати и пуфы. Индивидуальный пошив ткани, доставка по Украине.',
         })
-        attach(obj.hero_poster, 'slots/hero-video.webp')
         attach(obj.craft_image, 'craft.jpg')
         about_defaults = {
             'about_title_uk': 'Rossa. Твій стиль. Твій комфорт.',
@@ -143,30 +136,18 @@ class Command(BaseCommand):
             {
                 'sort': 0,
                 'image': 'home/slide-1.webp',
-                'title_uk': 'Меблі, створені для дому',
-                'title_ru': 'Мебель, созданная для дома',
-                'subtitle_uk': 'М’які дивани, ліжка та крісла з натуральних матеріалів. Індивідуальний пошив тканини й доставка по всій Україні — щоб ваш простір відчувався завершеним.',
-                'subtitle_ru': 'Мягкие диваны, кровати и кресла из натуральных материалов. Индивидуальный пошив ткани и доставка по всей Украине — чтобы ваше пространство ощущалось завершённым.',
                 'image_alt_uk': 'Білий модульний диван Rossa',
                 'image_alt_ru': 'Белый модульный диван Rossa',
             },
             {
                 'sort': 1,
                 'image': 'home/slide-2.webp',
-                'title_uk': 'Комфорт без компромісів',
-                'title_ru': 'Комфорт без компромиссов',
-                'subtitle_uk': 'Крісла та дивани для спокійних вечорів. Надійний каркас, пружні блоки й тканини, які приємно відчувати щодня — комфорт, розрахований на роки.',
-                'subtitle_ru': 'Кресла и диваны для спокойных вечеров. Надёжный каркас, упругие блоки и ткани, которые приятно ощущать каждый день — комфорт, рассчитанный на годы.',
                 'image_alt_uk': 'Зелений кутовий диван Rossa',
                 'image_alt_ru': 'Зелёный угловой диван Rossa',
             },
             {
                 'sort': 2,
                 'image': 'home/slide-3.webp',
-                'title_uk': 'Затишок\nу кожній деталі',
-                'title_ru': 'Уют\nв каждой детали',
-                'subtitle_uk': 'Текстури й матеріали, які хочеться відчувати. Відтінки, фактури та форми підбираємо так, щоб меблі гармонійно жили у вашому інтер’єрі.',
-                'subtitle_ru': 'Текстуры и материалы, которые хочется ощущать. Оттенки, фактуры и формы подбираем так, чтобы мебель гармонично жила в вашем интерьере.',
                 'image_alt_uk': 'Сірий диван Rossa',
                 'image_alt_ru': 'Серый диван Rossa',
             },
@@ -176,22 +157,11 @@ class Command(BaseCommand):
                 page=page,
                 sort=item['sort'],
                 defaults={
-                    'title_uk': item['title_uk'],
-                    'title_ru': item['title_ru'],
-                    'subtitle_uk': item['subtitle_uk'],
-                    'subtitle_ru': item['subtitle_ru'],
                     'image_alt_uk': item['image_alt_uk'],
                     'image_alt_ru': item['image_alt_ru'],
-                    'cta_uk': 'Дивитись каталог',
-                    'cta_ru': 'Смотреть каталог',
                     'is_active': True,
                 },
             )
-            # Keep captions in sync for demo slides
-            slide.title_uk = item['title_uk']
-            slide.title_ru = item['title_ru']
-            slide.subtitle_uk = item['subtitle_uk']
-            slide.subtitle_ru = item['subtitle_ru']
             slide.image_alt_uk = item['image_alt_uk']
             slide.image_alt_ru = item['image_alt_ru']
             replace_file(slide.image, item['image'])
@@ -320,11 +290,8 @@ class Command(BaseCommand):
                     ),
                 },
             ],
-            'values': [],
             'evolution_title_uk': 'Еволюція наших диванів',
             'evolution_title_ru': 'Эволюция наших диванов',
-            'logo_title_uk': 'Еволюція логотипу',
-            'logo_title_ru': 'Эволюция логотипа',
             'seo_title_uk': 'Про нас — ROSSA',
             'seo_title_ru': 'О нас — ROSSA',
             'seo_description_uk': 'Історія фабрики Rossa: від особистого пошуку дому до сучасної меблевої фабрики.',
@@ -333,7 +300,6 @@ class Command(BaseCommand):
         obj, _ = AboutPage.objects.get_or_create(pk=1, defaults=fields)
         for key, value in fields.items():
             setattr(obj, key, value)
-        replace_file(obj.hero_image, 'slots/about-hero.webp')
 
         from django.core.files import File
         from django.core.files.storage import default_storage
