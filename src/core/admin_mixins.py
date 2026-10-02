@@ -24,8 +24,6 @@ RICH_TEXT_FIELDS = {
     'body_uk', 'body_ru',
     'about_body_uk', 'about_body_ru',
     'craft_body_uk', 'craft_body_ru',
-    'intro_uk', 'intro_ru',
-    'sub_uk', 'sub_ru',
     'description_uk', 'description_ru',
 }
 

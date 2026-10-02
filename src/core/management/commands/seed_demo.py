@@ -414,8 +414,6 @@ class Command(BaseCommand):
         fields = {
             'title_uk': 'Співпраця з ROSSA',
             'title_ru': 'Сотрудничество с ROSSA',
-            'sub_uk': '',
-            'sub_ru': '',
             'form_title_uk': 'Форма заявки',
             'form_title_ru': 'Форма заявки',
             'form_fields': default_collab_form_copy(),

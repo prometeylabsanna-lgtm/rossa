@@ -79,7 +79,7 @@
           {% for item in page.dealer_support %}
             <li class="collab-dealer__item reveal reveal--up" data-reveal-delay="{% widthratio forloop.counter0 1 80 %}">
               <strong class="collab-dealer__item-title">{{ item|loc:'title' }}</strong>
-              <span class="collab-dealer__item-body">{{ item|loc:'body' }}</span>
+              <div class="collab-dealer__item-body cms-html">{{ item|loc:'body'|cms_html }}</div>
             </li>
           {% endfor %}
         </ul>

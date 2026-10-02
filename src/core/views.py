@@ -87,7 +87,7 @@ def collab(request):
             {'label': _('Головна'), 'url': '/', 'has_next': True},
             {'label': page.title, 'url': None, 'has_next': False},
         ],
-        **_seo(request, page.seo_title or page.title, page.seo_description or (page.sub or '')[:160]),
+        **_seo(request, page.seo_title or page.title, page.seo_description or page.title),
     })
 
 

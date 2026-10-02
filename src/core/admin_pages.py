@@ -89,6 +89,18 @@ class CollabPageForm(PageStyleFieldsMixin, forms.ModelForm):
         model = CollabPage
         fields = '__all__'
 
+    def clean_dealer_support(self):
+        from core.cms_text import ensure_cms_html_in_mapping
+        items = self.cleaned_data.get('dealer_support') or []
+        out = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            if all(str(v or '').strip() == '' for v in item.values()):
+                continue
+            out.append(ensure_cms_html_in_mapping(item, 'body_uk', 'body_ru'))
+        return out
+
 
 class ContactsPageForm(PageStyleFieldsMixin, forms.ModelForm):
     style_page_key = PageStyle.PAGE_CONTACTS
@@ -215,7 +227,6 @@ class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
             'classes': ('tab',),
             'fields': (
                 'title_uk',
-                'sub_uk',
                 'hero_image',
                 'advantages_title_uk',
                 'benefits',
@@ -232,7 +243,6 @@ class CollabPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
             'classes': ('tab',),
             'fields': (
                 'title_ru',
-                'sub_ru',
                 'advantages_title_ru',
                 'dealer_support_title_ru',
                 'form_title_ru',
@@ -256,7 +266,6 @@ class ContactsPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
             'classes': ('tab',),
             'fields': (
                 'title_uk',
-                'intro_uk',
                 'form_title_uk',
                 'seo_title_uk',
                 'seo_description_uk',
@@ -266,7 +275,6 @@ class ContactsPageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
             'classes': ('tab',),
             'fields': (
                 'title_ru',
-                'intro_ru',
                 'form_title_ru',
                 'seo_title_ru',
                 'seo_description_ru',

@@ -7,6 +7,8 @@ from typing import Any
 
 from django.forms.widgets import Widget
 
+from core.cms_text import cms_html_to_plain, ensure_cms_html
+
 
 SCHEMA_EVOLUTION = {
     'kind': 'evolution',
@@ -46,8 +48,8 @@ SCHEMA_MILESTONES = {
     'add_label': 'Додати віху',
     'fields': (
         {'key': 'year', 'type': 'text', 'label': 'Рік', 'required': True},
-        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (укр)'},
-        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (рос)'},
+        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (укр)', 'html': True},
+        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (рос)', 'html': True},
     ),
 }
 
@@ -83,8 +85,8 @@ SCHEMA_DEALER_SUPPORT = {
     'fields': (
         {'key': 'title_uk', 'type': 'text', 'label': 'Заголовок (укр)', 'required': True},
         {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (рос)'},
-        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (укр)'},
-        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (рос)'},
+        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (укр)', 'html': True},
+        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (рос)', 'html': True},
     ),
 }
 
@@ -98,6 +100,44 @@ JSON_LIST_SCHEMAS = {
 }
 
 
+def _html_field_keys(schema: dict[str, Any]) -> tuple[str, ...]:
+    return tuple(
+        str(field['key'])
+        for field in schema.get('fields') or ()
+        if isinstance(field, dict) and field.get('html')
+    )
+
+
+def _items_for_admin(items: Any, html_keys: tuple[str, ...]) -> list:
+    if not isinstance(items, list):
+        return []
+    out = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        row = dict(item)
+        for key in html_keys:
+            if key in row and row[key]:
+                row[key] = cms_html_to_plain(str(row[key]))
+        out.append(row)
+    return out
+
+
+def _items_for_storage(items: list, html_keys: tuple[str, ...]) -> list:
+    cleaned = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        if all(str(v or '').strip() == '' for v in item.values()):
+            continue
+        row = dict(item)
+        for key in html_keys:
+            if key in row:
+                row[key] = ensure_cms_html(str(row.get(key) or ''))
+        cleaned.append(row)
+    return cleaned
+
+
 class CmsJsonListWidget(Widget):
     template_name = 'django/forms/widgets/cms_json_list.html'
 
@@ -107,41 +147,35 @@ class CmsJsonListWidget(Widget):
 
     def __init__(self, schema: dict[str, Any], attrs: dict[str, Any] | None = None) -> None:
         self.schema = schema
+        self.html_keys = _html_field_keys(schema)
         super().__init__(attrs)
 
-    def format_value(self, value):
+    def _parse_list(self, value) -> list:
         if value in (None, ''):
-            return '[]'
-        if isinstance(value, (list, dict)):
-            return json.dumps(value, ensure_ascii=False)
+            return []
+        if isinstance(value, list):
+            return value
+        if isinstance(value, dict):
+            return [value]
         if isinstance(value, str):
-            raw = value.strip() or '[]'
             try:
-                parsed = json.loads(raw)
+                parsed = json.loads(value.strip() or '[]')
             except (TypeError, ValueError, json.JSONDecodeError):
-                return '[]'
-            return json.dumps(parsed, ensure_ascii=False)
-        return '[]'
+                return []
+            if isinstance(parsed, list):
+                return parsed
+            if isinstance(parsed, dict):
+                return [parsed]
+        return []
+
+    def format_value(self, value):
+        items = _items_for_admin(self._parse_list(value), self.html_keys)
+        return json.dumps(items, ensure_ascii=False)
 
     def value_from_datadict(self, data, files, name):
         raw = data.get(name, '[]')
-        if isinstance(raw, dict):
-            raw = [raw]
-        if not isinstance(raw, list):
-            try:
-                raw = json.loads(raw or '[]')
-            except (TypeError, ValueError, json.JSONDecodeError):
-                return []
-        if not isinstance(raw, list):
-            return []
-        cleaned = []
-        for item in raw:
-            if not isinstance(item, dict):
-                continue
-            if all(str(v or '').strip() == '' for v in item.values()):
-                continue
-            cleaned.append(item)
-        return cleaned
+        items = self._parse_list(raw)
+        return _items_for_storage(items, self.html_keys)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)

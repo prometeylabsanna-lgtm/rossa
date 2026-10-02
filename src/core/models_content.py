@@ -141,8 +141,6 @@ class AboutPage(SeoFieldsMixin, TimeStampedModel):
 class CollabPage(SeoFieldsMixin, TimeStampedModel):
     title_uk = models.CharField('Заголовок (UK)', max_length=255)
     title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
-    sub_uk = models.TextField('Вступ (UK)', blank=True)
-    sub_ru = models.TextField('Вступ (RU)', blank=True)
     form_title_uk = models.CharField('Заголовок форми (UK)', max_length=128, blank=True)
     form_title_ru = models.CharField('Заголовок форми (RU)', max_length=128, blank=True)
     form_fields = models.JSONField(
@@ -190,17 +188,13 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
     def load(cls):
         obj, _ = cls.objects.get_or_create(
             pk=1,
-            defaults={'title_uk': 'Співпраця з ROSSA', 'sub_uk': ''},
+            defaults={'title_uk': 'Співпраця з ROSSA'},
         )
         return obj
 
     @property
     def title(self):
         return localized(self, 'title')
-
-    @property
-    def sub(self):
-        return localized(self, 'sub')
 
     @property
     def form_title(self):
@@ -233,8 +227,6 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
 class ContactsPage(SeoFieldsMixin, TimeStampedModel):
     title_uk = models.CharField('Заголовок (UK)', max_length=255, default='Контакти')
     title_ru = models.CharField('Заголовок (RU)', max_length=255, blank=True)
-    intro_uk = models.TextField('Вступ (UK)', blank=True)
-    intro_ru = models.TextField('Вступ (RU)', blank=True)
     form_title_uk = models.CharField(
         'Заголовок форми (UK)',
         max_length=128,
@@ -258,17 +250,13 @@ class ContactsPage(SeoFieldsMixin, TimeStampedModel):
     def load(cls):
         obj, _ = cls.objects.get_or_create(
             pk=1,
-            defaults={'title_uk': 'Контакти', 'intro_uk': ''},
+            defaults={'title_uk': 'Контакти'},
         )
         return obj
 
     @property
     def title(self):
         return localized(self, 'title')
-
-    @property
-    def intro(self):
-        return localized(self, 'intro')
 
     @property
     def form_title(self):

@@ -46,6 +46,20 @@ def plain_text_to_cms_html(value: str) -> str:
     return '\n'.join(parts)
 
 
+def cms_html_to_plain(value: str) -> str:
+    """HTML з CMS → текст для редагування в адмінці (без видимих тегів)."""
+    text = unescape_cms_html(value or '').strip()
+    if not text:
+        return ''
+    if not looks_like_html(text):
+        return text
+    text = re.sub(r'(?i)<br\s*/?>', '\n', text)
+    text = re.sub(r'(?i)</p>\s*<p[^>]*>', '\n\n', text)
+    text = re.sub(r'(?i)</?p[^>]*>', '', text)
+    text = strip_tags(text)
+    return html_lib.unescape(text).replace('\xa0', ' ').strip()
+
+
 def ensure_cms_html(value: str) -> str:
     """Ідемпотентно: plain → HTML, HTML без змін."""
     return plain_text_to_cms_html(value or '')
