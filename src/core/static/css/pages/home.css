@@ -6,24 +6,18 @@
   width: calc(100% + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
   margin: 0 0 0 calc(-1 * env(safe-area-inset-left, 0px));
   border-radius: 0;
-  height: calc(100vh - var(--header-offset) - env(safe-area-inset-top, 0px));
-  height: calc(100svh - var(--header-offset) - env(safe-area-inset-top, 0px));
-  height: calc(100dvh - var(--header-offset) - env(safe-area-inset-top, 0px));
+  /* Match slide assets (1920×1080): full product in frame, light crop only if ratio differs */
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-height: calc(100vh - var(--header-offset) - env(safe-area-inset-top, 0px));
+  max-height: calc(100svh - var(--header-offset) - env(safe-area-inset-top, 0px));
+  max-height: calc(100dvh - var(--header-offset) - env(safe-area-inset-top, 0px));
 }
 
 @media (min-width: 768px) {
   .hero {
     width: 100%;
     margin: 0;
-    height: min(78vh, 720px);
-    height: min(78dvh, 720px);
-  }
-}
-
-@media (min-width: 1024px) {
-  .hero {
-    height: calc(100vh - var(--header-offset) - env(safe-area-inset-top, 0px));
-    height: calc(100dvh - var(--header-offset) - env(safe-area-inset-top, 0px));
   }
 }
 
@@ -76,14 +70,13 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  /* Logo (crown + Rossa) sits at the top of the wall — keep it in frame */
-  object-position: center top;
+  /* 16:9 frame ≈ slide ratio → near-full bleed; when max-height bites (wide/tall screens) → full sofa */
+  object-fit: contain;
+  object-position: center;
 }
 
-/* Green corner sofa: shift down ~12% so base + logo stay in frame */
 .hero__image--lift {
-  object-position: center 12%;
+  object-position: center;
 }
 
 .hero__caption {
