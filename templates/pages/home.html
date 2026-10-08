@@ -4,21 +4,15 @@
 {% block body_class %}page--home{% endblock %}
 
 {% block content %}
+  {% with first_slide=hero_slides.0 %}
+    <h1 class="visually-hidden">{% if first_slide.image_alt %}{{ first_slide.image_alt }}{% else %}Rossa{% endif %}</h1>
+  {% endwith %}
   <section class="hero" data-hero-slider{% if hero_slides|length > 1 %} data-autoplay="6000"{% endif %}>
     <div class="hero__track" data-hero-track>
       {% for slide in hero_slides %}
         <article class="hero__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide{% if forloop.first %} aria-hidden="false"{% else %} aria-hidden="true"{% endif %}>
           {% if slide.image %}
             <img class="hero__image{% if 'slide-2' in slide.image.name %} hero__image--lift{% endif %}" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
-          {% endif %}
-          {% if slide.image_alt %}
-            <div class="hero__caption{% if forloop.first %} reveal reveal--up{% endif %}">
-              {% if forloop.first %}
-                <h1 class="hero__caption-text">{{ slide.image_alt }}</h1>
-              {% else %}
-                <p class="hero__caption-text">{{ slide.image_alt }}</p>
-              {% endif %}
-            </div>
           {% endif %}
         </article>
       {% endfor %}
@@ -48,15 +42,6 @@
       <div class="about-band__copy">
         {% if page.about_title %}<h2 class="about-band__title reveal reveal--up">{{ page.about_title }}</h2>{% endif %}
         {% if page.about_body %}<div class="about-band__body reveal reveal--up cms-html" data-reveal-delay="80">{{ page.about_body|cms_html }}</div>{% endif %}
-      </div>
-      <div class="about-band__media reveal reveal--scale" data-reveal-delay="100">
-        {% if page.about_video %}
-          <video class="about-band__video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>
-            <source src="{{ page.about_video.url }}" type="video/mp4">
-          </video>
-        {% else %}
-          <div class="about-band__placeholder" aria-hidden="true">відео</div>
-        {% endif %}
       </div>
     </div>
     {% if value_props %}

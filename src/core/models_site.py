@@ -141,7 +141,6 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     about_title_ru = models.CharField('Про ROSSA — заголовок (ru)', max_length=255, blank=True)
     about_body_uk = models.TextField('Про ROSSA — текст (ukr)', blank=True)
     about_body_ru = models.TextField('Про ROSSA — текст (ru)', blank=True)
-    about_video = models.FileField('Про ROSSA — відео', upload_to='home/video/', blank=True)
     craft_title_uk = models.CharField('Заголовок блоку «виробництво» (ukr)', max_length=255)
     craft_title_ru = models.CharField('Заголовок блоку «виробництво» (ru)', max_length=255, blank=True)
     craft_body_uk = models.TextField('Текст блоку «виробництво» (ukr)')

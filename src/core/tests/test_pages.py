@@ -17,6 +17,7 @@ class PagesSmokeTests(TestCase):
             '/katalog/',
             '/katalog/divany/',
             '/katalog/divany/modulni/',
+            '/katalog/divany/yevroknyzhky/',
             '/katalog/lizhka/',
             '/katalog/pufy/',
             '/ru/katalog/',
@@ -34,7 +35,7 @@ class PagesSmokeTests(TestCase):
 
         self.assertEqual(beds.children.count(), 0)
         self.assertEqual(poufs.children.count(), 0)
-        self.assertGreaterEqual(sofas.children.filter(is_active=True).count(), 3)
+        self.assertGreaterEqual(sofas.children.filter(is_active=True).count(), 4)
 
         beds_page = self.client.get('/katalog/lizhka/')
         poufs_page = self.client.get('/katalog/pufy/')
@@ -45,6 +46,7 @@ class PagesSmokeTests(TestCase):
         self.assertContains(sofas_page, 'Модульні')
         self.assertContains(sofas_page, 'Кутові')
         self.assertContains(sofas_page, 'Прямі')
+        self.assertContains(sofas_page, 'Єврокнижки')
 
     def test_product(self):
         response = self.client.get('/tovar/milan/')

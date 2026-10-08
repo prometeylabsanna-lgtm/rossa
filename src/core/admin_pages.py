@@ -148,7 +148,6 @@ class HomePageAdmin(CmsWidgetsAdminMixin, SingletonAdminMixin, ModelAdmin):
                 'section_bestsellers_uk',
                 'about_title_uk',
                 'about_body_uk',
-                'about_video',
                 'craft_title_uk',
                 'craft_body_uk',
                 'craft_link_uk',

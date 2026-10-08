@@ -139,13 +139,9 @@ class Command(BaseCommand):
                 'чтобы каждая модель гармонично жила в вашем пространстве.'
             ),
         }
-        updated = False
         for key, value in about_defaults.items():
             if getattr(obj, key, None) != value:
                 setattr(obj, key, value)
-                updated = True
-        # Відео: завжди ensure на диску (на Vercel БД може мати шлях без файлу).
-        replace_file(obj.about_video, 'home/video/about-showroom.mp4')
         obj.save()
         self._hero_slides(obj)
 
@@ -557,22 +553,10 @@ class Command(BaseCommand):
         poufs.sort = 2
         poufs.save()
         poufs.children.all().delete()
-        # Підкатегорії лише у Диванів (модульні / кутові / прямі).
-        subs = [
-            ('modulni', 'Модульні', 'Модульные', 0),
-            ('kutovi', 'Кутові', 'Угловые', 1),
-            ('pryami', 'Прямі', 'Прямые', 2),
-        ]
-        children = {}
-        for slug, uk, ru, sort in subs:
-            obj, _ = Category.objects.get_or_create(slug=slug, parent=sofas, defaults={
-                'name_uk': uk, 'name_ru': ru, 'sort': sort,
-            })
-            obj.name_uk = uk
-            obj.name_ru = ru
-            obj.sort = sort
-            obj.save()
-            children[slug] = obj
+        # Підкатегорії лише у Диванів (модульні / кутові / прямі / єврокнижки).
+        from catalog.sofa_categories import ensure_sofa_subcategories
+
+        children = ensure_sofa_subcategories(sofas)
         return {'sofas': sofas, 'beds': beds, 'poufs': poufs, **children}
 
     def _products(self, categories, fabrics):

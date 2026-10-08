@@ -5,6 +5,7 @@ from __future__ import annotations
 from django.db.models import Q
 
 from catalog.models import Fabric, Product, ProductColor, ProductColorOption, Shade
+from catalog.sofa_categories import SOFA_SUBCATEGORY_SLUGS
 
 # slug, name_uk, name_ru, hex, sort
 SOFA_COLOR_PALETTE = (
@@ -16,7 +17,7 @@ SOFA_COLOR_PALETTE = (
     ('brown', 'Коричневий', 'Коричневый', '#3C2415', 5),
 )
 
-SOFA_CATEGORY_SLUGS = frozenset({'modulni', 'kutovi', 'pryami', 'divany'})
+SOFA_CATEGORY_SLUGS = frozenset({'divany'}) | SOFA_SUBCATEGORY_SLUGS
 
 
 def ensure_color_options() -> dict[str, ProductColorOption]:
@@ -77,7 +78,7 @@ def sofa_products_queryset():
 
 
 def is_sofa_category_key(cat_key: str) -> bool:
-    return cat_key in {'modulni', 'kutovi', 'pryami'}
+    return cat_key in SOFA_SUBCATEGORY_SLUGS
 
 
 def attach_sofa_palette(
