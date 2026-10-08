@@ -50,15 +50,15 @@ python3 - <<'PY'
 import sys
 from pathlib import Path
 
+# about-showroom.mp4 більше не сідиться: HomePage.about_video прибрано (0018).
 required = [
     Path('media_demo/brand/rossa-logo.png'),
     Path('media_demo/brand/contact-map.webp'),
     Path('media_demo/home/craft.jpg'),
     Path('media_demo/home/slides/slide-1.webp'),
-    Path('media_demo/home/video/about-showroom.mp4'),
     Path('media_demo/products/milan.webp'),
     Path('public/media/brand/rossa-logo.png'),
-    Path('public/media/home/video/about-showroom.mp4'),
+    Path('public/media/home/slides/slide-1.webp'),
 ]
 missing = [str(p) for p in required if not p.exists()]
 if missing:
