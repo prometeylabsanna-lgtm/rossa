@@ -10,9 +10,14 @@ from catalog.models import (
     Product,
     ProductCharacteristic,
     ProductColor,
-    ProductColorOption,
     ProductFabricPrice,
-    Shade,
+)
+from catalog.sofa_colors import (
+    SOFA_COLOR_PALETTE,
+    attach_sofa_palette,
+    ensure_color_options,
+    is_sofa_category_key,
+    sync_fabric_shades,
 )
 from core.cms_text import ensure_cms_html, ensure_cms_html_in_mapping
 from core.management.seed_legal_texts import LEGAL_PAGES
@@ -524,32 +529,7 @@ class Command(BaseCommand):
             obj.save()
             out[slug] = obj
 
-        # Єдина палітра для всіх категорій тканини: беж → зелений → темно-коричневий
-        fixed_shades = [
-            ('beige', 'Беж', 'Беж', '#D4C4A8', 0),
-            ('green', 'Зелений', 'Зелёный', '#7A8B6E', 1),
-            ('brown', 'Коричневий', 'Коричневый', '#3C2415', 2),
-        ]
-        keep_shade_slugs = {slug for slug, *_ in fixed_shades}
-        for slug, fabric in out.items():
-            for shade_slug, name_uk, name_ru, hex_color, sort in fixed_shades:
-                shade, _ = Shade.objects.get_or_create(
-                    fabric=fabric,
-                    slug=shade_slug,
-                    defaults={
-                        'name_uk': name_uk,
-                        'name_ru': name_ru,
-                        'hex_color': hex_color,
-                        'sort': sort,
-                    },
-                )
-                shade.name_uk = name_uk
-                shade.name_ru = name_ru
-                shade.hex_color = hex_color
-                shade.sort = sort
-                shade.is_active = True
-                shade.save()
-            Shade.objects.filter(fabric=fabric).exclude(slug__in=keep_shade_slugs).delete()
+        sync_fabric_shades(out.values())
         return out
 
     def _categories(self):
@@ -596,7 +576,6 @@ class Command(BaseCommand):
         return {'sofas': sofas, 'beds': beds, 'poufs': poufs, **children}
 
     def _products(self, categories, fabrics):
-        from catalog.models import Shade
         catalog = [
             {
                 'slug': 'milan', 'name_uk': 'Мілан', 'name_ru': 'Милан',
@@ -677,7 +656,7 @@ class Command(BaseCommand):
                 'color_set': 'milan',
             },
         ]
-        # Порядок кружечків завжди: беж → зелений → темно-коричневий
+        # Фото лише для базових відтінків; нові (сірий/графіт/оранж) — лише HEX
         color_sets = {
             'milan': {
                 'beige': 'products/milan.webp',
@@ -689,38 +668,14 @@ class Command(BaseCommand):
                 'green': 'products/ontario.webp',
                 'brown': 'products/ontario-dark-brown.webp',
             },
-            # solo / kyoto / loks / milan — однакові фото, як у Локс
         }
-        shade_order = (
-            ('beige', 0, '#D4C4A8'),
-            ('green', 1, '#7A8B6E'),
-            ('brown', 2, '#3C2415'),
+        color_options = ensure_color_options()
+        # beds / poufs: лише кольори з фото
+        non_sofa_shade_order = tuple(
+            (slug, sort, hex_color)
+            for slug, _uk, _ru, hex_color, sort in SOFA_COLOR_PALETTE
+            if slug in ('beige', 'green', 'brown')
         )
-        color_names = {
-            'beige': ('Беж', 'Беж'),
-            'green': ('Зелений', 'Зелёный'),
-            'brown': ('Коричневий', 'Коричневый'),
-        }
-        color_options = {}
-        for key, sort, hex_color in shade_order:
-            name_uk, name_ru = color_names[key]
-            option, _ = ProductColorOption.objects.get_or_create(
-                slug=key,
-                defaults={
-                    'name_uk': name_uk,
-                    'name_ru': name_ru,
-                    'hex_color': hex_color,
-                    'sort': sort,
-                    'is_active': True,
-                },
-            )
-            option.name_uk = name_uk
-            option.name_ru = name_ru
-            option.hex_color = hex_color
-            option.sort = sort
-            option.is_active = True
-            option.save()
-            color_options[key] = option
 
         char_defs = (
             ('frame', 'Каркас', 'Каркас', 0),
@@ -830,10 +785,17 @@ class Command(BaseCommand):
                 fp.sku = f'{product.sku}-{fabric.slug[-1].upper()}'
                 fp.save(update_fields=['price', 'sku'])
             color_map = color_sets.get(item.get('color_set'))
-            if color_map:
-                keep_ids = {color_options[key].id for key in color_map}
+            if color_map and is_sofa_category_key(item['cat']):
+                attach_sofa_palette(
+                    product,
+                    color_options,
+                    image_paths=color_map,
+                    replace_file=replace_file,
+                )
+            elif color_map:
+                keep_ids = {color_options[key].id for key, *_ in non_sofa_shade_order}
                 ProductColor.objects.filter(product=product).exclude(color_id__in=keep_ids).delete()
-                for key, sort, _hex in shade_order:
+                for key, sort, _hex in non_sofa_shade_order:
                     path = color_map.get(key)
                     if not path:
                         continue
