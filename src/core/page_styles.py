@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 
 from django.core.cache import cache
-from django.urls import reverse
 
 from core.models_styles import (
     CHROME_STYLE_CACHE_KEY,
@@ -29,18 +28,6 @@ _URL_PAGE_MAP: dict[tuple[str | None, str | None], str] = {
     ('catalog', 'category'): PageStyle.PAGE_CATALOG,
     ('catalog', 'product'): PageStyle.PAGE_CATALOG,
     ('catalog', 'search'): PageStyle.PAGE_CATALOG,
-}
-
-_PAGE_PREVIEW: dict[str, tuple[str, dict]] = {
-    PageStyle.PAGE_HOME: ('core:home', {}),
-    PageStyle.PAGE_ABOUT: ('core:about', {}),
-    PageStyle.PAGE_COLLAB: ('core:collab', {}),
-    PageStyle.PAGE_CONTACTS: ('core:contacts', {}),
-    PageStyle.PAGE_DELIVERY: ('core:delivery', {}),
-    PageStyle.PAGE_OFFER: ('core:offer', {}),
-    PageStyle.PAGE_PRIVACY: ('core:privacy', {}),
-    PageStyle.PAGE_COOKIES: ('core:cookies', {}),
-    PageStyle.PAGE_CATALOG: ('catalog:index', {}),
 }
 
 LEGAL_SLUG_TO_PAGE = {
@@ -125,15 +112,6 @@ def normalize_hex(value: str, *, default: str = '') -> str:
     if len(raw) == 4:
         return f'#{raw[1] * 2}{raw[2] * 2}{raw[3] * 2}'.lower()
     return raw.lower()
-
-
-def page_preview_url(page: str) -> str:
-    tip = _PAGE_PREVIEW.get(page, ('core:home', {}))
-    name, kwargs = tip
-    try:
-        return reverse(name, kwargs=kwargs)
-    except Exception:
-        return '/'
 
 
 def resolve_page_key(request) -> str | None:

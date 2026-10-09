@@ -103,6 +103,24 @@ class CmsWidgetsAdminMixin:
 
     change_form_template = 'admin/core/cms_change_form.html'
 
+    @property
+    def media(self):
+        # Єдине місце для CMS-асетів форми; widget Media лишається
+        # для каталогу / самодостатніх віджетів (Django дедуплікує шляхи).
+        return super().media + forms.Media(
+            css={'all': (
+                'css/admin/site_content.css',
+                'css/admin/cms_json_list.css',
+                'css/admin/cms_form_copy.css',
+            )},
+            js=(
+                'js/admin/cms_image_preview.js',
+                'js/admin/cms_json_list.js',
+                'js/admin/cms_form_copy.js',
+                'js/admin/cms_tinymce_tabs.js',
+            ),
+        )
+
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if isinstance(db_field, models.ImageField):
             kwargs['widget'] = CmsAdminImageWidget()

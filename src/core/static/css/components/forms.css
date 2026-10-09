@@ -7,54 +7,6 @@
   gap: 14px;
 }
 
-.form.form--compact {
-  gap: 6px;
-}
-
-.form.form--compact .section__title {
-  font-size: 20px;
-  line-height: 1.2;
-  margin: 0 0 2px;
-}
-
-.form.form--compact input:not([type="checkbox"]):not([type="radio"]),
-.form.form--compact textarea,
-.form.form--compact select {
-  padding: 8px 12px;
-  line-height: 1.3;
-}
-
-.form.form--compact textarea {
-  min-height: 56px;
-  max-height: 120px;
-}
-
-.form.form--compact .form__check {
-  margin-top: 0;
-  gap: 8px;
-  font-size: 12px;
-}
-
-.form.form--compact .btn {
-  margin-top: 2px;
-  padding: 10px 20px;
-  min-height: 44px;
-}
-
-@media (min-width: 768px) {
-  .form.form--compact {
-    gap: 7px;
-  }
-
-  .form.form--compact .section__title {
-    font-size: 22px;
-  }
-
-  .form.form--compact textarea {
-    min-height: 60px;
-  }
-}
-
 .form input,
 .form textarea,
 .form select {

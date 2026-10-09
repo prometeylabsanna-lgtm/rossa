@@ -404,7 +404,6 @@
   border-bottom-color: var(--color-accent);
 }
 
-.search-panel__hint,
 .search-panel a {
   font-size: 13px;
   color: var(--color-text);

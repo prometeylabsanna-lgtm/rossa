@@ -20,12 +20,12 @@
               <div class="catalog-filters__label">{% trans "Категорія" %}</div>
               <div class="chips">
                 <label class="chip{% if not selected_cat %} is-active{% endif %}">
-                  <input type="radio" name="cat" value="" data-filter-auto {% if not selected_cat %}checked{% endif %}>
+                  <input class="visually-hidden" type="radio" name="cat" value="" data-filter-auto {% if not selected_cat %}checked{% endif %}>
                   {% trans "Всі" %}
                 </label>
                 {% for cat in filter_categories %}
                   <label class="chip{% if selected_cat and selected_cat.id == cat.id %} is-active{% endif %}">
-                    <input type="radio" name="cat" value="{{ cat.slug }}" data-filter-auto {% if selected_cat and selected_cat.id == cat.id %}checked{% endif %}>
+                    <input class="visually-hidden" type="radio" name="cat" value="{{ cat.slug }}" data-filter-auto {% if selected_cat and selected_cat.id == cat.id %}checked{% endif %}>
                     {{ cat.name }}
                   </label>
                 {% endfor %}

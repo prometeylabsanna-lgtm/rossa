@@ -82,7 +82,7 @@ class CmsAdminImageWidget(ClearableFileInput):
 
     class Media:
         css = {'all': ('css/admin/site_content.css',)}
-        js = ('js/admin/cms_image_preview.js', 'js/admin/cms_payload_guard.js')
+        js = ('js/admin/cms_image_preview.js',)
 
     def __init__(self, attrs: Optional[dict[str, Any]] = None) -> None:
         merged = dict(attrs or {})

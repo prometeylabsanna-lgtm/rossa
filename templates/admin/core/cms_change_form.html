@@ -1,16 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n static %}
-
-{% block extrahead %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/admin/site_content.css' %}">
-  <link rel="stylesheet" href="{% static 'css/admin/cms_json_list.css' %}">
-  <link rel="stylesheet" href="{% static 'css/admin/cms_form_copy.css' %}">
-  <script src="{% static 'js/admin/cms_image_preview.js' %}" defer></script>
-  <script src="{% static 'js/admin/cms_json_list.js' %}" defer></script>
-  <script src="{% static 'js/admin/cms_form_copy.js' %}" defer></script>
-  <script src="{% static 'js/admin/cms_tinymce_tabs.js' %}" defer></script>
-{% endblock %}
+{% load i18n %}
 
 {% block content_title %}
   {{ block.super }}

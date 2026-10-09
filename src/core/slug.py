@@ -1,8 +1,6 @@
 """Транслітерація UA/RU → латиниця та унікальні slug для CMS."""
 from __future__ import annotations
 
-import re
-
 from django.utils.text import slugify
 
 _TRANSLIT = {
