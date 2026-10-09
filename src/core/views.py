@@ -52,6 +52,48 @@ def robots_txt(request):
     return HttpResponse(body, content_type='text/plain')
 
 
+@require_GET
+def llms_txt(request):
+    """Короткий опис сайту для ШІ-агентів (специфікація llms.txt)."""
+    def abs_url(name):
+        return request.build_absolute_uri(reverse(name))
+
+    home = abs_url('core:home')
+    catalog = abs_url('catalog:index')
+    about = abs_url('core:about')
+    collab = abs_url('core:collab')
+    contacts = abs_url('core:contacts')
+    delivery = abs_url('core:delivery')
+    sitemap = abs_url('django.contrib.sitemaps.views.sitemap')
+
+    body = (
+        '# Rossa\n'
+        '\n'
+        '> Український бренд м’яких меблів власного виробництва. '
+        'Слоган: «Rossa. Твій стиль. Твій комфорт.»\n'
+        '\n'
+        'Rossa створює дивани, ліжка та пуфи з увагою до форми, матеріалів '
+        'і довговічності. Власне виробництво в Україні, індивідуальний підхід '
+        'до клієнта, великий вибір тканин. Замовлення — через форму на сайті; '
+        'менеджер зв’язується з клієнтом.\n'
+        '\n'
+        '## Ключові сторінки\n'
+        '\n'
+        f'- [Головна]({home}): огляд бренду, переваги та популярні моделі\n'
+        f'- [Каталог]({catalog}): дивани, ліжка, пуфи\n'
+        f'- [Про нас]({about}): історія та виробництво\n'
+        f'- [Співпраця]({collab}): партнерство для салонів і дизайнерів\n'
+        f'- [Контакти]({contacts}): телефони, email, форма звернення\n'
+        f'- [Отримання]({delivery}): доставка та умови отримання\n'
+        '\n'
+        '## Додатково\n'
+        '\n'
+        f'- [Sitemap]({sitemap}): повний список публічних URL\n'
+        '- Мови сайту: українська (основна), російська (/ru/)\n'
+    )
+    return HttpResponse(body, content_type='text/plain; charset=utf-8')
+
+
 def page_not_found(request, exception):
     ctx = _seo(
         request,

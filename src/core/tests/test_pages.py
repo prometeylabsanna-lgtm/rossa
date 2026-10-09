@@ -100,3 +100,12 @@ class PagesSmokeTests(TestCase):
         self.assertEqual(self.client.get('/robots.txt').status_code, 200)
         self.assertEqual(self.client.get('/healthz/').status_code, 200)
         self.assertEqual(self.client.get('/sitemap.xml').status_code, 200)
+
+    def test_llms_txt(self):
+        response = self.client.get('/llms.txt')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('text/plain', response['Content-Type'])
+        body = response.content.decode('utf-8')
+        self.assertIn('# Rossa', body)
+        self.assertIn('/katalog/', body)
+        self.assertIn('/kontakty/', body)

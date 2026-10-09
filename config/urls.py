@@ -9,8 +9,9 @@ from django.views.i18n import set_language
 
 from core.admin_upload import cms_upload
 from core.sitemaps import sitemaps
-from core.views import healthz, robots_txt
+from core.views import healthz, llms_txt, robots_txt
 from core.views_media import serve_media
+
 
 _ADMIN = settings.ADMIN_URL
 
@@ -28,6 +29,7 @@ urlpatterns = [
     path('i18n/setlang/', set_language, name='set_language'),
     path('healthz/', healthz, name='healthz'),
     path('robots.txt', robots_txt, name='robots'),
+    path('llms.txt', llms_txt, name='llms'),
     path(
         'sitemap.xml',
         sitemap,

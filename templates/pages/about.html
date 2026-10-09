@@ -26,16 +26,15 @@
       {% if page.craft_images %}
         <div class="craft-mosaic">
           {% for ci in page.craft_images %}
-            <div class="craft-mosaic__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
+            <div class="craft-mosaic__item">
               <img
-                src="{{ ci.image|img_variant:960 }}"
-                srcset="{{ ci.image|img_srcset }}"
+                src="{{ ci.image }}"
+                srcset="{{ ci.image }} 1024w, {{ ci.image|img_srcset }}"
                 sizes="(max-width:767px) 50vw, 400px"
                 alt="{{ ci|loc:'label' }}"
-                width="400"
-                height="500"
-                loading="lazy"
-                decoding="async"
+                width="1024"
+                height="682"
+                {% if forloop.first %}fetchpriority="high" decoding="async"{% else %}loading="lazy" decoding="async"{% endif %}
               >
             </div>
           {% endfor %}

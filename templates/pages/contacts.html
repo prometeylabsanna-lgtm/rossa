@@ -79,8 +79,8 @@
         <div class="contacts__photo reveal reveal--up" data-reveal-delay="200">
           <img
             class="map-slot"
-            src="{{ map_image.url|img_variant:960 }}"
-            srcset="{{ map_image.url|img_srcset }}"
+            src="{{ map_image.url }}"
+            srcset="{{ map_image.url }} 1600w, {{ map_image.url|img_srcset }}"
             sizes="(max-width:1023px) 100vw, 50vw"
             alt="{% trans 'Салон ROSSA' %}"
             width="800"
