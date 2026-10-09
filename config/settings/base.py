@@ -129,6 +129,8 @@ CONTENT_SECURITY_POLICY = {
         'media-src': ("'self'",),
         'connect-src': ("'self'",),
         'object-src': ("'none'",),
+        # Google Maps embed на /contacts/
+        'frame-src': ("'self'", 'https://www.google.com', 'https://maps.google.com'),
         'frame-ancestors': ("'none'",),
         'base-uri': ("'self'",),
         'form-action': ("'self'",),
