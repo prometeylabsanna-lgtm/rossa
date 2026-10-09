@@ -106,7 +106,9 @@ def _render_listing(request, category, crumbs, seo_title=None, seo_description=N
 
     qs = apply_sort(qs, sort)
     page_size = settings.CATALOG_PAGE_SIZE
-    offset = int(request.GET.get('offset', 0) or 0)
+    offset = _parse_int(request.GET.get('offset')) or 0
+    if offset < 0:
+        offset = 0
     total = qs.count()
     products = list(qs[offset:offset + page_size])
     next_offset = offset + page_size

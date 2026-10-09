@@ -1,4 +1,7 @@
 .form {
+  --color-danger: #c62828;
+  --color-success: #2e7d32;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -100,14 +103,45 @@
   outline-offset: 2px;
 }
 
-.form__error {
-  font-size: 13px;
-  color: var(--color-accent);
+.form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.form__errors {
-  color: var(--color-accent);
+.form__error,
+.form__errors,
+.form .errorlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
   font-size: 13px;
+  line-height: 1.35;
+  color: var(--color-danger);
+}
+
+.form .errorlist li {
+  margin: 0;
+}
+
+.form__control.is-invalid,
+.form input.is-invalid,
+.form textarea.is-invalid {
+  border-color: var(--color-danger);
+  outline-color: var(--color-danger);
+}
+
+.form__control.is-valid,
+.form input.is-valid,
+.form textarea.is-valid {
+  border-color: var(--color-success);
+}
+
+.form__control.is-invalid:focus,
+.form input.is-invalid:focus,
+.form textarea.is-invalid:focus {
+  outline: 2px solid var(--color-danger);
+  border-color: var(--color-danger);
 }
 
 .form__check {
@@ -355,4 +389,14 @@
   .modal__title {
     font-size: 20px;
   }
+}
+
+/* Honeypot: поза екраном, але не type=hidden (боти часто ігнорують hidden). */
+.form__hp {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }

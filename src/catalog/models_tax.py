@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+from core.fields import WebPImageField
 from core.mixins import SeoFieldsMixin, TimeStampedModel
 from core.slug import AutoSlugMixin
 from core.utils import localized
@@ -114,7 +115,7 @@ class Shade(AutoSlugMixin, TimeStampedModel):
     name_uk = models.CharField('Назва (ukr)', max_length=128)
     name_ru = models.CharField('Назва (ru)', max_length=128, blank=True)
     hex_color = models.CharField('HEX', max_length=7)
-    swatch = models.ImageField('Міні-фото кружечка', upload_to='shades/', blank=True)
+    swatch = WebPImageField('Міні-фото кружечка', upload_to='shades/', blank=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)
     is_active = models.BooleanField('Видимий', default=True)
 

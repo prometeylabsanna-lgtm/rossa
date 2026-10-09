@@ -4,12 +4,14 @@ from django import forms
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
+from unfold.admin import TabularInline as UnfoldTabularInline
 
 from core.admin_filters import (
     FILTER_INIT_PARAM,
     default_param_for_field,
     resolve_list_filter_item,
 )
+from core.admin_help import apply_admin_field_hints
 
 
 class RossaChangeList(ChangeList):
@@ -21,7 +23,19 @@ class RossaChangeList(ChangeList):
         return lookup_params
 
 
-class ModelAdmin(UnfoldModelAdmin):
+class AdminFieldHintsMixin:
+    """Підказки лімітів символів / розміру фото біля полів форм."""
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        return apply_admin_field_hints(db_field, formfield, model=getattr(self, 'model', None))
+
+
+class TabularInline(AdminFieldHintsMixin, UnfoldTabularInline):
+    pass
+
+
+class ModelAdmin(AdminFieldHintsMixin, UnfoldModelAdmin):
     """Filters live in the top bar as dropdowns; booleans/status get defaults."""
 
     list_filter_sheet = True

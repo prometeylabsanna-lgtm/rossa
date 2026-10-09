@@ -61,8 +61,10 @@ def cms_html_to_plain(value: str) -> str:
 
 
 def ensure_cms_html(value: str) -> str:
-    """Ідемпотентно: plain → HTML, HTML без змін."""
-    return plain_text_to_cms_html(value or '')
+    """Ідемпотентно: plain → HTML, HTML → allowlist-sanitize (anti XSS у CMS)."""
+    from core.cms_sanitize import sanitize_cms_html
+
+    return sanitize_cms_html(plain_text_to_cms_html(value or ''))
 
 
 def ensure_cms_html_in_mapping(item: dict, *keys: str) -> dict:

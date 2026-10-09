@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from leads.forms import ContactForm, OrderForm, PartnershipForm
+from leads.idempotency import claim_idempotency_key, release_idempotency_key
+from leads.rate_limit import allow_lead_post
 from leads.services import current_lang, notify_manager
 
 
@@ -15,16 +17,40 @@ def _ok_redirect(request, url_name):
     return redirect(url_name)
 
 
-@require_POST
-def order_submit(request):
-    form = OrderForm(request.POST)
-    if form.is_valid():
+def _rate_limited(request):
+    return HttpResponse('Too Many Requests', status=429, headers={'Retry-After': '60'})
+
+
+def _save_lead_once(request, form, *, notify_subject, notify_body):
+    """Зберігає лід один раз на idempotency_key; дублікат → thanks без повторного save."""
+    if getattr(form, 'honeypot_tripped', lambda: False)():
+        # Бот заповнив пастку — імітуємо успіх без запису в БД.
+        return _ok_redirect(request, 'core:thanks')
+    token = form.cleaned_data.get('idempotency_key', '')
+    if not claim_idempotency_key(token):
+        return _ok_redirect(request, 'core:thanks')
+    try:
         obj = form.save(commit=False)
         obj.language = current_lang()
         obj.save()
-        notify_manager(
-            f'ROSSA замовлення: {obj.product_name}',
-            (
+    except Exception:
+        release_idempotency_key(token)
+        raise
+    notify_manager(notify_subject(obj), notify_body(obj))
+    return _ok_redirect(request, 'core:thanks')
+
+
+@require_POST
+def order_submit(request):
+    if not allow_lead_post(request):
+        return _rate_limited(request)
+    form = OrderForm(request.POST)
+    if form.is_valid():
+        return _save_lead_once(
+            request,
+            form,
+            notify_subject=lambda obj: f'ROSSA замовлення: {obj.product_name}',
+            notify_body=lambda obj: (
                 f'Модель: {obj.product_name}\n'
                 f'Тканина: {obj.fabric_name}\n'
                 f'Відтінок: {obj.shade_name}\n'
@@ -37,7 +63,6 @@ def order_submit(request):
                 f'Коментар: {obj.comment}\n'
             ),
         )
-        return _ok_redirect(request, 'core:thanks')
     return render(request, 'leads/order_form.html', {
         'form': form,
         'product': type('P', (), {'name': form.data.get('product_name', '')})(),
@@ -49,15 +74,16 @@ def order_submit(request):
 def partnership_submit(request):
     from core.models import CollabPage
 
+    if not allow_lead_post(request):
+        return _rate_limited(request)
     page = CollabPage.load()
     form = PartnershipForm(request.POST, page=page)
     if form.is_valid():
-        obj = form.save(commit=False)
-        obj.language = current_lang()
-        obj.save()
-        notify_manager(
-            f'ROSSA співпраця: {obj.name}',
-            (
+        return _save_lead_once(
+            request,
+            form,
+            notify_subject=lambda obj: f'ROSSA співпраця: {obj.name}',
+            notify_body=lambda obj: (
                 f'Ім’я: {obj.name}\n'
                 f'Телефон: {obj.phone}\n'
                 f'E-mail: {obj.email}\n'
@@ -65,7 +91,6 @@ def partnership_submit(request):
                 f'Повідомлення: {obj.message}\n'
             ),
         )
-        return _ok_redirect(request, 'core:thanks')
     return render(request, 'leads/partnership_form.html', {
         'form': form,
         'page': page,
@@ -74,14 +99,16 @@ def partnership_submit(request):
 
 @require_POST
 def contact_submit(request):
+    if not allow_lead_post(request):
+        return _rate_limited(request)
     form = ContactForm(request.POST)
     if form.is_valid():
-        obj = form.save(commit=False)
-        obj.language = current_lang()
-        obj.save()
-        notify_manager(
-            f'ROSSA контакти: {obj.name}',
-            f'Ім’я: {obj.name}\nТелефон: {obj.phone}\nПовідомлення: {obj.message}\n',
+        return _save_lead_once(
+            request,
+            form,
+            notify_subject=lambda obj: f'ROSSA контакти: {obj.name}',
+            notify_body=lambda obj: (
+                f'Ім’я: {obj.name}\nТелефон: {obj.phone}\nПовідомлення: {obj.message}\n'
+            ),
         )
-        return _ok_redirect(request, 'core:thanks')
     return render(request, 'leads/contact_form.html', {'form': form}, status=400)

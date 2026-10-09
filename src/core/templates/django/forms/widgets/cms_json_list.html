@@ -14,5 +14,9 @@
   <button type="button" class="rs-cms-json__add" data-cms-json-add>
     {{ widget.add_label }}
   </button>
-  <p class="rs-cms-json__hint help">{% trans "Превʼю, завантаження, стрілки порядку та видалення. Зміни застосуються після «Зберегти»." %}</p>
+  {% if widget.hint %}
+    <p class="rs-cms-json__hint help">{{ widget.hint }}</p>
+  {% else %}
+    <p class="rs-cms-json__hint help">{% trans "Превʼю, завантаження, стрілки порядку та видалення. Зміни застосуються після «Зберегти»." %}</p>
+  {% endif %}
 </div>

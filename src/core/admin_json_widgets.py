@@ -14,6 +14,7 @@ SCHEMA_EVOLUTION = {
     'kind': 'evolution',
     'upload_to': 'about/evolution/',
     'add_label': 'Додати фото',
+    'hint': 'Кожне фото — не більше 8 МБ.',
     'fields': (
         {'key': 'image', 'type': 'image', 'label': 'Фото', 'required': True},
     ),
@@ -23,10 +24,11 @@ SCHEMA_CRAFT = {
     'kind': 'craft',
     'upload_to': 'about/',
     'add_label': 'Додати фото',
+    'hint': 'Кожне фото — не більше 8 МБ. Підпис — не більше 80 символів.',
     'fields': (
         {'key': 'image', 'type': 'image', 'label': 'Фото', 'required': True},
-        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (ukr)'},
-        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (ru)'},
+        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (ukr)', 'max_chars': 80},
+        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (ru)', 'max_chars': 80},
     ),
 }
 
@@ -34,11 +36,12 @@ SCHEMA_LOGO = {
     'kind': 'logo',
     'upload_to': 'about/logos/',
     'add_label': 'Додати логотип',
+    'hint': 'Кожне фото — не більше 8 МБ. Підпис — не більше 80 символів.',
     'fields': (
         {'key': 'image', 'type': 'image', 'label': 'Фото', 'required': True},
-        {'key': 'year', 'type': 'text', 'label': 'Рік'},
-        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (ukr)'},
-        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (ru)'},
+        {'key': 'year', 'type': 'text', 'label': 'Рік', 'max_chars': 8},
+        {'key': 'label_uk', 'type': 'text', 'label': 'Підпис (ukr)', 'max_chars': 80},
+        {'key': 'label_ru', 'type': 'text', 'label': 'Підпис (ru)', 'max_chars': 80},
     ),
 }
 
@@ -46,10 +49,23 @@ SCHEMA_MILESTONES = {
     'kind': 'milestones',
     'upload_to': '',
     'add_label': 'Додати віху',
+    'hint': 'Текст віхи — не більше 320 символів.',
     'fields': (
-        {'key': 'year', 'type': 'text', 'label': 'Рік', 'required': True},
-        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (ukr)', 'html': True},
-        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (ru)', 'html': True},
+        {'key': 'year', 'type': 'text', 'label': 'Рік', 'required': True, 'max_chars': 8},
+        {
+            'key': 'body_uk',
+            'type': 'textarea',
+            'label': 'Текст (ukr)',
+            'html': True,
+            'max_chars': 320,
+        },
+        {
+            'key': 'body_ru',
+            'type': 'textarea',
+            'label': 'Текст (ru)',
+            'html': True,
+            'max_chars': 320,
+        },
     ),
 }
 
@@ -65,6 +81,7 @@ SCHEMA_BENEFITS = {
     'kind': 'benefits',
     'upload_to': '',
     'add_label': 'Додати перевагу',
+    'hint': 'Заголовок — не більше 80 символів.',
     'fields': (
         {
             'key': 'icon',
@@ -73,8 +90,14 @@ SCHEMA_BENEFITS = {
             'required': True,
             'choices': BENEFIT_ICON_CHOICES,
         },
-        {'key': 'title_uk', 'type': 'text', 'label': 'Заголовок (ukr)', 'required': True},
-        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (ru)'},
+        {
+            'key': 'title_uk',
+            'type': 'text',
+            'label': 'Заголовок (ukr)',
+            'required': True,
+            'max_chars': 80,
+        },
+        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (ru)', 'max_chars': 80},
     ),
 }
 
@@ -82,11 +105,30 @@ SCHEMA_DEALER_SUPPORT = {
     'kind': 'dealer_support',
     'upload_to': '',
     'add_label': 'Додати пункт підтримки',
+    'hint': 'Заголовок — не більше 80 символів. Текст — не більше 160 символів.',
     'fields': (
-        {'key': 'title_uk', 'type': 'text', 'label': 'Заголовок (ukr)', 'required': True},
-        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (ru)'},
-        {'key': 'body_uk', 'type': 'textarea', 'label': 'Текст (ukr)', 'html': True},
-        {'key': 'body_ru', 'type': 'textarea', 'label': 'Текст (ru)', 'html': True},
+        {
+            'key': 'title_uk',
+            'type': 'text',
+            'label': 'Заголовок (ukr)',
+            'required': True,
+            'max_chars': 80,
+        },
+        {'key': 'title_ru', 'type': 'text', 'label': 'Заголовок (ru)', 'max_chars': 80},
+        {
+            'key': 'body_uk',
+            'type': 'textarea',
+            'label': 'Текст (ukr)',
+            'html': True,
+            'max_chars': 160,
+        },
+        {
+            'key': 'body_ru',
+            'type': 'textarea',
+            'label': 'Текст (ru)',
+            'html': True,
+            'max_chars': 160,
+        },
     ),
 }
 
@@ -186,6 +228,7 @@ class CmsJsonListWidget(Widget):
         context['widget']['add_label'] = self.schema.get('add_label', 'Додати')
         context['widget']['kind'] = self.schema.get('kind', 'list')
         context['widget']['upload_to'] = self.schema.get('upload_to', '')
+        context['widget']['hint'] = self.schema.get('hint', '')
         return context
 
 

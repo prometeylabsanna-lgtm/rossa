@@ -3,6 +3,7 @@ import re
 from django.core.cache import cache
 from django.db import models
 
+from core.fields import WebPImageField
 from core.mixins import SeoFieldsMixin, TimeStampedModel
 from core.utils import localized
 
@@ -23,8 +24,8 @@ class SiteSettings(TimeStampedModel):
     hours_ru = models.CharField('Графік (ru)', max_length=128, blank=True)
     footer_tagline_uk = models.CharField('Підпис у підвалі (ukr)', max_length=255, blank=True)
     footer_tagline_ru = models.CharField('Підпис у підвалі (ru)', max_length=255, blank=True)
-    map_image = models.ImageField('Карта / салон', upload_to='brand/', blank=True)
-    logo = models.ImageField('Логотип', upload_to='brand/', blank=True)
+    map_image = WebPImageField('Карта / салон', upload_to='brand/', blank=True)
+    logo = WebPImageField('Логотип', upload_to='brand/', blank=True)
     guarantee_uk = models.CharField('Гарантія (ukr)', max_length=128, blank=True)
     guarantee_ru = models.CharField('Гарантія (ru)', max_length=128, blank=True)
     delivery_label_uk = models.CharField('Доставка (ukr)', max_length=128, blank=True)
@@ -147,7 +148,7 @@ class HomePage(SeoFieldsMixin, TimeStampedModel):
     craft_body_ru = models.TextField('Текст блоку «виробництво» (ru)', blank=True)
     craft_link_uk = models.CharField('Текст посилання «Про нас» (ukr)', max_length=128, blank=True)
     craft_link_ru = models.CharField('Текст посилання «Про нас» (ru)', max_length=128, blank=True)
-    craft_image = models.ImageField('Фото майстерні', upload_to='home/', blank=True)
+    craft_image = WebPImageField('Фото майстерні', upload_to='home/', blank=True)
     cta_banner_title_uk = models.CharField('Текст банера-запрошення (ukr)', max_length=255, blank=True)
     cta_banner_title_ru = models.CharField('Текст банера-запрошення (ru)', max_length=255, blank=True)
 
@@ -218,7 +219,7 @@ class HeroSlide(TimeStampedModel):
         related_name='hero_slides',
         verbose_name='Головна',
     )
-    image = models.ImageField('Зображення', upload_to='home/slides/')
+    image = WebPImageField('Зображення', upload_to='home/slides/')
     image_alt_uk = models.CharField('Підпис / alt (ukr)', max_length=160, blank=True)
     image_alt_ru = models.CharField('Підпис / alt (ru)', max_length=160, blank=True)
     sort = models.PositiveSmallIntegerField('Порядок', default=0)

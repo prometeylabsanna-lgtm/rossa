@@ -56,6 +56,10 @@
 
     function uploadFile(file, index, statusEl) {
       if (!file || !uploadTo) return;
+      if (file.size && file.size > 8 * 1024 * 1024) {
+        statusEl.textContent = "Не більше 8 МБ.";
+        return;
+      }
       statusEl.textContent = "Завантаження…";
       var body = new FormData();
       body.append("file", file);
@@ -139,6 +143,10 @@
             fileLabel.appendChild(fileInput);
             fieldsWrap.appendChild(fileLabel);
             fieldsWrap.appendChild(status);
+            var imgHint = document.createElement("p");
+            imgHint.className = "rs-cms-json__field-hint help";
+            imgHint.textContent = "Не більше 8 МБ.";
+            fieldsWrap.appendChild(imgHint);
             return;
           }
 
@@ -166,6 +174,9 @@
             control = document.createElement("input");
             control.type = "text";
           }
+          if (field.max_chars) {
+            control.setAttribute("maxlength", String(field.max_chars));
+          }
           control.value = item[field.key] || "";
           control.addEventListener("input", function () {
             items[index][field.key] = control.value;
@@ -177,6 +188,12 @@
           });
           wrap.appendChild(label);
           wrap.appendChild(control);
+          if (field.max_chars) {
+            var fieldHint = document.createElement("p");
+            fieldHint.className = "rs-cms-json__field-hint help";
+            fieldHint.textContent = "Не більше " + field.max_chars + " символів.";
+            wrap.appendChild(fieldHint);
+          }
           fieldsWrap.appendChild(wrap);
         });
 

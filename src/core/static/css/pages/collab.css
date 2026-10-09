@@ -471,6 +471,20 @@
   appearance: none;
 }
 
+.form--collab input.is-invalid,
+.form--collab textarea.is-invalid {
+  border-color: var(--color-danger, #c62828);
+}
+
+.form--collab input.is-valid,
+.form--collab textarea.is-valid {
+  border-color: var(--color-success, #2e7d32);
+}
+
+.form--collab .form__error {
+  color: var(--color-danger, #c62828);
+}
+
 .form--collab textarea {
   min-height: 110px;
   resize: vertical;

@@ -98,6 +98,6 @@ MIDDLEWARE = [
 
 LOGGING['root']['level'] = 'INFO'  # noqa: F405
 
-# django-csp 4.x: CSP_REPORT_ONLY застарів — лише CONTENT_SECURITY_POLICY_REPORT_ONLY.
+# Enforce CSP на публічному/адмін деплої (політика з base.py).
+# Report-only дубль — щоб бачити порушення в логах браузера без другого режиму «вимкнено».
 CONTENT_SECURITY_POLICY_REPORT_ONLY = CONTENT_SECURITY_POLICY  # noqa: F405
-CONTENT_SECURITY_POLICY = None

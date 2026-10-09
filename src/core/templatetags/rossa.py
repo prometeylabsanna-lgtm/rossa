@@ -2,6 +2,7 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 
+from core.cms_sanitize import sanitize_cms_html
 from core.cms_text import ensure_cms_html
 
 register = template.Library()
@@ -28,8 +29,8 @@ def uah(value):
 
 @register.filter(is_safe=True)
 def cms_html(value):
-    """HTML з TinyMCE рендериться; plain text → абзаци. Теги ніколи не світяться."""
+    """HTML з TinyMCE → allowlist sanitize → mark_safe. Plain text → абзаци."""
     text = ensure_cms_html(value or '')
     if not text:
         return ''
-    return mark_safe(text)
+    return mark_safe(sanitize_cms_html(text))

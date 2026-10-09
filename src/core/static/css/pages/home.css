@@ -279,8 +279,9 @@
   text-align: left;
   gap: 18px;
   box-sizing: border-box;
-  width: 100%;
-  max-width: 80%;
+  width: fit-content;
+  max-width: min(92%, 42rem);
+  margin-inline: auto;
   padding: 36px 24px 40px;
   background: var(--color-nav);
   color: var(--color-light);
@@ -289,6 +290,7 @@
 @media (min-width: 768px) {
   .about-band__copy {
     gap: 22px;
+    max-width: min(88%, 48rem);
     padding: 52px 40px;
   }
 }
@@ -296,6 +298,7 @@
 @media (min-width: 1024px) {
   .about-band__copy {
     gap: 24px;
+    max-width: min(80%, 52rem);
     padding: 64px 56px;
   }
 }

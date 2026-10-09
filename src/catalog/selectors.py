@@ -98,25 +98,45 @@ def apply_listing_filters(qs, *, cat_slug=None, price_min=None, price_max=None, 
     return qs, selected_cat
 
 
-def search_products(query: str):
-    q = (query or '').strip()
+SEARCH_QUERY_MAX = 80
+
+
+def _search_query_variants(query: str) -> list[str]:
+    """Варіанти регістру (допомагає кирилиці на SQLite, де icontains слабкий)."""
+    q = (query or '').strip()[:SEARCH_QUERY_MAX]
     if not q:
+        return []
+    variants = {q, q.lower(), q.upper()}
+    if len(q) > 1:
+        variants.add(q[:1].upper() + q[1:].lower())
+        variants.add(q.capitalize())
+    return [v for v in variants if v]
+
+
+def search_products(query: str):
+    variants = _search_query_variants(query)
+    if not variants:
         return visible_products().none()
-    return visible_products().filter(
-        Q(name_uk__icontains=q)
-        | Q(name_ru__icontains=q)
-        | Q(sku__icontains=q)
-        | Q(type_uk__icontains=q)
-        | Q(type_ru__icontains=q)
-    )
+    combined = Q()
+    for q in variants:
+        combined |= (
+            Q(name_uk__icontains=q)
+            | Q(name_ru__icontains=q)
+            | Q(sku__icontains=q)
+            | Q(slug__icontains=q)
+            | Q(type_uk__icontains=q)
+            | Q(type_ru__icontains=q)
+        )
+    return visible_products().filter(combined)
 
 
+# `id` — tie-breaker для стабільної пагінації (без дублів між сторінками).
 SORT_MAP = {
-    'popular': ('-badge', '-created_at'),
-    'new': ('-created_at',),
-    'price-asc': ('effective_price', 'base_price'),
-    'price-desc': ('-effective_price', '-base_price'),
-    'name': ('name_uk',),
+    'popular': ('-badge', '-created_at', 'id'),
+    'new': ('-created_at', 'id'),
+    'price-asc': ('effective_price', 'base_price', 'id'),
+    'price-desc': ('-effective_price', '-base_price', 'id'),
+    'name': ('name_uk', 'id'),
 }
 
 

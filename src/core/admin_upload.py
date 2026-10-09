@@ -10,6 +10,8 @@ from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
+from core.images_webp import convert_upload_to_webp
+
 ALLOWED_UPLOAD_PREFIXES = (
     'about/evolution/',
     'about/logos/',
@@ -46,10 +48,16 @@ def cms_upload(request):
         return JsonResponse({'error': 'Дозволені лише зображення (jpg, png, webp, gif)'}, status=400)
 
     if upload.size and upload.size > 8 * 1024 * 1024:
-        return JsonResponse({'error': 'Файл більший за 8 МБ'}, status=400)
+        return JsonResponse({'error': 'Не більше 8 МБ.'}, status=400)
 
     base = _SAFE_NAME.sub('-', Path(upload.name).stem).strip('-.') or 'image'
     filename = f'{upload_to}{base}{ext}'
-    saved = default_storage.save(filename, upload)
+    file_obj = upload
+
+    converted = convert_upload_to_webp(filename, upload)
+    if converted is not None:
+        filename, file_obj = converted
+
+    saved = default_storage.save(filename, file_obj)
     url = default_storage.url(saved)
     return JsonResponse({'url': url, 'path': saved})

@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.collab_form_copy import default_collab_form_copy, resolve_form_field_copy
+from core.fields import WebPImageField
 from core.mixins import SeoFieldsMixin, TimeStampedModel
 from core.utils import localized
 
@@ -149,8 +150,8 @@ class CollabPage(SeoFieldsMixin, TimeStampedModel):
         blank=True,
         help_text='Підписи та підказки полів заявки (укр / рос).',
     )
-    hero_image = models.ImageField('Hero фото', upload_to='collab/', blank=True)
-    form_image = models.ImageField('Фото біля форми', upload_to='collab/', blank=True)
+    hero_image = WebPImageField('Hero фото', upload_to='collab/', blank=True)
+    form_image = WebPImageField('Фото біля форми', upload_to='collab/', blank=True)
     advantages_title_uk = models.CharField('Заголовок переваг (ukr)', max_length=128, blank=True, default='Наші переваги')
     advantages_title_ru = models.CharField('Заголовок переваг (ru)', max_length=128, blank=True)
     benefits = models.JSONField(

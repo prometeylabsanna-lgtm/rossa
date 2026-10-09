@@ -1,8 +1,8 @@
+import re
+
 from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
-from unfold.admin import TabularInline
-
 from catalog.models import (
     Category,
     Characteristic,
@@ -14,7 +14,7 @@ from catalog.models import (
     ProductFabricPrice,
     Shade,
 )
-from core.admin_base import ModelAdmin
+from core.admin_base import ModelAdmin, TabularInline
 from core.admin_widgets import CmsAdminColorWidget, CmsAdminImageWidget
 
 
@@ -293,6 +293,8 @@ class ProductColorOptionAdmin(ModelAdmin):
     @admin.display(description='')
     def swatch_preview(self, obj):
         hex_color = (obj.hex_color or '').strip() or '#ccc'
+        if not re.fullmatch(r'#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?', hex_color):
+            hex_color = '#ccc'
         return format_html(
             '<span style="display:inline-block;width:1.25rem;height:1.25rem;'
             'border-radius:999px;background:{};border:1px solid #d0cdc8;"></span>',

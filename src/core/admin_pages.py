@@ -4,9 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from unfold.admin import TabularInline
-
-from core.admin_base import ModelAdmin
+from core.admin_base import ModelAdmin, TabularInline
 
 from core.admin_mixins import (
     STYLE_TAB,

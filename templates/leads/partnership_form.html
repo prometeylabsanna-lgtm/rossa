@@ -3,40 +3,44 @@
       method="post"
       action="{% url 'leads:partnership' %}"
       data-qa="lead-form"
+      {% include "leads/_form_msgs.html" %}
       hx-post="{% url 'leads:partnership' %}"
-      hx-swap="outerHTML">
+      hx-swap="outerHTML"
+      novalidate>
   {% csrf_token %}
+  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+  {% include "leads/_honeypot.html" %}
   <h2 class="collab-apply__form-title">{% if page and page.form_title %}{{ page.form_title }}{% else %}{% trans "Форма заявки" %}{% endif %}</h2>
   {{ form.non_field_errors }}
 
   <label class="form__field">
     <span class="form__label">{{ form.name.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
     {{ form.name }}
-    {{ form.name.errors }}
+    {% if form.name.errors %}<p class="form__error" data-field-error>{{ form.name.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
   </label>
 
   <label class="form__field">
     <span class="form__label">{{ form.phone.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
     {{ form.phone }}
-    {{ form.phone.errors }}
+    {% if form.phone.errors %}<p class="form__error" data-field-error>{{ form.phone.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
   </label>
 
   <label class="form__field">
     <span class="form__label">{{ form.email.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
     {{ form.email }}
-    {{ form.email.errors }}
+    {% if form.email.errors %}<p class="form__error" data-field-error>{{ form.email.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
   </label>
 
   <label class="form__field">
     <span class="form__label">{{ form.city.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
     {{ form.city }}
-    {{ form.city.errors }}
+    {% if form.city.errors %}<p class="form__error" data-field-error>{{ form.city.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
   </label>
 
   <label class="form__field">
     <span class="form__label">{{ form.message.label }}</span>
     {{ form.message }}
-    {{ form.message.errors }}
+    {% if form.message.errors %}<p class="form__error" data-field-error>{{ form.message.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
   </label>
 
   <button class="btn btn--solid" type="submit">{% if form.submit_label %}{{ form.submit_label }}{% else %}{% trans "Надіслати" %}{% endif %}</button>

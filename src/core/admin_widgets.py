@@ -18,6 +18,11 @@ TINYMCE_SIMPLE = {
     'promotion': False,
     'forced_root_block': 'p',
     'newline_behavior': 'block',
+    'valid_elements': (
+        'p,br,strong/b,em/i,u,ul,ol,li,'
+        'a[href|title|target|rel],span[class]'
+    ),
+    'valid_link_targets': '_blank',
     'content_style': (
         'body { font-family: system-ui, -apple-system, sans-serif; font-size: 16px; '
         'line-height: 1.55; padding: 8px 12px; }'
@@ -28,13 +33,19 @@ TINYMCE_SIMPLE = {
 
 
 class CmsTinyMCE(TinyMCE):
-    """TinyMCE: plain text з \\n\\n відкривається вже як абзаци."""
+    """TinyMCE: plain text з \\n\\n відкривається вже як абзаци; save → sanitize."""
 
     def format_value(self, value):
         raw = super().format_value(value)
         if raw in (None, ''):
             return ''
         return ensure_cms_html(str(raw))
+
+    def value_from_datadict(self, data, files, name):
+        value = super().value_from_datadict(data, files, name)
+        if value in (None, ''):
+            return value
+        return ensure_cms_html(str(value))
 
 
 def cms_control_classes(base_classes: list[str], extra_class: str = '') -> str:

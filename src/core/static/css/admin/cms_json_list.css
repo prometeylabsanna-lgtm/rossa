@@ -139,6 +139,12 @@
   opacity: 0.75;
 }
 
+.rs-cms-json__field-hint {
+  margin: 0.25rem 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
 .rs-cms-json__status {
   font-size: 13px;
   opacity: 0.8;

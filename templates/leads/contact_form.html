@@ -3,20 +3,40 @@
       method="post"
       action="{% url 'leads:contact' %}"
       data-qa="lead-form"
+      {% include "leads/_form_msgs.html" %}
       hx-post="{% url 'leads:contact' %}"
-      hx-swap="outerHTML">
+      hx-swap="outerHTML"
+      novalidate>
   {% csrf_token %}
+  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+  {% include "leads/_honeypot.html" %}
   {{ form.non_field_errors }}
-  {{ form.name }}
-  {{ form.name.errors }}
-  {{ form.phone }}
-  {{ form.phone.errors }}
-  {{ form.message }}
-  {{ form.message.errors }}
-  <label class="form__check">
-    {{ form.consent }}
-    <span>{{ form.consent.label }}</span>
-  </label>
-  {{ form.consent.errors }}
+
+  <div class="form__field">
+    <label class="visually-hidden" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+    {{ form.name }}
+    {% if form.name.errors %}<p class="form__error" data-field-error>{{ form.name.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
+  <div class="form__field">
+    <label class="visually-hidden" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+    {{ form.phone }}
+    {% if form.phone.errors %}<p class="form__error" data-field-error>{{ form.phone.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
+  <div class="form__field">
+    <label class="visually-hidden" for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+    {{ form.message }}
+    {% if form.message.errors %}<p class="form__error" data-field-error>{{ form.message.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
+  <div class="form__field">
+    <label class="form__check">
+      {{ form.consent }}
+      <span>{{ form.consent.label }}</span>
+    </label>
+    {% if form.consent.errors %}<p class="form__error" data-field-error>{{ form.consent.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
   <button class="btn btn--solid" type="submit">{% trans "Надіслати" %}</button>
 </form>

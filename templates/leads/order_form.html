@@ -5,9 +5,12 @@
       action="{% url 'leads:order' %}"
       data-qa="lead-form"
       data-order-form
+      {% include "leads/_form_msgs.html" %}
       hx-post="{% url 'leads:order' %}"
-      hx-swap="outerHTML">
+      hx-swap="outerHTML"
+      novalidate>
   {% csrf_token %}
+  {% include "leads/_honeypot.html" %}
   <h2 class="modal__title" data-order-title>{{ product.name }}</h2>
   <p class="modal__price">
     <span data-order-price-view>{% if price %}{{ price|uah }}{% else %}{{ price }}{% endif %}</span>
@@ -25,26 +28,43 @@
   </ul>
   {{ form.non_field_errors }}
   {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-  <label class="visually-hidden" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-  {{ form.name }}
-  {{ form.name.errors }}
-  <label class="visually-hidden" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
-  {{ form.phone }}
-  {{ form.phone.errors }}
-  <label class="visually-hidden" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-  {{ form.email }}
-  {{ form.email.errors }}
-  <label class="visually-hidden" for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
-  {{ form.comment }}
+
+  <div class="form__field">
+    <label class="visually-hidden" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+    {{ form.name }}
+    {% if form.name.errors %}<p class="form__error" data-field-error>{{ form.name.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
+  <div class="form__field">
+    <label class="visually-hidden" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+    {{ form.phone }}
+    {% if form.phone.errors %}<p class="form__error" data-field-error>{{ form.phone.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
+  <div class="form__field">
+    <label class="visually-hidden" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+    {{ form.email }}
+    {% if form.email.errors %}<p class="form__error" data-field-error>{{ form.email.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
+  <div class="form__field">
+    <label class="visually-hidden" for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
+    {{ form.comment }}
+  </div>
+
   <fieldset class="radios">
     <legend>{{ form.fulfillment.label }}</legend>
     {{ form.fulfillment }}
-    {{ form.fulfillment.errors }}
+    {% if form.fulfillment.errors %}<p class="form__error">{{ form.fulfillment.errors|striptags }}</p>{% endif %}
   </fieldset>
-  <label class="form__check">
-    {{ form.consent }}
-    <span>{{ form.consent.label }}</span>
-  </label>
-  {{ form.consent.errors }}
+
+  <div class="form__field">
+    <label class="form__check">
+      {{ form.consent }}
+      <span>{{ form.consent.label }}</span>
+    </label>
+    {% if form.consent.errors %}<p class="form__error" data-field-error>{{ form.consent.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+  </div>
+
   <button class="btn btn--solid" type="submit">{% trans "Надіслати замовлення" %}</button>
 </form>

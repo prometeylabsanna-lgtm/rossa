@@ -86,9 +86,14 @@
         class="btn btn--solid"
         type="button"
         data-open-order
-        {% if not selected_fabric and fabrics %}disabled{% endif %}
-      >{% trans "Замовити" %}</button>
-      <button class="btn btn--outline" type="button" data-open-order>{% trans "Отримати консультацію" %}</button>
+        {% if not product.is_available %}disabled aria-disabled="true"{% elif not selected_fabric and fabrics %}disabled{% endif %}
+      >{% if product.is_available %}{% trans "Замовити" %}{% else %}{% trans "Немає в наявності" %}{% endif %}</button>
+      <button
+        class="btn btn--outline"
+        type="button"
+        data-open-order
+        {% if not product.is_available %}title="{% trans 'Запит на наявність / консультацію' %}"{% endif %}
+      >{% trans "Отримати консультацію" %}</button>
     </div>
     <div class="pdp__notes">
       <div>{{ site_settings.guarantee }}</div>

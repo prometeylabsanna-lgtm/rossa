@@ -1,10 +1,16 @@
+import re
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
 from catalog.models_tax import Category, Fabric
+from core.fields import WebPImageField
 from core.mixins import SeoFieldsMixin, TimeStampedModel
 from core.slug import AutoSlugMixin
 from core.utils import localized
+
+_HEX_RE = re.compile(r'^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$')
 
 
 class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
@@ -35,7 +41,7 @@ class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
     care_ru = models.TextField('Догляд (ru)', blank=True)
     dims_uk = models.CharField('Розміри (ukr)', max_length=255, blank=True)
     dims_ru = models.CharField('Розміри (ru)', max_length=255, blank=True)
-    default_image = models.ImageField('Основне фото', upload_to='products/', blank=True)
+    default_image = WebPImageField('Основне фото', upload_to='products/', blank=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -172,6 +178,13 @@ class ProductColorOption(AutoSlugMixin, TimeStampedModel):
     def name(self):
         return localized(self, 'name')
 
+    def clean(self):
+        super().clean()
+        value = (self.hex_color or '').strip()
+        if not _HEX_RE.fullmatch(value):
+            raise ValidationError({'hex_color': 'Очікується HEX у форматі #RGB або #RRGGBB'})
+        self.hex_color = value
+
 
 class ProductColor(TimeStampedModel):
     """Колір товару: стандартний кружечок + фото товару цього кольору."""
@@ -188,7 +201,7 @@ class ProductColor(TimeStampedModel):
         on_delete=models.PROTECT,
         related_name='product_colors',
     )
-    image = models.ImageField(
+    image = WebPImageField(
         'Фото товару цього кольору',
         upload_to='products/colors/',
         blank=True,

@@ -118,12 +118,14 @@ CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'default-src': ("'self'",),
         # unsafe-eval потрібен для Alpine.js у django-unfold (x-show / x-data).
+        # unsafe-inline: inline CSS-змінні в base.html + TinyMCE/Unfold.
         'script-src': ("'self'", "'unsafe-inline'", "'unsafe-eval'"),
         'style-src': ("'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'),
         'font-src': ("'self'", 'https://fonts.gstatic.com', 'data:'),
         'img-src': ("'self'", 'data:', 'blob:'),
         'media-src': ("'self'",),
         'connect-src': ("'self'",),
+        'object-src': ("'none'",),
         'frame-ancestors': ("'none'",),
         'base-uri': ("'self'",),
         'form-action': ("'self'",),
@@ -139,6 +141,12 @@ TINYMCE_DEFAULT_CONFIG = {
     'promotion': False,
     'forced_root_block': 'p',
     'newline_behavior': 'block',
+    # Дзеркало core.cms_sanitize.ALLOWED_TAGS — staff XSS defense-in-depth.
+    'valid_elements': (
+        'p,br,strong/b,em/i,u,ul,ol,li,'
+        'a[href|title|target|rel],span[class]'
+    ),
+    'valid_link_targets': '_blank',
     'content_style': (
         'body { font-family: system-ui, -apple-system, sans-serif; font-size: 16px; '
         'line-height: 1.55; padding: 8px 12px; }'
