@@ -2,6 +2,7 @@ from core.models_content import (
     AboutPage,
     CollabPage,
     ContactsPage,
+    CookiesPage,
     DeliveryPage,
     LegalPage,
     OfferPage,
@@ -25,6 +26,7 @@ __all__ = [
     'DeliveryPage',
     'OfferPage',
     'PrivacyPage',
+    'CookiesPage',
     'PageStyle',
     'ChromeStyle',
 ]

@@ -120,8 +120,8 @@ CONTENT_SECURITY_POLICY = {
         # unsafe-eval потрібен для Alpine.js у django-unfold (x-show / x-data).
         # unsafe-inline: inline CSS-змінні в base.html + TinyMCE/Unfold.
         'script-src': ("'self'", "'unsafe-inline'", "'unsafe-eval'"),
-        'style-src': ("'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'),
-        'font-src': ("'self'", 'https://fonts.gstatic.com', 'data:'),
+        'style-src': ("'self'", "'unsafe-inline'"),
+        'font-src': ("'self'", 'data:'),
         'img-src': ("'self'", 'data:', 'blob:'),
         'media-src': ("'self'",),
         'connect-src': ("'self'",),

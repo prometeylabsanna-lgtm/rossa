@@ -7,6 +7,7 @@ from django.utils.translation import get_language
 
 from core.cms_sanitize import sanitize_cms_html
 from core.cms_text import ensure_cms_html
+from core.images_webp import srcset_from_url, variant_url
 
 register = template.Library()
 
@@ -48,3 +49,19 @@ def highlight_rossa(value):
     if not text:
         return ''
     return mark_safe(_ROSSA_RE.sub(r'<span class="about-band__brand">\1</span>', text, count=1))
+
+
+@register.filter
+def img_variant(url, width=960):
+    """URL responsive-варіанту: ontario.webp → ontario_w960.webp."""
+    try:
+        width_i = int(width)
+    except (TypeError, ValueError):
+        width_i = 960
+    return variant_url(url or '', width_i)
+
+
+@register.filter
+def img_srcset(url):
+    """srcset для 640/960/1600w."""
+    return srcset_from_url(url or '')

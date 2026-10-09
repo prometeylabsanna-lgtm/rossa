@@ -59,7 +59,7 @@ def text_char_limit(model: type[models.Model] | None, field_name: str) -> int | 
             return 150
         if model_name == 'AboutPage':
             return 2000
-        if model_name in {'LegalPage', 'DeliveryPage', 'OfferPage', 'PrivacyPage'}:
+        if model_name in {'LegalPage', 'DeliveryPage', 'OfferPage', 'PrivacyPage', 'CookiesPage'}:
             return 5000
         return 2000
     return 3000

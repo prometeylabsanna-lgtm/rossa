@@ -24,6 +24,7 @@ _URL_PAGE_MAP: dict[tuple[str | None, str | None], str] = {
     ('core', 'delivery'): PageStyle.PAGE_DELIVERY,
     ('core', 'offer'): PageStyle.PAGE_OFFER,
     ('core', 'privacy'): PageStyle.PAGE_PRIVACY,
+    ('core', 'cookies'): PageStyle.PAGE_COOKIES,
     ('catalog', 'index'): PageStyle.PAGE_CATALOG,
     ('catalog', 'category'): PageStyle.PAGE_CATALOG,
     ('catalog', 'product'): PageStyle.PAGE_CATALOG,
@@ -38,6 +39,7 @@ _PAGE_PREVIEW: dict[str, tuple[str, dict]] = {
     PageStyle.PAGE_DELIVERY: ('core:delivery', {}),
     PageStyle.PAGE_OFFER: ('core:offer', {}),
     PageStyle.PAGE_PRIVACY: ('core:privacy', {}),
+    PageStyle.PAGE_COOKIES: ('core:cookies', {}),
     PageStyle.PAGE_CATALOG: ('catalog:index', {}),
 }
 
@@ -45,6 +47,7 @@ LEGAL_SLUG_TO_PAGE = {
     'otrymannya': PageStyle.PAGE_DELIVERY,
     'oferta': PageStyle.PAGE_OFFER,
     'privacy': PageStyle.PAGE_PRIVACY,
+    'cookies': PageStyle.PAGE_COOKIES,
 }
 
 LEGAL_PAGE_DEFAULTS = {
@@ -66,6 +69,12 @@ LEGAL_PAGE_DEFAULTS = {
         'title_ru': 'Политика конфиденциальности',
         'body_uk': '',
     },
+    PageStyle.PAGE_COOKIES: {
+        'slug': 'cookies',
+        'title_uk': 'Політика використання Cookies',
+        'title_ru': 'Политика использования Cookies',
+        'body_uk': '',
+    },
 }
 
 
@@ -81,15 +90,27 @@ def ensure_page_styles() -> int:
 
 
 def ensure_legal_pages() -> None:
+    from core.management.seed_legal_texts import LEGAL_PAGES
     from core.models_content import LegalPage
 
+    seed_by_slug = {
+        slug: {
+            'title_uk': title_uk,
+            'title_ru': title_ru,
+            'body_uk': body_uk,
+            'body_ru': body_ru,
+        }
+        for slug, title_uk, title_ru, body_uk, body_ru in LEGAL_PAGES
+    }
     for defaults in LEGAL_PAGE_DEFAULTS.values():
+        seed = seed_by_slug.get(defaults['slug'], {})
         LegalPage.objects.get_or_create(
             slug=defaults['slug'],
             defaults={
-                'title_uk': defaults['title_uk'],
-                'title_ru': defaults.get('title_ru', ''),
-                'body_uk': defaults.get('body_uk', ''),
+                'title_uk': seed.get('title_uk', defaults['title_uk']),
+                'title_ru': seed.get('title_ru', defaults.get('title_ru', '')),
+                'body_uk': seed.get('body_uk', defaults.get('body_uk', '')),
+                'body_ru': seed.get('body_ru', ''),
                 'is_active': True,
             },
         )

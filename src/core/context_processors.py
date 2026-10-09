@@ -40,7 +40,7 @@ def site_globals(request):
         mtimes = [
             p.stat().st_mtime_ns
             for p in _STATIC_ROOT.rglob('*')
-            if p.suffix in {'.css', '.js'}
+            if p.suffix in {'.css', '.js', '.woff2', '.webp'}
         ]
         static_v = max(mtimes, default=0)
     return {

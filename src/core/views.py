@@ -124,6 +124,7 @@ def contacts(request):
 
 def thanks(request):
     return render(request, 'pages/thanks.html', {
+        'noindex': True,
         **_seo(request, _('Дякуємо за заявку — ROSSA'), _('Менеджер зв’яжеться з вами найближчим часом.')),
     })
 

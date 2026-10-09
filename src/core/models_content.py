@@ -328,3 +328,10 @@ class PrivacyPage(LegalPage):
         proxy = True
         verbose_name = 'Політика конфіденційності'
         verbose_name_plural = 'Політика конфіденційності'
+
+
+class CookiesPage(LegalPage):
+    class Meta:
+        proxy = True
+        verbose_name = 'Cookies'
+        verbose_name_plural = 'Cookies'

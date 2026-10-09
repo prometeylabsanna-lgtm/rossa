@@ -2,7 +2,14 @@
 {% load i18n static rossa %}
 {% block body_class %}page--inner page--collab{% endblock %}
 {% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/pages/collab.css' %}?v={{ static_v }}">
+{% endblock %}
+
+{% block preload %}
+  {% if page.hero_image %}
+    <link rel="preload" as="image" href="{{ page.hero_image.url|img_variant:1600 }}" fetchpriority="high">
+  {% endif %}
 {% endblock %}
 {% block content %}
   <h1 class="visually-hidden">{{ page.title }}</h1>
@@ -11,10 +18,13 @@
     <figure class="collab__hero reveal reveal--scale">
       <img
         class="collab__hero-img"
-        src="{{ page.hero_image.url }}"
+        src="{{ page.hero_image.url|img_variant:1600 }}"
+        srcset="{{ page.hero_image.url|img_srcset }}"
+        sizes="100vw"
         alt="{{ page.title }}"
         width="1678"
         height="937"
+        fetchpriority="high"
         decoding="async"
       >
       <div class="collab__hero-crumbs">
@@ -99,7 +109,9 @@
         <figure class="collab-apply__media">
           <img
             class="collab-apply__img"
-            src="{{ page.form_image.url }}"
+            src="{{ page.form_image.url|img_variant:960 }}"
+            srcset="{{ page.form_image.url|img_srcset }}"
+            sizes="(max-width:1023px) 100vw, 40vw"
             alt=""
             width="1200"
             height="900"

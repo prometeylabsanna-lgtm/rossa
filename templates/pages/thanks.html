@@ -1,5 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
+{% endblock %}
+{% block site_js %}{% endblock %}
 {% block content %}
   <section class="thanks reveal reveal--up">
     <h1>{% trans "Дякуємо за заявку!" %}</h1>

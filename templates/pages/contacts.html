@@ -1,6 +1,9 @@
 {% extends "base.html" %}
-{% load i18n rossa %}
+{% load i18n static rossa %}
 {% block body_class %}page--inner{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
+{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <section class="contacts">
@@ -74,7 +77,17 @@
 
       {% if map_image %}
         <div class="contacts__photo reveal reveal--up" data-reveal-delay="200">
-          <img class="map-slot" src="{{ map_image.url }}" alt="{% trans 'Салон ROSSA' %}" width="800" height="450" loading="lazy">
+          <img
+            class="map-slot"
+            src="{{ map_image.url|img_variant:960 }}"
+            srcset="{{ map_image.url|img_srcset }}"
+            sizes="(max-width:1023px) 100vw, 50vw"
+            alt="{% trans 'Салон ROSSA' %}"
+            width="800"
+            height="450"
+            loading="lazy"
+            decoding="async"
+          >
         </div>
       {% endif %}
     </div>

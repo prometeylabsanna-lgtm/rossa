@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static rossa %}
 <header class="header" data-header>
   <div class="header__bar">
     <div class="header__start">
@@ -37,9 +37,9 @@
 
     <a class="header__logo" href="{% url 'core:home' %}">
       {% if site_settings.logo %}
-      <img src="{{ site_settings.logo.url }}" alt="ROSSA" width="163" height="120">
+      <img src="{{ site_settings.logo.url|img_variant:640 }}" alt="ROSSA" width="163" height="120" decoding="async">
       {% else %}
-      <img src="{% static 'images/logo/rossa-logo.png' %}" alt="ROSSA" width="163" height="120">
+      <img src="{% static 'images/logo/rossa-logo.webp' %}" alt="ROSSA" width="163" height="120" decoding="async">
       {% endif %}
     </a>
 

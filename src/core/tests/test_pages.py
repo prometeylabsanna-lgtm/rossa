@@ -57,9 +57,28 @@ class PagesSmokeTests(TestCase):
         self.assertContains(ru, 'Милан')
 
     def test_info_pages(self):
-        for name in ['core:about', 'core:collab', 'core:contacts', 'core:thanks', 'core:delivery', 'core:offer', 'core:privacy']:
+        for name in [
+            'core:about',
+            'core:collab',
+            'core:contacts',
+            'core:thanks',
+            'core:delivery',
+            'core:offer',
+            'core:privacy',
+            'core:cookies',
+        ]:
             response = self.client.get(reverse(name))
             self.assertEqual(response.status_code, 200, name)
+
+    def test_thanks_is_noindex_and_out_of_sitemap(self):
+        thanks = self.client.get(reverse('core:thanks'))
+        self.assertEqual(thanks.status_code, 200)
+        self.assertContains(thanks, 'name="robots" content="noindex,follow"')
+
+        sitemap = self.client.get('/sitemap.xml')
+        self.assertEqual(sitemap.status_code, 200)
+        self.assertNotContains(sitemap, '/dyakuyemo/')
+        self.assertContains(sitemap, '/cookies/')
 
     def test_ru_prefix_and_contacts_copy(self):
         uk = self.client.get('/kontakty/')

@@ -10,7 +10,7 @@ from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from core.images_webp import convert_upload_to_webp
+from core.images_webp import convert_upload_to_webp, write_variants_for_bytes
 
 ALLOWED_UPLOAD_PREFIXES = (
     'about/evolution/',
@@ -59,5 +59,10 @@ def cms_upload(request):
         filename, file_obj = converted
 
     saved = default_storage.save(filename, file_obj)
+    try:
+        with default_storage.open(saved, 'rb') as fh:
+            write_variants_for_bytes(default_storage, saved, fh.read())
+    except Exception:
+        pass
     url = default_storage.url(saved)
     return JsonResponse({'url': url, 'path': saved})

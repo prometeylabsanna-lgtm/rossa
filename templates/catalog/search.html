@@ -1,6 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% block body_class %}page--inner{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/pages/catalog.css' %}?v={{ static_v }}">
+{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <section class="search-page">

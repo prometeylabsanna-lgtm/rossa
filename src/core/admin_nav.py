@@ -56,6 +56,11 @@ def build_unfold_navigation() -> list[dict]:
                     'link': reverse_lazy('admin:core_privacypage_changelist'),
                 },
                 {
+                    'title': _('Cookies'),
+                    'icon': 'cookie',
+                    'link': reverse_lazy('admin:core_cookiespage_changelist'),
+                },
+                {
                     'title': _('Шапка сайту'),
                     'icon': 'web_asset',
                     'link': reverse_lazy('admin:core_headersettings_changelist'),

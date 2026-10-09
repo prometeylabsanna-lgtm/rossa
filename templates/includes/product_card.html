@@ -7,11 +7,30 @@
       {% endif %}
       {% with shades=product.preview_shades %}
         {% if shades %}
-          {% for item in shades %}
-            <img data-card-image="{{ item.shade.id }}" src="{{ item.image.url }}" alt="{{ product.name }}" width="640" height="360" {% if not forloop.first %}hidden{% endif %} {% if not forloop.first %}loading="lazy"{% endif %}>
-          {% endfor %}
+          {% with first=shades.0 %}
+            <img
+              data-card-image
+              src="{{ first.image.url|img_variant:960 }}"
+              srcset="{{ first.image.url|img_srcset }}"
+              sizes="(max-width:767px) 100vw, (max-width:1023px) 50vw, 33vw"
+              alt="{{ product.name }}"
+              width="640"
+              height="360"
+              loading="lazy"
+              decoding="async"
+            >
+          {% endwith %}
         {% elif product.default_image %}
-          <img src="{{ product.default_image.url }}" alt="{{ product.name }}" width="640" height="360" loading="lazy">
+          <img
+            src="{{ product.default_image.url|img_variant:960 }}"
+            srcset="{{ product.default_image.url|img_srcset }}"
+            sizes="(max-width:767px) 100vw, (max-width:1023px) 50vw, 33vw"
+            alt="{{ product.name }}"
+            width="640"
+            height="360"
+            loading="lazy"
+            decoding="async"
+          >
         {% endif %}
       {% endwith %}
     </div>
@@ -29,7 +48,15 @@
     <div class="card__price">{% trans "Від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
     <div class="swatches">
       {% for item in product.preview_shades %}
-        <button type="button" class="swatch{% if forloop.first %} is-active{% endif %}" data-swatch="{{ item.shade.id }}" data-hex="{{ item.hex }}" aria-label="{{ item.shade.name }}"></button>
+        <button
+          type="button"
+          class="swatch{% if forloop.first %} is-active{% endif %}"
+          data-swatch="{{ item.shade.id }}"
+          data-hex="{{ item.hex }}"
+          data-image="{{ item.image.url|img_variant:960 }}"
+          data-srcset="{{ item.image.url|img_srcset }}"
+          aria-label="{{ item.shade.name }}"
+        ></button>
       {% endfor %}
     </div>
   </div>

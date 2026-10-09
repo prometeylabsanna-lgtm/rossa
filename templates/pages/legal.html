@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load i18n static rossa %}
 {% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/pages/legal.css' %}?v={{ static_v }}">
 {% endblock %}
+{% block site_js %}{% endblock %}
 {% block body_class %}page--inner page--legal{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}

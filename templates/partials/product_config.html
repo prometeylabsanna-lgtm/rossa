@@ -7,17 +7,30 @@
           {% if color.image %}
             <img
               data-pdp-image="{{ color.id }}"
-              src="{{ color.image.url }}"
+              src="{{ color.image.url|img_variant:1600 }}"
+              srcset="{{ color.image.url|img_srcset }}"
+              sizes="(max-width:1023px) 100vw, 60vw"
               alt="{{ product.name }}"
               width="900"
               height="506"
+              decoding="async"
               {% if not selected_color or color.id != selected_color.id %}hidden{% endif %}
               {% if selected_color and color.id != selected_color.id %}loading="lazy"{% endif %}
+              {% if selected_color and color.id == selected_color.id %}fetchpriority="high"{% endif %}
             >
           {% endif %}
         {% endfor %}
       {% elif main_image %}
-        <img src="{{ main_image.url }}" alt="{{ product.name }}" width="900" height="506">
+        <img
+          src="{{ main_image.url|img_variant:1600 }}"
+          srcset="{{ main_image.url|img_srcset }}"
+          sizes="(max-width:1023px) 100vw, 60vw"
+          alt="{{ product.name }}"
+          width="900"
+          height="506"
+          fetchpriority="high"
+          decoding="async"
+        >
       {% endif %}
     </div>
     {% if colors|length > 1 %}
@@ -30,7 +43,7 @@
               data-pdp-thumb="{{ color.id }}"
               aria-label="{{ color.name }}"
             >
-              <img src="{{ color.image.url }}" alt="" width="96" height="96">
+              <img src="{{ color.image.url|img_variant:640 }}" alt="" width="96" height="96" loading="lazy" decoding="async">
             </button>
           {% endif %}
         {% endfor %}

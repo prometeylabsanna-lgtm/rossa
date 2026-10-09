@@ -16,6 +16,7 @@ from core.models import (
     AboutPage,
     CollabPage,
     ContactsPage,
+    CookiesPage,
     DeliveryPage,
     HeroSlide,
     HomePage,
@@ -131,6 +132,14 @@ class PrivacyPageForm(PageStyleFieldsMixin, forms.ModelForm):
 
     class Meta:
         model = PrivacyPage
+        fields = '__all__'
+
+
+class CookiesPageForm(PageStyleFieldsMixin, forms.ModelForm):
+    style_page_key = PageStyle.PAGE_COOKIES
+
+    class Meta:
+        model = CookiesPage
         fields = '__all__'
 
 
@@ -374,6 +383,13 @@ class PrivacyPageAdmin(LegalSlugAdmin):
     page_key = PageStyle.PAGE_PRIVACY
     slug = 'privacy'
     form = PrivacyPageForm
+
+
+@admin.register(CookiesPage)
+class CookiesPageAdmin(LegalSlugAdmin):
+    page_key = PageStyle.PAGE_COOKIES
+    slug = 'cookies'
+    form = CookiesPageForm
 
 
 @admin.register(ValueProp)

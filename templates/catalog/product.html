@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% load i18n static rossa %}
 {% block body_class %}page--inner{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/pages/catalog.css' %}?v={{ static_v }}">
+{% endblock %}
 {% block extra_js %}
-<script src="{% static 'js/pages/product.js' %}" defer></script>
+<script src="{% static 'js/pages/product.js' %}?v={{ static_v }}" defer></script>
 {% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}

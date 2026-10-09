@@ -2,8 +2,11 @@
 {% load i18n static rossa %}
 {% block body_class %}page--inner page--about{% endblock %}
 {% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
   <link rel="stylesheet" href="{% static 'css/pages/about-evolution.css' %}?v={{ static_v }}">
 {% endblock %}
+
+{% block site_js %}{% endblock %}
 {% block content %}
   {% include "includes/breadcrumbs.html" %}
   <div class="about-grid">
@@ -25,7 +28,9 @@
           {% for ci in page.craft_images %}
             <div class="craft-mosaic__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00">
               <img
-                src="{{ ci.image }}"
+                src="{{ ci.image|img_variant:960 }}"
+                srcset="{{ ci.image|img_srcset }}"
+                sizes="(max-width:767px) 50vw, 400px"
                 alt="{{ ci|loc:'label' }}"
                 width="400"
                 height="500"

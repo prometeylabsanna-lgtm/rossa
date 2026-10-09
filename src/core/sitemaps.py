@@ -18,7 +18,6 @@ class StaticSitemap(Sitemap):
             'core:collab',
             'core:about',
             'core:contacts',
-            'core:thanks',
         ]
 
     def location(self, item):
@@ -58,6 +57,7 @@ LEGAL_URLS = {
     'otrymannya': 'core:delivery',
     'oferta': 'core:offer',
     'privacy': 'core:privacy',
+    'cookies': 'core:cookies',
 }
 
 

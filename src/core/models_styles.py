@@ -22,6 +22,7 @@ class PageStyle(TimeStampedModel):
     PAGE_DELIVERY = 'delivery'
     PAGE_OFFER = 'offer'
     PAGE_PRIVACY = 'privacy'
+    PAGE_COOKIES = 'cookies'
     PAGE_CATALOG = 'catalog'
 
     PAGE_CHOICES = (
@@ -32,6 +33,7 @@ class PageStyle(TimeStampedModel):
         (PAGE_DELIVERY, 'Доставка'),
         (PAGE_OFFER, 'Оферта'),
         (PAGE_PRIVACY, 'Політика конфіденційності'),
+        (PAGE_COOKIES, 'Cookies'),
         (PAGE_CATALOG, 'Каталог'),
     )
 

@@ -6,9 +6,12 @@ export DJANGO_SETTINGS_MODULE=config.settings.vercel
 export VERCEL_BUILD=1
 export PYTHONPATH="${PYTHONPATH:-}:src"
 
+python3 scripts/build_css_bundles.py
 python3 manage.py compilemessages --ignore=.venv --ignore=venv || true
 python3 manage.py migrate --noinput
 python3 manage.py seed_demo
+# Оптимізація демо-медіа (resize + variants) перед копіюванням у public/
+python3 manage.py optimize_media --root media_demo
 python3 manage.py collectstatic --noinput
 
 # Перевірка схеми демо-БД (інакше адмінка на Vercel падає з «інсталяція БД»).

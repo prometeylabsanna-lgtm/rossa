@@ -3,6 +3,22 @@
 
 {% block body_class %}page--home{% endblock %}
 
+{% block preload %}
+  {% with first_slide=hero_slides.0 %}
+    {% if first_slide.image %}
+      <link rel="preload" as="image" href="{{ first_slide.image.url|img_variant:1600 }}" fetchpriority="high" imagesizes="100vw" imagesrcset="{{ first_slide.image.url|img_srcset }}">
+    {% endif %}
+  {% endwith %}
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v={{ static_v }}">
+{% endblock %}
+
+{% block site_js %}
+  <script src="{% static 'js/product-card.js' %}?v={{ static_v }}" defer></script>
+{% endblock %}
+
 {% block content %}
   {% with first_slide=hero_slides.0 %}
     <h1 class="visually-hidden">{% if first_slide.image_alt %}{{ first_slide.image_alt }}{% else %}Rossa{% endif %}</h1>
@@ -12,7 +28,16 @@
       {% for slide in hero_slides %}
         <article class="hero__slide{% if forloop.first %} is-active{% endif %}" data-hero-slide{% if forloop.first %} aria-hidden="false"{% else %} aria-hidden="true"{% endif %}>
           {% if slide.image %}
-            <img class="hero__image{% if 'slide-2' in slide.image.name %} hero__image--lift{% endif %}" src="{{ slide.image.url }}" alt="{{ slide.image_alt }}" width="1920" height="1080"{% if not forloop.first %} loading="lazy"{% endif %}>
+            <img
+              class="hero__image{% if 'slide-2' in slide.image.name %} hero__image--lift{% endif %}"
+              src="{{ slide.image.url|img_variant:1600 }}"
+              srcset="{{ slide.image.url|img_srcset }}"
+              sizes="100vw"
+              alt="{{ slide.image_alt }}"
+              width="1920"
+              height="1080"
+              {% if forloop.first %}fetchpriority="high" decoding="async"{% else %}loading="lazy" decoding="async"{% endif %}
+            >
           {% endif %}
         </article>
       {% endfor %}
@@ -63,11 +88,26 @@
         <a class="cat-tile reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}00" href="{{ cat.get_absolute_url }}">
           <div class="cat-tile__media">
             {% if cat.slug == 'divany' %}
-              <img src="{% static 'images/slots/cat-sofas.webp' %}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">
+              <img
+                src="{% static 'images/slots/cat-sofas_w960.webp' %}"
+                srcset="{% static 'images/slots/cat-sofas_w640.webp' %} 640w, {% static 'images/slots/cat-sofas_w960.webp' %} 960w, {% static 'images/slots/cat-sofas_w1600.webp' %} 1600w"
+                sizes="(max-width:767px) 100vw, 33vw"
+                alt="{{ cat.name }}" width="1024" height="551" loading="lazy" decoding="async"
+              >
             {% elif cat.slug == 'lizhka' %}
-              <img src="{% static 'images/slots/cat-beds.webp' %}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">
+              <img
+                src="{% static 'images/slots/cat-beds_w960.webp' %}"
+                srcset="{% static 'images/slots/cat-beds_w640.webp' %} 640w, {% static 'images/slots/cat-beds_w960.webp' %} 960w, {% static 'images/slots/cat-beds_w1600.webp' %} 1600w"
+                sizes="(max-width:767px) 100vw, 33vw"
+                alt="{{ cat.name }}" width="1024" height="551" loading="lazy" decoding="async"
+              >
             {% elif cat.slug == 'pufy' %}
-              <img src="{% static 'images/slots/cat-poufs.webp' %}" alt="{{ cat.name }}" width="1024" height="551" loading="lazy">
+              <img
+                src="{% static 'images/slots/cat-poufs_w960.webp' %}"
+                srcset="{% static 'images/slots/cat-poufs_w640.webp' %} 640w, {% static 'images/slots/cat-poufs_w960.webp' %} 960w, {% static 'images/slots/cat-poufs_w1600.webp' %} 1600w"
+                sizes="(max-width:767px) 100vw, 33vw"
+                alt="{{ cat.name }}" width="1024" height="551" loading="lazy" decoding="async"
+              >
             {% endif %}
             <span class="cat-tile__label">{{ cat.name }}</span>
           </div>
@@ -90,7 +130,17 @@
 
   <section class="craft">
     {% if page.craft_image %}
-      <img class="craft__bg" src="{{ page.craft_image.url }}" alt="" width="1600" height="900" loading="lazy">
+      <img
+        class="craft__bg"
+        src="{{ page.craft_image.url|img_variant:1600 }}"
+        srcset="{{ page.craft_image.url|img_srcset }}"
+        sizes="100vw"
+        alt=""
+        width="1600"
+        height="900"
+        loading="lazy"
+        decoding="async"
+      >
     {% endif %}
     <div class="craft__panel">
       <h2 class="craft__title">{{ page.craft_title }}</h2>

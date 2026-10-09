@@ -1,11 +1,11 @@
-{% load i18n static %}
+{% load i18n static rossa %}
 <footer class="footer">
   <div class="footer__grid">
     <div>
       {% if site_settings.logo %}
-        <img class="footer__logo" src="{{ site_settings.logo.url }}" alt="ROSSA" width="110" height="81">
+        <img class="footer__logo" src="{{ site_settings.logo.url|img_variant:640 }}" alt="ROSSA" width="110" height="81" loading="lazy" decoding="async">
       {% else %}
-        <img class="footer__logo" src="{% static 'images/logo/rossa-logo.png' %}" alt="ROSSA" width="110" height="81">
+        <img class="footer__logo" src="{% static 'images/logo/rossa-logo.webp' %}" alt="ROSSA" width="110" height="81" loading="lazy" decoding="async">
       {% endif %}
       <p class="footer__tagline">{{ site_settings.footer_tagline }}</p>
     </div>
@@ -29,6 +29,7 @@
         <a href="{% url 'core:delivery' %}">{% trans "Як отримати замовлення" %}</a>
         <a href="{% url 'core:offer' %}">{% trans "Оферта" %}</a>
         <a href="{% url 'core:privacy' %}">{% trans "Політика конфіденційності" %}</a>
+        <a href="{% url 'core:cookies' %}">{% trans "Cookies" %}</a>
       </div>
     </div>
     <div>

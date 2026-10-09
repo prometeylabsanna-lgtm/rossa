@@ -98,6 +98,9 @@ MIDDLEWARE = [
 
 LOGGING['root']['level'] = 'INFO'  # noqa: F405
 
+# Довгий кеш для static (версія через ?v=static_v у шаблонах).
+WHITENOISE_MAX_AGE = 31536000
+
 # Enforce CSP на публічному/адмін деплої (політика з base.py).
 # Report-only дубль — щоб бачити порушення в логах браузера без другого режиму «вимкнено».
 CONTENT_SECURITY_POLICY_REPORT_ONLY = CONTENT_SECURITY_POLICY  # noqa: F405

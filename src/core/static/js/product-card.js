@@ -9,17 +9,20 @@
     (root || document).querySelectorAll("[data-product-card]").forEach((card) => {
       if (card.dataset.bound === "1") return;
       card.dataset.bound = "1";
-      const images = card.querySelectorAll("[data-card-image]");
+      const image = card.querySelector("[data-card-image]");
       const swatches = card.querySelectorAll("[data-swatch]");
+      if (!image || !swatches.length) return;
       swatches.forEach((swatch) => {
         swatch.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-          const id = swatch.dataset.swatch;
+          const src = swatch.dataset.image;
+          if (!src) return;
           swatches.forEach((s) => s.classList.toggle("is-active", s === swatch));
-          images.forEach((img) => {
-            img.hidden = img.dataset.cardImage !== id;
-          });
+          image.src = src;
+          if (swatch.dataset.srcset) {
+            image.srcset = swatch.dataset.srcset;
+          }
         });
       });
     });
