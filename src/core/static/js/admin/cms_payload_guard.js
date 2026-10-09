@@ -77,7 +77,7 @@
   }
 
   function init() {
-    if (window.location.pathname.indexOf("/admin/") !== 0) return;
+    if (!document.getElementById("page") && !document.getElementById("content")) return;
     document.querySelectorAll("form").forEach(bindForm);
   }
 

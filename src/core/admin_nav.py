@@ -1,8 +1,14 @@
+from django.conf import settings
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 
+def _admin_prefix() -> str:
+    return f'/{settings.ADMIN_URL.strip("/")}/'
+
+
 def build_unfold_navigation() -> list[dict]:
+    prefix = _admin_prefix()
     return [
         {
             'title': _('Сторінки сайту'),
@@ -14,8 +20,8 @@ def build_unfold_navigation() -> list[dict]:
                     'icon': 'home',
                     'link': reverse_lazy('admin:core_homepage_changelist'),
                     'active': lambda request: (
-                        '/admin/core/homepage/' in request.path
-                        or '/admin/core/valueprop/' in request.path
+                        f'{prefix}core/homepage/' in request.path
+                        or f'{prefix}core/valueprop/' in request.path
                     ),
                     'items': [
                         {

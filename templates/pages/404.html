@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 {% load i18n static %}
+{% block body_class %}page--inner page--404{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/pages/inner.css' %}?v={{ static_v }}">
+  <link rel="stylesheet" href="{% static 'css/pages/not-found.css' %}?v={{ static_v }}">
 {% endblock %}
 {% block site_js %}{% endblock %}
 {% block content %}
-  <section class="not-found reveal reveal--up">
-    <h1>{% trans "Сторінку не знайдено" %}</h1>
-    <p class="page-intro">{% trans "Перейдіть до каталогу або на головну." %}</p>
-    <a class="btn btn--ghost" href="{% url 'core:home' %}">{% trans "На головну" %}</a>
-    <a class="btn btn--outline" href="{% url 'catalog:index' %}">{% trans "До каталогу" %}</a>
+  <section class="not-found" aria-labelledby="not-found-title">
+    <p class="not-found__code reveal reveal--scale" aria-hidden="true">404</p>
+    <h1 id="not-found-title" class="not-found__title reveal reveal--up" data-reveal-delay="80">
+      {% trans "Сторінку не знайдено" %}
+    </h1>
+    <p class="not-found__text reveal reveal--up" data-reveal-delay="140">
+      {% trans "Можливо, посилання застаріло або адресу введено з помилкою. Перейдіть на головну чи до каталогу." %}
+    </p>
+    <div class="not-found__actions reveal reveal--up" data-reveal-delay="200">
+      <a class="btn btn--ghost" href="{% url 'core:home' %}">{% trans "На головну" %}</a>
+      <a class="btn btn--outline" href="{% url 'catalog:index' %}">{% trans "До каталогу" %}</a>
+    </div>
   </section>
 {% endblock %}

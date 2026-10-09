@@ -64,7 +64,8 @@
       var body = new FormData();
       body.append("file", file);
       body.append("upload_to", uploadTo);
-      fetch("/admin/cms-upload/", {
+      var adminRoot = "/" + window.location.pathname.split("/").filter(Boolean)[0] + "/";
+      fetch(adminRoot + "cms-upload/", {
         method: "POST",
         headers: { "X-CSRFToken": csrfToken() },
         body: body,

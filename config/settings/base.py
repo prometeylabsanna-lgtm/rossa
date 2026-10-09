@@ -100,6 +100,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Секретний префікс адмінки (без слешів з боків). Старий /admin → 404.
+ADMIN_URL = config('ADMIN_URL', default='rossa-panel').strip().strip('/')
+
 EMAIL_BACKEND = config(
     'EMAIL_BACKEND',
     default='django.core.mail.backends.console.EmailBackend',

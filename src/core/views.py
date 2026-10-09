@@ -38,13 +38,27 @@ def healthz(request):
 
 @require_GET
 def robots_txt(request):
+    from django.conf import settings
+
     sitemap_url = request.build_absolute_uri(reverse('django.contrib.sitemaps.views.sitemap'))
-    body = f'User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: {sitemap_url}\n'
+    admin_path = settings.ADMIN_URL.strip('/')
+    body = (
+        'User-agent: *\n'
+        'Allow: /\n'
+        'Disallow: /admin/\n'
+        f'Disallow: /{admin_path}/\n'
+        f'Sitemap: {sitemap_url}\n'
+    )
     return HttpResponse(body, content_type='text/plain')
 
 
 def page_not_found(request, exception):
-    return render(request, 'pages/404.html', status=404)
+    ctx = _seo(
+        request,
+        _('Сторінку не знайдено — ROSSA'),
+        _('Запитуваної сторінки не існує. Перейдіть на головну або до каталогу.'),
+    )
+    return render(request, 'pages/404.html', ctx, status=404)
 
 
 def home(request):

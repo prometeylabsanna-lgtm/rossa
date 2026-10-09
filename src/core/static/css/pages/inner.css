@@ -647,8 +647,3 @@
   max-width: 420px;
   opacity: 0.7;
 }
-
-.not-found {
-  padding: var(--section-y-lg) var(--pad-x);
-  text-align: center;
-}
