@@ -342,15 +342,13 @@ class Command(BaseCommand):
             ('about-frame.webp', 'Ручна оббивка', 'Ручная обивка'),
             ('about-assembly.webp', 'Збірка на виробництві', 'Сборка на производстве'),
         ]
+        from core.management.seed_media import sync_slot_file
+
         items = []
         for filename, lu, lr in mapping:
-            src = slots_dir / filename
+            sync_slot_file(filename, 'about', force=True)
             dest = f'about/{filename}'
-            if src.exists():
-                if default_storage.exists(dest):
-                    default_storage.delete(dest)
-                with src.open('rb') as fh:
-                    dest = default_storage.save(dest, File(fh))
+            if default_storage.exists(dest):
                 items.append({'image': f'/media/{dest}', 'label_uk': lu, 'label_ru': lr})
         obj.craft_images = items
 

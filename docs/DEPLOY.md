@@ -34,7 +34,14 @@ nginx віддає `/static/` і `/media/` з томів `static_volume` / `medi
 git pull
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
+При старті backend сам виконує `ensure_about_media` (craft-фото «Про нас» → `media_volume`).
 seed_demo ідемпотентний і не перезаписує вже змінений контент.
+
+Якщо медіа все одно порожні:
+```bash
+docker compose exec backend python manage.py ensure_about_media --force
+docker compose exec backend python manage.py seed_demo
+```
 
 ---
 
