@@ -5,11 +5,23 @@ services:
       dockerfile: ./deploy/nginx/Dockerfile
     ports:
       - "80:80"
+      - "443:443"
+    environment:
+      SSL_DOMAIN: ${SSL_DOMAIN:-rossamebel.com.ua}
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
     depends_on:
       - backend
+
+  certbot:
+    image: certbot/certbot:v2.11.0
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h; done"
 
   backend:
     build:
@@ -46,3 +58,5 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+  certbot_www:
+  certbot_conf:

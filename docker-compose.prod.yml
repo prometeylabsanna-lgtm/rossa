@@ -1,6 +1,8 @@
 services:
   nginx:
     restart: always
+  certbot:
+    restart: always
   backend:
     restart: always
     env_file:

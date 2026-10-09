@@ -6,7 +6,7 @@
 
 ## 2. Репозиторій на сервері
 ```bash
-git clone <repo> /opt/rossa && cd /opt/rossa
+git clone <repo> /var/www/rossa && cd /var/www/rossa
 cp .env.example .env
 # заповнити SECRET_KEY, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, POSTGRES_*, MANAGER_EMAIL
 ```
@@ -20,10 +20,44 @@ docker compose exec backend python manage.py createsuperuser
 
 Перевірка: `curl http://127.0.0.1/healthz/`
 
-## 4. HTTPS
-Після DNS:
-- `SECURE_SSL_REDIRECT=True` у `.env`
-- сертифікат через certbot / `django-docker-ssl` (nginx 443 + Let's Encrypt)
+## 4. HTTPS (Let's Encrypt) — rossamebel.com.ua
+
+Перед цим:
+- DNS A: `rossamebel.com.ua` і `www.rossamebel.com.ua` → IP дроплета
+- у DO Firewall відкриті **80** і **443**
+
+```bash
+cd /var/www/rossa
+git pull
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+# перший сертифікат (email: hello@rossamebel.com.ua)
+bash scripts/init-letsencrypt.sh
+```
+
+Потім у `.env`:
+
+```env
+ALLOWED_HOSTS=rossamebel.com.ua,www.rossamebel.com.ua
+CSRF_TRUSTED_ORIGINS=https://rossamebel.com.ua,https://www.rossamebel.com.ua
+SECURE_SSL_REDIRECT=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+```
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate backend
+```
+
+Перевірка: `curl -sI https://rossamebel.com.ua/healthz/`
+
+Адмінка: `https://rossamebel.com.ua/rossa-panel/`
+
+Опційно — щотижневий reload nginx після renew (cron на хості):
+
+```bash
+0 4 * * 1 cd /var/www/rossa && docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T nginx nginx -s reload
+```
 
 ## 5. Статика / медіа
 nginx віддає `/static/` і `/media/` з томів `static_volume` / `media_volume`.
