@@ -313,6 +313,10 @@
   color: var(--color-light);
 }
 
+.about-band__brand {
+  color: var(--color-gold);
+}
+
 @media (min-width: 768px) {
   .about-band__title {
     font-size: 44px;

@@ -40,7 +40,7 @@
   <section class="about-band">
     <div class="about-band__inner">
       <div class="about-band__copy">
-        {% if page.about_title %}<h2 class="about-band__title reveal reveal--up">{{ page.about_title }}</h2>{% endif %}
+        {% if page.about_title %}<h2 class="about-band__title reveal reveal--up">{{ page.about_title|highlight_rossa }}</h2>{% endif %}
         {% if page.about_body %}<div class="about-band__body reveal reveal--up cms-html" data-reveal-delay="80">{{ page.about_body|cms_html }}</div>{% endif %}
       </div>
     </div>

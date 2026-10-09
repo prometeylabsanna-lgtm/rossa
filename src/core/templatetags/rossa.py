@@ -1,4 +1,7 @@
+import re
+
 from django import template
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 
@@ -6,6 +9,8 @@ from core.cms_sanitize import sanitize_cms_html
 from core.cms_text import ensure_cms_html
 
 register = template.Library()
+
+_ROSSA_RE = re.compile(r'(Rossa)', re.IGNORECASE)
 
 
 @register.filter
@@ -34,3 +39,12 @@ def cms_html(value):
     if not text:
         return ''
     return mark_safe(sanitize_cms_html(text))
+
+
+@register.filter(is_safe=True)
+def highlight_rossa(value):
+    """Обгортає перше «Rossa» у span.about-band__brand (золотий акцент)."""
+    text = escape(value or '')
+    if not text:
+        return ''
+    return mark_safe(_ROSSA_RE.sub(r'<span class="about-band__brand">\1</span>', text, count=1))
