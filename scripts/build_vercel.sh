@@ -51,16 +51,27 @@ import sys
 from pathlib import Path
 
 # about-showroom.mp4 більше не сідиться: HomePage.about_video прибрано (0018).
-required = [
-    Path('media_demo/brand/rossa-logo.png'),
-    Path('media_demo/brand/contact-map.webp'),
-    Path('media_demo/home/craft.jpg'),
-    Path('media_demo/home/slides/slide-1.webp'),
-    Path('media_demo/products/milan.webp'),
-    Path('public/media/brand/rossa-logo.png'),
-    Path('public/media/home/slides/slide-1.webp'),
+# WebPImageField при seed конвертує png/jpg → .webp (див. core.fields.WebPImageField).
+def require_any(*candidates: Path) -> Path | None:
+    for path in candidates:
+        if path.exists():
+            return path
+    return None
+
+
+checks = [
+    ('logo', Path('media_demo/brand/rossa-logo.webp'), Path('media_demo/brand/rossa-logo.png')),
+    ('map', Path('media_demo/brand/contact-map.webp')),
+    ('craft', Path('media_demo/home/craft.webp'), Path('media_demo/home/craft.jpg')),
+    ('slide', Path('media_demo/home/slides/slide-1.webp')),
+    ('product', Path('media_demo/products/milan.webp')),
+    ('public-logo', Path('public/media/brand/rossa-logo.webp'), Path('public/media/brand/rossa-logo.png')),
+    ('public-slide', Path('public/media/home/slides/slide-1.webp')),
 ]
-missing = [str(p) for p in required if not p.exists()]
+missing = []
+for label, *candidates in checks:
+    if require_any(*candidates) is None:
+        missing.append(f'{label} ({" | ".join(str(c) for c in candidates)})')
 if missing:
     print('ERROR: missing media after seed/copy:', ', '.join(missing), file=sys.stderr)
     sys.exit(1)
