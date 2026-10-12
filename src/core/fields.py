@@ -28,3 +28,16 @@ class WebPImageField(ImageField):
     """ImageField: оптимізація → WebP + responsive variants при збереженні."""
 
     attr_class = WebPImageFieldFile
+
+
+    def contribute_to_class(self, cls, name, **kwargs):
+        super().contribute_to_class(cls, name, **kwargs)
+        if cls._meta.abstract:
+            return
+        from django.db.models.signals import post_delete, pre_save
+
+        from core import media_cleanup
+
+        label = f'{cls._meta.app_label}.{cls.__name__}'
+        pre_save.connect(media_cleanup.webp_pre_save, sender=cls, weak=False, dispatch_uid=f'webp_pre_save:{label}')
+        post_delete.connect(media_cleanup.webp_post_delete, sender=cls, weak=False, dispatch_uid=f'webp_post_delete:{label}')
