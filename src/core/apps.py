@@ -7,7 +7,13 @@ class CoreConfig(AppConfig):
     verbose_name = 'Сайт'
 
     def ready(self):
-        from django.db.models.signals import post_migrate
+        from django.db.models.signals import post_delete, post_migrate, pre_save
+
+        from core import media_cleanup
+        from core.models import AboutPage
+
+        pre_save.connect(media_cleanup.gallery_pre_save, sender=AboutPage, dispatch_uid='gallery_pre_save')
+        post_delete.connect(media_cleanup.gallery_post_delete, sender=AboutPage, dispatch_uid='gallery_post_delete')
 
         def _seed_cms(sender, **kwargs):
             if sender.name != 'core':
