@@ -116,31 +116,50 @@ class ProductColorInline(TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class ProductColorImageInline(TabularInline):
-    model = ProductColorImage
-    extra = 1
-    fields = ('color', 'image', 'sort')
-    ordering = ('color__sort', 'sort', 'id')
-    tab = True
-    verbose_name = 'Фото'
-    verbose_name_plural = 'Галерея кольорів'
+def _color_gallery_inline(color_option_id: int, title: str):
+    """Окрема вкладка галереї для одного кольору товару."""
+    cid = int(color_option_id)
+    tab_title = title
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'color':
-            kwargs['queryset'] = ProductColorOption.objects.filter(is_active=True).order_by('sort', 'id')
-            obj = getattr(request, '_rossa_product_obj', None)
-            if obj and obj.pk:
-                color_ids = list(
-                    ProductColor.objects.filter(product_id=obj.pk).values_list('color_id', flat=True)
-                )
-                if color_ids:
-                    kwargs['queryset'] = kwargs['queryset'].filter(id__in=color_ids)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    class ColorGalleryInline(TabularInline):
+        model = ProductColorImage
+        fk_name = 'product'
+        extra = 1
+        fields = ('image', 'sort')
+        ordering = ('sort', 'id')
+        tab = True
+        verbose_name = 'Фото'
+        verbose_name_plural = tab_title
 
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
-        if db_field.name == 'image':
-            kwargs['widget'] = CmsAdminImageWidget()
-        return super().formfield_for_dbfield(db_field, request, **kwargs)
+        def get_queryset(self, request):
+            return super().get_queryset(request).filter(color_id=cid)
+
+        def get_formset(self, request, obj=None, **kwargs):
+            FormSet = super().get_formset(request, obj, **kwargs)
+
+            class ColorBoundFormSet(FormSet):
+                def save_new(self, form, commit=True):
+                    instance = super().save_new(form, commit=False)
+                    instance.color_id = cid
+                    if commit:
+                        instance.save()
+                        form.save_m2m()
+                    return instance
+
+                def save_existing(self, form, instance, commit=True):
+                    instance.color_id = cid
+                    return super().save_existing(form, instance, commit)
+
+            return ColorBoundFormSet
+
+        def formfield_for_dbfield(self, db_field, request, **kwargs):
+            if db_field.name == 'image':
+                kwargs['widget'] = CmsAdminImageWidget()
+            return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+    ColorGalleryInline.__name__ = f'ColorGalleryInline_{cid}'
+    ColorGalleryInline.__qualname__ = f'ColorGalleryInline_{cid}'
+    return ColorGalleryInline
 
 
 class ProductCharacteristicInline(TabularInline):
@@ -336,12 +355,7 @@ class ProductAdmin(ModelAdmin):
     list_filter = ('category', 'badge', 'is_available', 'is_active')
     search_fields = ('name_uk', 'name_ru', 'sku')
     readonly_fields = ('slug', 'type_ru')
-    inlines = [
-        FabricPriceInline,
-        ProductColorInline,
-        ProductColorImageInline,
-        ProductCharacteristicInline,
-    ]
+    inlines = [FabricPriceInline, ProductColorInline, ProductCharacteristicInline]
     fieldsets = (
         ('Контент (ukr)', {
             'classes': ('tab',),
@@ -363,9 +377,11 @@ class ProductAdmin(ModelAdmin):
                 'seo_description_uk',
             ),
             'description': (
-                'Основне фото — запасний варіант, якщо для кольору ще немає галереї. '
-                'Головне зображення береться з першого фото галереї обраного кольору '
-                '(вкладка «Галерея кольорів»; спочатку додайте колір у «Кольори товару»).'
+                'Основне фото — запасний варіант. '
+                'Галерея: спочатку вкладка «Кольори товару» → Зберегти, '
+                'потім зверху з’являться окремі вкладки з назвами кольорів '
+                '(Беж, Зелений…) — туди додавайте кілька фото. '
+                'Перше за порядком = головне; на сайті гортаються свайпом.'
             ),
         }),
         ('Контент (ru)', {
@@ -388,9 +404,20 @@ class ProductAdmin(ModelAdmin):
             css={'all': ('css/admin/product_form.css',)},
         )
 
-    def get_form(self, request, obj=None, change=False, **kwargs):
-        request._rossa_product_obj = obj
-        return super().get_form(request, obj, change=change, **kwargs)
+    def get_inlines(self, request, obj=None):
+        inlines = [FabricPriceInline, ProductColorInline]
+        if obj is not None:
+            colors = (
+                ProductColor.objects
+                .filter(product_id=obj.pk)
+                .select_related('color')
+                .order_by('sort', 'id')
+            )
+            for row in colors:
+                name = row.color.name_uk if row.color_id else f'Колір #{row.pk}'
+                inlines.append(_color_gallery_inline(row.color_id, name))
+        inlines.append(ProductCharacteristicInline)
+        return inlines
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'default_image':
