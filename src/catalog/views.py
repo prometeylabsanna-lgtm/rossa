@@ -187,31 +187,30 @@ def product_detail(request, slug):
     selected_fabric = next((f for f in fabrics if str(f.id) == str(fabric_id)), None) or (fabrics[0] if fabrics else None)
 
     colors_qs = [c for c in product.colors.all() if c.is_active]
-    colors = [
-        {
+    colors = []
+    for c in colors_qs:
+        gallery_images = c.gallery_images()
+        if not gallery_images:
+            continue
+        colors.append({
             'id': c.id,
             'name': c.name,
             'hex_color': c.hex_color,
-            'image': c.image or product.default_image,
+            'image': gallery_images[0],
+            'gallery': gallery_images,
             'obj': c,
-        }
-        for c in colors_qs
-    ]
+        })
     selected_color = None
     if color_id:
         selected_color = next((c for c in colors if str(c['id']) == str(color_id)), None)
     if not selected_color:
         selected_color = colors[0] if colors else None
-    selected_color_obj = selected_color['obj'] if selected_color else None
 
     price = product.price_for_fabric(selected_fabric) if selected_fabric else product.min_price
-    main_image = None
-    gallery = []
-    if selected_color_obj and selected_color_obj.image:
-        main_image = selected_color_obj.image
-        gallery = [selected_color_obj]
-    else:
-        main_image = product.default_image
+    main_image = selected_color['image'] if selected_color else product.default_image
+    gallery = selected_color['gallery'] if selected_color else (
+        [product.default_image] if product.default_image else []
+    )
 
     related_qs = related_products(product, limit=3)
     crumbs = [(_('Головна'), reverse('core:home')), (_('Каталог'), reverse('catalog:index'))]

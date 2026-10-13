@@ -88,19 +88,34 @@
     });
   }
 
+  function showPdpSlide(pdp, colorId, slideIndex) {
+    const id = String(colorId);
+    const slides = pdp.querySelectorAll(`[data-pdp-image="${id}"]`);
+    if (!slides.length) return;
+    const next = ((slideIndex % slides.length) + slides.length) % slides.length;
+    pdp.querySelectorAll("[data-pdp-image]").forEach((img) => {
+      const sameColor = img.dataset.pdpImage === id;
+      const sameSlide = Number(img.dataset.pdpSlide || 0) === next;
+      img.hidden = !(sameColor && sameSlide);
+    });
+    pdp.querySelectorAll(`[data-pdp-thumbs-color="${id}"] [data-pdp-thumb-slide]`).forEach((thumb) => {
+      thumb.classList.toggle("is-active", Number(thumb.dataset.pdpThumbSlide) === next);
+    });
+    pdp.dataset.slideIndex = String(next);
+  }
+
   function selectPdpColor(pdp, colorId, shadeName) {
     const id = String(colorId);
-    pdp.querySelectorAll("[data-pdp-image]").forEach((img) => {
-      img.hidden = img.dataset.pdpImage !== id;
-    });
     pdp.querySelectorAll("[data-pdp-swatch]").forEach((swatch) => {
       const active = swatch.dataset.pdpSwatch === id;
       swatch.classList.toggle("is-active", active);
       swatch.setAttribute("aria-pressed", active ? "true" : "false");
     });
-    pdp.querySelectorAll("[data-pdp-thumb]").forEach((thumb) => {
-      thumb.classList.toggle("is-active", thumb.dataset.pdpThumb === id);
+    pdp.querySelectorAll("[data-pdp-thumbs]").forEach((thumbs) => {
+      thumbs.hidden = thumbs.dataset.pdpThumbsColor !== id;
     });
+
+    showPdpSlide(pdp, id, 0);
 
     const source = pdp.querySelector("[data-order-source]");
     if (source && shadeName) source.dataset.shadeName = shadeName;
@@ -116,6 +131,49 @@
     }
   }
 
+  function bindPdpSwipe(pdp) {
+    const stage = pdp.querySelector("[data-pdp-stage]");
+    if (!stage || stage.dataset.swipeBound === "1") return;
+    stage.dataset.swipeBound = "1";
+
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+
+    stage.addEventListener(
+      "touchstart",
+      (event) => {
+        if (event.touches.length !== 1) return;
+        const touch = event.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        tracking = true;
+      },
+      { passive: true }
+    );
+
+    stage.addEventListener(
+      "touchend",
+      (event) => {
+        if (!tracking) return;
+        tracking = false;
+        const touch = event.changedTouches[0];
+        if (!touch) return;
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+        const activeSwatch = pdp.querySelector("[data-pdp-swatch].is-active");
+        const colorId = activeSwatch ? activeSwatch.dataset.pdpSwatch : null;
+        if (!colorId) return;
+        const slides = pdp.querySelectorAll(`[data-pdp-image="${colorId}"]`);
+        if (slides.length < 2) return;
+        const current = Number(pdp.dataset.slideIndex || 0);
+        showPdpSlide(pdp, colorId, current + (dx < 0 ? 1 : -1));
+      },
+      { passive: true }
+    );
+  }
+
   function bindPdpColors(root) {
     const scope = root && root.querySelector ? root : document;
     const pdps = [];
@@ -126,20 +184,24 @@
       if (pdp.dataset.colorsBound === "1") return;
       pdp.dataset.colorsBound = "1";
       paintHex(pdp);
+      pdp.dataset.slideIndex = "0";
+      bindPdpSwipe(pdp);
 
       pdp.addEventListener("click", (event) => {
         const swatch = event.target.closest("[data-pdp-swatch]");
-        const thumb = event.target.closest("[data-pdp-thumb]");
-        const trigger = swatch || thumb;
-        if (!trigger || !pdp.contains(trigger)) return;
-        event.preventDefault();
-        const id = swatch
-          ? swatch.dataset.pdpSwatch
-          : thumb.dataset.pdpThumb;
-        const shadeName = swatch
-          ? swatch.dataset.shadeName || ""
-          : (pdp.querySelector(`[data-pdp-swatch="${id}"]`) || {}).dataset?.shadeName || "";
-        selectPdpColor(pdp, id, shadeName);
+        const thumb = event.target.closest("[data-pdp-thumb-slide]");
+        if (swatch && pdp.contains(swatch)) {
+          event.preventDefault();
+          selectPdpColor(pdp, swatch.dataset.pdpSwatch, swatch.dataset.shadeName || "");
+          return;
+        }
+        if (thumb && pdp.contains(thumb)) {
+          event.preventDefault();
+          const thumbs = thumb.closest("[data-pdp-thumbs]");
+          const colorId = thumbs ? thumbs.dataset.pdpThumbsColor : null;
+          if (!colorId) return;
+          showPdpSlide(pdp, colorId, Number(thumb.dataset.pdpThumbSlide || 0));
+        }
       });
     });
   }

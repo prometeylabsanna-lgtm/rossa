@@ -1,38 +1,55 @@
 {% load i18n rossa %}
+{% with shades=product.preview_shades %}
 <article class="card reveal reveal--up"{% if forloop %} data-reveal-delay="{{ forloop.counter0 }}00"{% endif %} data-product-card data-qa="product-card">
-  <a href="{{ product.get_absolute_url }}">
-    <div class="card__media">
+  <a href="{{ product.get_absolute_url }}" class="card__media-link">
+    <div class="card__media" data-card-media>
       {% if product.badge %}
         <span class="card__badge">{% if product.badge == 'HIT' %}{% trans "Хіт" %}{% else %}{{ product.get_badge_display }}{% endif %}</span>
       {% endif %}
-      {% with shades=product.preview_shades %}
-        {% if shades %}
-          {% with first=shades.0 %}
-            <img
-              data-card-image
-              src="{{ first.image.url|img_variant:960 }}"
-              srcset="{{ first.image.url|img_srcset }}"
-              sizes="(max-width:767px) 100vw, (max-width:1023px) 50vw, 33vw"
-              alt="{{ product.name }}"
-              width="640"
-              height="360"
-              loading="lazy"
-              decoding="async"
-            >
-          {% endwith %}
-        {% elif product.default_image %}
-          <img
-            src="{{ product.default_image.url|img_variant:960 }}"
-            srcset="{{ product.default_image.url|img_srcset }}"
-            sizes="(max-width:767px) 100vw, (max-width:1023px) 50vw, 33vw"
-            alt="{{ product.name }}"
-            width="640"
-            height="360"
-            loading="lazy"
-            decoding="async"
+      {% if shades %}
+        {% for item in shades %}
+          <div
+            class="card__gallery"
+            data-card-gallery="{{ item.shade.id }}"
+            {% if not forloop.first %}hidden{% endif %}
           >
-        {% endif %}
-      {% endwith %}
+            {% for image in item.gallery %}
+              <img
+                {% if forloop.parentloop.first and forloop.first %}data-card-image{% endif %}
+                src="{{ image.url|img_variant:960 }}"
+                srcset="{{ image.url|img_srcset }}"
+                sizes="(max-width:767px) 100vw, (max-width:1023px) 50vw, 33vw"
+                alt="{{ product.name }}"
+                width="640"
+                height="360"
+                loading="{% if forloop.parentloop.first and forloop.first %}eager{% else %}lazy{% endif %}"
+                decoding="async"
+                data-card-slide
+                {% if not forloop.first %}hidden{% endif %}
+              >
+            {% endfor %}
+            {% if item.gallery|length > 1 %}
+              <div class="card__dots" aria-hidden="true">
+                {% for image in item.gallery %}
+                  <span class="card__dot{% if forloop.first %} is-active{% endif %}"></span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% elif product.default_image %}
+        <img
+          data-card-image
+          src="{{ product.default_image.url|img_variant:960 }}"
+          srcset="{{ product.default_image.url|img_srcset }}"
+          sizes="(max-width:767px) 100vw, (max-width:1023px) 50vw, 33vw"
+          alt="{{ product.name }}"
+          width="640"
+          height="360"
+          loading="lazy"
+          decoding="async"
+        >
+      {% endif %}
     </div>
   </a>
   <div class="card__body">
@@ -47,17 +64,16 @@
     </div>
     <div class="card__price">{% trans "Від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
     <div class="swatches">
-      {% for item in product.preview_shades %}
+      {% for item in shades %}
         <button
           type="button"
           class="swatch{% if forloop.first %} is-active{% endif %}"
           data-swatch="{{ item.shade.id }}"
           data-hex="{{ item.hex }}"
-          data-image="{{ item.image.url|img_variant:960 }}"
-          data-srcset="{{ item.image.url|img_srcset }}"
           aria-label="{{ item.shade.name }}"
         ></button>
       {% endfor %}
     </div>
   </div>
 </article>
+{% endwith %}

@@ -2,6 +2,7 @@ from catalog.models_product import (
     Product,
     ProductCharacteristic,
     ProductColor,
+    ProductColorImage,
     ProductColorOption,
     ProductFabricPrice,
 )
@@ -16,5 +17,6 @@ __all__ = [
     'ProductFabricPrice',
     'ProductColorOption',
     'ProductColor',
+    'ProductColorImage',
     'ProductCharacteristic',
 ]

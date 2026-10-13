@@ -4,7 +4,14 @@ from __future__ import annotations
 
 from django.db.models import Q
 
-from catalog.models import Fabric, Product, ProductColor, ProductColorOption, Shade
+from catalog.models import (
+    Fabric,
+    Product,
+    ProductColor,
+    ProductColorImage,
+    ProductColorOption,
+    Shade,
+)
 from catalog.sofa_categories import SOFA_SUBCATEGORY_SLUGS
 
 # slug, name_uk, name_ru, hex, sort
@@ -119,6 +126,23 @@ def attach_sofa_palette(
                 dest_name=f'{product.slug}-{slug}.webp',
             )
         color_obj.save()
+        if color_obj.image:
+            gallery_row = (
+                ProductColorImage.objects
+                .filter(product=product, color=option)
+                .order_by('sort', 'id')
+                .first()
+            )
+            if gallery_row is None:
+                ProductColorImage.objects.create(
+                    product=product,
+                    color=option,
+                    image=color_obj.image,
+                    sort=0,
+                )
+            elif not gallery_row.image:
+                gallery_row.image = color_obj.image
+                gallery_row.save(update_fields=['image', 'updated_at'])
         created_or_updated += 1
     return created_or_updated
 

@@ -10,6 +10,7 @@ from catalog.models import (
     Product,
     ProductCharacteristic,
     ProductColor,
+    ProductColorImage,
     ProductColorOption,
     ProductFabricPrice,
     Shade,
@@ -102,7 +103,7 @@ class FabricPriceInline(TabularInline):
 class ProductColorInline(TabularInline):
     model = ProductColor
     extra = 1
-    fields = ('color', 'image', 'sort', 'is_active')
+    fields = ('color', 'sort', 'is_active')
     ordering = ('sort', 'id')
     tab = True
     verbose_name = 'Колір'
@@ -111,8 +112,29 @@ class ProductColorInline(TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'color':
-            from catalog.models import ProductColorOption
             kwargs['queryset'] = ProductColorOption.objects.filter(is_active=True).order_by('sort', 'id')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class ProductColorImageInline(TabularInline):
+    model = ProductColorImage
+    extra = 1
+    fields = ('color', 'image', 'sort')
+    ordering = ('color__sort', 'sort', 'id')
+    tab = True
+    verbose_name = 'Фото'
+    verbose_name_plural = 'Галерея кольорів'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'color':
+            kwargs['queryset'] = ProductColorOption.objects.filter(is_active=True).order_by('sort', 'id')
+            obj = getattr(request, '_rossa_product_obj', None)
+            if obj and obj.pk:
+                color_ids = list(
+                    ProductColor.objects.filter(product_id=obj.pk).values_list('color_id', flat=True)
+                )
+                if color_ids:
+                    kwargs['queryset'] = kwargs['queryset'].filter(id__in=color_ids)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
@@ -314,7 +336,12 @@ class ProductAdmin(ModelAdmin):
     list_filter = ('category', 'badge', 'is_available', 'is_active')
     search_fields = ('name_uk', 'name_ru', 'sku')
     readonly_fields = ('slug', 'type_ru')
-    inlines = [FabricPriceInline, ProductColorInline, ProductCharacteristicInline]
+    inlines = [
+        FabricPriceInline,
+        ProductColorInline,
+        ProductColorImageInline,
+        ProductCharacteristicInline,
+    ]
     fieldsets = (
         ('Контент (ukr)', {
             'classes': ('tab',),
@@ -334,6 +361,11 @@ class ProductAdmin(ModelAdmin):
                 'dims_uk',
                 'seo_title_uk',
                 'seo_description_uk',
+            ),
+            'description': (
+                'Основне фото — запасний варіант, якщо для кольору ще немає галереї. '
+                'Головне зображення береться з першого фото галереї обраного кольору '
+                '(вкладка «Галерея кольорів»; спочатку додайте колір у «Кольори товару»).'
             ),
         }),
         ('Контент (ru)', {
@@ -355,6 +387,10 @@ class ProductAdmin(ModelAdmin):
         return super().media + forms.Media(
             css={'all': ('css/admin/product_form.css',)},
         )
+
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        request._rossa_product_obj = obj
+        return super().get_form(request, obj, change=change, **kwargs)
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'default_image':

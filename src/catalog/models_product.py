@@ -115,18 +115,30 @@ class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
             return match.price
         return self.base_price + (fabric.surcharge or 0)
 
+    def gallery_for_color(self, color_option_id):
+        """Галерея фото для кольору (потребує prefetch color_images)."""
+        return [
+            row for row in self.color_images.all()
+            if row.color_id == color_option_id
+        ]
+
     def preview_shades(self):
         """Кружечки на картці: кольори товару (ціна від кольору не залежить)."""
         seen = []
         for color in self.colors.all():
             if not color.is_active:
                 continue
-            image = color.image or self.default_image
+            gallery_rows = self.gallery_for_color(color.color_id)
+            gallery = [row.image for row in gallery_rows if row.image]
+            image = gallery[0] if gallery else (color.image or self.default_image)
             if not image:
                 continue
+            if not gallery:
+                gallery = [image]
             seen.append({
                 'shade': color,
                 'image': image,
+                'gallery': gallery,
                 'hex': color.hex_color,
             })
             if len(seen) >= 8:
@@ -237,6 +249,56 @@ class ProductColor(TimeStampedModel):
     @property
     def slug(self):
         return self.color.slug
+
+    def gallery_images(self):
+        """Список ImageField галереї; fallback — одиночне фото кольору / товару."""
+        rows = self.product.gallery_for_color(self.color_id)
+        images = [row.image for row in rows if row.image]
+        if images:
+            return images
+        if self.image:
+            return [self.image]
+        if self.product.default_image:
+            return [self.product.default_image]
+        return []
+
+    @property
+    def main_image(self):
+        images = self.gallery_images()
+        return images[0] if images else None
+
+
+class ProductColorImage(TimeStampedModel):
+    """Фото галереї товару для конкретного кольору (порядок = sort)."""
+
+    product = models.ForeignKey(
+        Product,
+        verbose_name='Товар',
+        on_delete=models.CASCADE,
+        related_name='color_images',
+    )
+    color = models.ForeignKey(
+        ProductColorOption,
+        verbose_name='Колір',
+        on_delete=models.CASCADE,
+        related_name='product_images',
+    )
+    image = WebPImageField(
+        'Фото',
+        upload_to='products/gallery/',
+    )
+    sort = models.PositiveSmallIntegerField('Порядок', default=0)
+
+    class Meta:
+        ordering = ['sort', 'id']
+        verbose_name = 'Фото галереї кольору'
+        verbose_name_plural = 'Галерея кольорів'
+        indexes = [
+            models.Index(fields=['product', 'color', 'sort']),
+        ]
+
+    def __str__(self):
+        return f'{self.product.name_uk} / {self.color.name_uk} #{self.sort}'
 
 
 class ProductCharacteristic(TimeStampedModel):

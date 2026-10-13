@@ -1,4 +1,4 @@
-from catalog.models import Category, Product, ProductCharacteristic
+from catalog.models import Category, Product, ProductCharacteristic, ProductColorImage
 from django.db.models import Case, IntegerField, Min, Prefetch, Q, When
 from django.db.models.functions import Coalesce
 
@@ -10,6 +10,10 @@ def visible_products():
         .prefetch_related(
             'fabric_prices__fabric',
             'colors__color',
+            Prefetch(
+                'color_images',
+                queryset=ProductColorImage.objects.order_by('sort', 'id'),
+            ),
             Prefetch(
                 'characteristics',
                 queryset=ProductCharacteristic.objects.select_related(

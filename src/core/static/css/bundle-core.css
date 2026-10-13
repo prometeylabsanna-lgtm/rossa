@@ -1593,12 +1593,30 @@ body.is-nav-open {
   cursor: pointer;
 }
 
+.card__media-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
 .card__media {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: transparent;
   overflow: hidden;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.card__gallery {
+  position: absolute;
+  inset: 0;
+}
+
+.card__gallery[hidden] {
+  display: none;
 }
 
 .card__media img {
@@ -1609,14 +1627,40 @@ body.is-nav-open {
   object-fit: contain;
   -webkit-transition: -webkit-transform var(--duration-slow) var(--ease-out);
   transition: transform var(--duration-slow) var(--ease-out);
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .card__media img[hidden] {
   display: none;
 }
 
+.card__dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.card__dot.is-active {
+  background: var(--color-accent, #8a7355);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .card:hover .card__media img {
+  .card:hover .card__media img:not([hidden]) {
     -webkit-transform: scale(1.05);
     transform: scale(1.05);
   }

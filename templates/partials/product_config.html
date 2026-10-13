@@ -4,21 +4,21 @@
     <div class="pdp__stage" data-pdp-stage>
       {% if colors %}
         {% for color in colors %}
-          {% if color.image %}
+          {% for image in color.gallery %}
             <img
               data-pdp-image="{{ color.id }}"
-              src="{{ color.image.url|img_variant:1600 }}"
-              srcset="{{ color.image.url|img_srcset }}"
+              data-pdp-slide="{{ forloop.counter0 }}"
+              src="{{ image.url|img_variant:1600 }}"
+              srcset="{{ image.url|img_srcset }}"
               sizes="(max-width:1023px) 100vw, 60vw"
               alt="{{ product.name }}"
               width="900"
               height="506"
               decoding="async"
-              {% if not selected_color or color.id != selected_color.id %}hidden{% endif %}
-              {% if selected_color and color.id != selected_color.id %}loading="lazy"{% endif %}
-              {% if selected_color and color.id == selected_color.id %}fetchpriority="high"{% endif %}
+              {% if not selected_color or color.id != selected_color.id or not forloop.first %}hidden{% endif %}
+              {% if selected_color and color.id == selected_color.id and forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
             >
-          {% endif %}
+          {% endfor %}
         {% endfor %}
       {% elif main_image %}
         <img
@@ -33,22 +33,27 @@
         >
       {% endif %}
     </div>
-    {% if colors|length > 1 %}
-      <div class="thumbs" data-pdp-thumbs>
-        {% for color in colors %}
-          {% if color.image %}
+    {% for color in colors %}
+      {% if color.gallery|length > 1 %}
+        <div
+          class="thumbs"
+          data-pdp-thumbs
+          data-pdp-thumbs-color="{{ color.id }}"
+          {% if not selected_color or color.id != selected_color.id %}hidden{% endif %}
+        >
+          {% for image in color.gallery %}
             <button
               type="button"
-              class="{% if selected_color and color.id == selected_color.id %}is-active{% endif %}"
-              data-pdp-thumb="{{ color.id }}"
-              aria-label="{{ color.name }}"
+              class="{% if forloop.first %}is-active{% endif %}"
+              data-pdp-thumb-slide="{{ forloop.counter0 }}"
+              aria-label="{% trans 'Фото' %} {{ forloop.counter }}"
             >
-              <img src="{{ color.image.url|img_variant:640 }}" alt="" width="96" height="96" loading="lazy" decoding="async">
+              <img src="{{ image.url|img_variant:640 }}" alt="" width="96" height="96" loading="lazy" decoding="async">
             </button>
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
   </div>
   <div>
     <div class="pdp__eyebrow">{{ product.category.label_path }}</div>
