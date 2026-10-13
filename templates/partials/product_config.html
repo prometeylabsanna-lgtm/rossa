@@ -8,8 +8,8 @@
             <img
               data-pdp-image="{{ color.id }}"
               data-pdp-slide="{{ forloop.counter0 }}"
-              src="{{ image.url|img_variant:1600 }}"
-              srcset="{{ image.url|img_srcset }}"
+              src="{{ image.url }}"
+              srcset="{{ image.url }} 1600w, {{ image.url|img_srcset }}"
               sizes="(max-width:1023px) 100vw, 60vw"
               alt="{{ product.name }}"
               width="900"
@@ -22,8 +22,8 @@
         {% endfor %}
       {% elif main_image %}
         <img
-          src="{{ main_image.url|img_variant:1600 }}"
-          srcset="{{ main_image.url|img_srcset }}"
+          src="{{ main_image.url }}"
+          srcset="{{ main_image.url }} 1600w, {{ main_image.url|img_srcset }}"
           sizes="(max-width:1023px) 100vw, 60vw"
           alt="{{ product.name }}"
           width="900"
@@ -48,7 +48,7 @@
               data-pdp-thumb-slide="{{ forloop.counter0 }}"
               aria-label="{% trans 'Фото' %} {{ forloop.counter }}"
             >
-              <img src="{{ image.url|img_variant:640 }}" alt="" width="96" height="96" loading="lazy" decoding="async">
+              <img src="{{ image.url }}" alt="" width="96" height="96" loading="lazy" decoding="async">
             </button>
           {% endfor %}
         </div>

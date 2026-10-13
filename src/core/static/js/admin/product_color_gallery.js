@@ -10,22 +10,23 @@
     }
   }
 
-  function rowColorInput(row) {
-    return row.querySelector('input[name$="-color"], select[name$="-color"]');
+  function colorInputs(group) {
+    return Array.prototype.slice.call(
+      group.querySelectorAll(
+        'input[name*="color_images-"][name$="-color"], select[name*="color_images-"][name$="-color"]'
+      )
+    ).filter(function (input) {
+      return input.name.indexOf("__prefix__") === -1;
+    });
   }
 
-  function rowColorId(row) {
-    var input = rowColorInput(row);
-    return input ? String(input.value || "") : "";
+  function rowForInput(input) {
+    return input.closest("tbody") || input.closest("tr") || input.closest(".inline-related");
   }
 
-  function setRowColorId(row, colorId) {
-    var input = rowColorInput(row);
-    if (input) input.value = String(colorId);
-  }
-
-  function isEmptyForm(row) {
-    return row.classList.contains("empty-form");
+  function hasPrimaryKey(row) {
+    var idInput = row.querySelector('input[name$="-id"]');
+    return !!(idInput && idInput.value);
   }
 
   function initGallery(root) {
@@ -36,47 +37,86 @@
     var swatchesEl = root.querySelector("[data-rs-color-swatches]");
     var hintEl = root.querySelector("[data-rs-color-hint]");
     var activeLabel = root.querySelector("[data-rs-color-active-label]");
-    var group = root.closest("[data-inline-type='tabular']") || root.parentElement;
+    var group =
+      document.getElementById("color_images-group") ||
+      root.closest("[data-inline-type='tabular']") ||
+      root.parentElement;
     if (!group || !swatchesEl) return;
 
     var table = group.querySelector("table");
     var addRow = group.querySelector(".add-row");
 
-    function dataRows() {
-      return Array.prototype.slice
-        .call(group.querySelectorAll("tbody"))
-        .filter(function (row) {
-          return !isEmptyForm(row) && row.querySelector('input[name$="-color"], select[name$="-color"]');
-        });
-    }
-
-    function emptyTemplate() {
-      return group.querySelector("tbody.empty-form");
-    }
-
     function hideColorColumn() {
-      group.querySelectorAll("th, td").forEach(function (cell) {
-        if (
-          cell.classList.contains("column-color") ||
-          cell.classList.contains("field-color")
-        ) {
-          cell.style.display = "none";
-        }
+      group.querySelectorAll("th.column-color, td.field-color, .field-color").forEach(function (cell) {
+        cell.classList.add("rs-color-col-hidden");
       });
+    }
+
+    function setVisible(row, show) {
+      if (!row) return;
+      row.classList.toggle("rs-color-row-hidden", !show);
+      row.hidden = !show;
+      // запас для старих WebKit, де hidden на tbody ігнорується
+      row.style.display = show ? "" : "none";
+    }
+
+    function applyFilter(activeId) {
+      var current = null;
+      for (var i = 0; i < swatches.length; i++) {
+        if (String(swatches[i].id) === String(activeId)) {
+          current = swatches[i];
+          break;
+        }
+      }
+      if (activeLabel) {
+        activeLabel.hidden = !current;
+        activeLabel.textContent = current
+          ? "Фото для кольору: " + current.name + " — можна додати кілька слайдів"
+          : "";
+      }
+
+      colorInputs(group).forEach(function (input) {
+        var row = rowForInput(input);
+        if (!row || row.classList.contains("empty-form")) return;
+
+        var cid = String(input.value || "");
+        // Не перетираємо колір уже збережених рядків.
+        if (!cid && !hasPrimaryKey(row)) {
+          input.value = String(activeId);
+          cid = String(activeId);
+        }
+        setVisible(row, cid === String(activeId));
+      });
+
+      var tmpl = group.querySelector(
+        'input[name="color_images-__prefix__-color"], select[name="color_images-__prefix__-color"]'
+      );
+      if (tmpl) tmpl.value = String(activeId);
+
+      // empty-form tbody
+      var emptyTbody = group.querySelector("tbody.empty-form");
+      if (emptyTbody) {
+        var emptyColor = emptyTbody.querySelector(
+          'input[name$="-color"], select[name$="-color"]'
+        );
+        if (emptyColor) emptyColor.value = String(activeId);
+      }
+
+      hideColorColumn();
     }
 
     if (!swatches.length) {
       if (hintEl) hintEl.hidden = false;
-      if (table) table.style.display = "none";
-      if (addRow) addRow.style.display = "none";
+      if (table) table.classList.add("rs-color-row-hidden");
+      if (addRow) addRow.classList.add("rs-color-row-hidden");
       swatchesEl.innerHTML = "";
       if (activeLabel) activeLabel.hidden = true;
       return;
     }
 
     if (hintEl) hintEl.hidden = true;
-    if (table) table.style.display = "";
-    if (addRow) addRow.style.display = "";
+    if (table) table.classList.remove("rs-color-row-hidden");
+    if (addRow) addRow.classList.remove("rs-color-row-hidden");
 
     var activeId = String(swatches[0].id);
     swatchesEl.innerHTML = "";
@@ -98,51 +138,33 @@
           el.classList.toggle("is-active", on);
           el.setAttribute("aria-selected", on ? "true" : "false");
         });
-        applyFilter();
+        applyFilter(activeId);
       });
       swatchesEl.appendChild(btn);
     });
 
-    function applyFilter() {
-      var current = null;
-      for (var i = 0; i < swatches.length; i++) {
-        if (String(swatches[i].id) === activeId) {
-          current = swatches[i];
-          break;
-        }
-      }
-      if (activeLabel) {
-        activeLabel.hidden = !current;
-        activeLabel.textContent = current ? "Фото для кольору: " + current.name : "";
-      }
-
-      dataRows().forEach(function (row) {
-        var cid = rowColorId(row);
-        if (!cid) {
-          setRowColorId(row, activeId);
-          cid = activeId;
-        }
-        row.style.display = cid === activeId ? "" : "none";
-      });
-
-      var tmpl = emptyTemplate();
-      if (tmpl) setRowColorId(tmpl, activeId);
-      hideColorColumn();
-    }
-
-    if (window.MutationObserver) {
+    var debounce = null;
+    if (window.MutationObserver && table) {
       var observer = new MutationObserver(function () {
-        applyFilter();
+        window.clearTimeout(debounce);
+        debounce = window.setTimeout(function () {
+          applyFilter(activeId);
+        }, 30);
       });
-      var tableBodyParent = table || group;
-      observer.observe(tableBodyParent, { childList: true, subtree: true });
+      observer.observe(table, { childList: true, subtree: true });
     }
 
-    applyFilter();
+    group.addEventListener("click", function (event) {
+      if (!event.target.closest(".add-row a, a.add-row, .inline-add")) return;
+      window.setTimeout(function () {
+        applyFilter(activeId);
+      }, 50);
+    });
+
+    applyFilter(activeId);
   }
 
   function ensureMount() {
-    // Fallback, якщо Unfold не підхопив template_before.
     if (document.querySelector("[data-rs-color-gallery]")) return;
     var group = document.getElementById("color_images-group");
     if (!group) return;

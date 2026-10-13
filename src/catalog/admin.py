@@ -125,6 +125,7 @@ class ProductColorGalleryInline(TabularInline):
     fields = ('color', 'image', 'sort')
     ordering = ('sort', 'id')
     tab = True
+    show_title = False
     verbose_name = 'Фото'
     verbose_name_plural = 'Фото за кольорами'
     template_before = 'admin/catalog/product/color_gallery_swatches.html'

@@ -110,6 +110,13 @@ select.rs-admin-btn-select:focus {
 
 /* Колонку color ховаємо (значення ставить кружечок) */
 #color_images-group th.column-color,
-#color_images-group td.field-color {
+#color_images-group td.field-color,
+#color_images-group .rs-color-col-hidden {
+  display: none;
+}
+
+/* Рядки інших кольорів — ховаємо цілим tbody/блоком */
+#color_images-group tbody.rs-color-row-hidden,
+#color_images-group .rs-color-row-hidden {
   display: none;
 }
