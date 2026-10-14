@@ -41,7 +41,7 @@ select.rs-admin-btn-select:focus {
   }
 }
 
-/* Вкладка «Фото за кольорами»: кружечки обраних кольорів */
+/* Вкладка «Фото»: кружечки обраних кольорів */
 .rs-color-gallery {
   margin: 0 0 1rem;
   padding: 0.75rem 0 0;
@@ -95,13 +95,11 @@ select.rs-admin-btn-select:focus {
   box-shadow: 0 0 0 2px rgba(152, 96, 48, 0.28);
 }
 
-/* Панелі кольорів у вкладці Фото — таблицю ховає JS за кружечком */
-[data-rs-gallery-table][hidden] {
+/* Заголовки окремих formset кольорів не потрібні — одна вкладка «Фото» */
+[data-rs-gallery-panel] .inline-heading,
+[data-rs-gallery-panel] > .inline-related > fieldset > h2 {
   display: none;
 }
 
-/* Заголовки окремих formset кольорів не потрібні — одна вкладка «Фото» */
-[data-rs-gallery-panel] > .inline-related > fieldset > h2,
-[data-rs-gallery-panel] .inline-heading {
-  display: none;
-}
+/* Кружечки лише на першій панелі; коли вона схована Alpine — тримаємо бар видимим окремо не потрібно:
+   перший колір у списку завжди є; store завжди вказує на один із кольорів. */

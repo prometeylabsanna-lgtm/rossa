@@ -1,10 +1,19 @@
 {% load i18n %}
-{# Усі панелі у вкладці «Фото» (activeTab=color_images). color_id — сервер (569b534). #}
+{# Кружечки — окремо (завжди на вкладці Фото). Таблиця — лише для активного кольору. #}
+{% if inline_admin_formset.opts.template_before %}
+<div
+  class="rs-color-gallery-bar-wrap"
+  x-show="activeTab == 'color_images'"
+>
+  {% include inline_admin_formset.opts.template_before %}
+</div>
+{% endif %}
+
 <div
   id="{{ inline_admin_formset.formset.prefix }}-group"
   data-inline-type="tabular"
   data-rs-gallery-panel="{{ inline_admin_formset.opts.gallery_color_id }}"
-  x-show="activeTab == 'color_images'"
+  x-show="activeTab == 'color_images' && $store.rsGallery && String($store.rsGallery.id) === '{{ inline_admin_formset.opts.gallery_color_id }}'"
 >
   <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
     <fieldset class="module relative {{ inline_admin_formset.classes }} min-w-0" aria-labelledby="{{ inline_admin_formset.formset.prefix }}-heading">
@@ -13,10 +22,6 @@
       {% include "unfold/helpers/inline_heading.html" %}
 
       {% if inline_admin_formset.is_collapsible %}</summary>{% endif %}
-
-      {% if inline_admin_formset.opts.template_before %}
-        {% include inline_admin_formset.opts.template_before %}
-      {% endif %}
 
       <div data-rs-gallery-table>
         {% include "unfold/helpers/edit_inline/tabular_table.html" %}

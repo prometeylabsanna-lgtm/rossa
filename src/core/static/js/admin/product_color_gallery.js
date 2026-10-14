@@ -1,8 +1,9 @@
 (function () {
   /**
-   * Кружечки лише показують/ховають панель formset кольору.
-   * color_id на сервері ставить окремий formset (save_new) — як у 569b534.
-   * Немає привʼязки файлу до кольору через hidden/JS.
+   * Кружечки лише змінюють Alpine.store('rsGallery').id.
+   * Видимість панелей — x-show у color_gallery_tabular.html
+   * (activeTab == color_images && store.id == colorId).
+   * color_id на збереженні ставить сервер (окремий formset на колір).
    */
   var STORAGE_KEY = "rossa.galleryActiveColor";
 
@@ -30,32 +31,30 @@
     } catch (err) {
       saved = "";
     }
-    if (saved && swatches.some(function (s) { return String(s.id) === String(saved); })) {
+    if (
+      saved &&
+      swatches.some(function (s) {
+        return String(s.id) === String(saved);
+      })
+    ) {
       return String(saved);
     }
     return swatches.length ? String(swatches[0].id) : "";
   }
 
-  function panels() {
-    return Array.prototype.slice.call(
-      document.querySelectorAll("[data-rs-gallery-panel]")
-    );
-  }
-
-  function setTableVisible(table, show) {
-    if (!table) return;
-    table.hidden = !show;
-    table.setAttribute("aria-hidden", show ? "false" : "true");
-    table.style.display = show ? "" : "none";
-  }
-
-  function applyFilter(activeId) {
-    panels().forEach(function (panel) {
-      var show =
-        String(panel.getAttribute("data-rs-gallery-panel")) === String(activeId);
-      setTableVisible(panel.querySelector("[data-rs-gallery-table]"), show);
+  function setGalleryColor(colorId) {
+    var id = String(colorId || "");
+    rememberColor(id);
+    if (window.Alpine && Alpine.store("rsGallery")) {
+      Alpine.store("rsGallery").id = id;
+      return;
+    }
+    // Alpine ще не готовий — store створить alpine:init у change_form
+    document.addEventListener("alpine:init", function () {
+      if (Alpine.store("rsGallery")) {
+        Alpine.store("rsGallery").id = id;
+      }
     });
-    rememberColor(activeId);
   }
 
   function init() {
@@ -71,13 +70,12 @@
 
     if (!swatches.length) {
       swatchesEl.innerHTML = "";
-      panels().forEach(function (panel) {
-        setTableVisible(panel.querySelector("[data-rs-gallery-table]"), false);
-      });
+      setGalleryColor("");
       return;
     }
 
     var activeId = recalledColor(swatches);
+    setGalleryColor(activeId);
     swatchesEl.innerHTML = "";
 
     swatches.forEach(function (item) {
@@ -95,17 +93,15 @@
       btn.addEventListener("click", function (event) {
         event.preventDefault();
         activeId = id;
+        setGalleryColor(activeId);
         swatchesEl.querySelectorAll(".rs-color-gallery__swatch").forEach(function (el) {
           var on = el.getAttribute("data-color-id") === activeId;
           el.classList.toggle("is-active", on);
           el.setAttribute("aria-selected", on ? "true" : "false");
         });
-        applyFilter(activeId);
       });
       swatchesEl.appendChild(btn);
     });
-
-    applyFilter(activeId);
   }
 
   function boot() {

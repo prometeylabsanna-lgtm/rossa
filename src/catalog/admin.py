@@ -145,7 +145,7 @@ def _color_gallery_inline(color_option_id: int, title: str, *, is_primary: bool 
         extra = 1
         fields = ('image', 'sort')
         ordering = ('sort', 'id')
-        # Лише перший створює вкладку «Фото»; решта теж показуються в ній (template).
+        # Лише перший створює вкладку «Фото»; решта панелей теж у ній (x-show у template).
         tab = is_primary
         show_title = False
         verbose_name = 'Фото'
@@ -153,6 +153,7 @@ def _color_gallery_inline(color_option_id: int, title: str, *, is_primary: bool 
         gallery_color_id = cid
         gallery_color_name = title
         template = 'admin/catalog/product/color_gallery_tabular.html'
+        # Кружечки рендеряться ПОЗА панеллю (див. color_gallery_tabular.html).
         template_before = (
             'admin/catalog/product/color_gallery_swatches.html' if is_primary else None
         )
