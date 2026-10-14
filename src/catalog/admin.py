@@ -116,12 +116,41 @@ class ProductColorInline(TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class ProductColorImageForm(forms.ModelForm):
+    """Нові рядки без файлу не вважаються зміненими (JS проставляє color → інакше валідація image падає тихо)."""
+
+    class Meta:
+        model = ProductColorImage
+        fields = ('color', 'image', 'sort')
+
+    def has_changed(self):
+        if self.instance.pk:
+            return super().has_changed()
+        if not self.is_bound:
+            return False
+        uploaded = self.files.get(self.add_prefix('image'))
+        return bool(uploaded)
+
+    def clean(self):
+        cleaned = super().clean()
+        uploaded = self.files.get(self.add_prefix('image')) if self.is_bound else None
+        has_image = bool(uploaded) or bool(cleaned.get('image')) or bool(self.instance.pk and self.instance.image)
+        if has_image and not cleaned.get('color'):
+            # color — HiddenInput, показуємо помилку біля фото
+            self.add_error(
+                'image',
+                'Оберіть кружечок кольору зверху, потім знову завантажте фото.',
+            )
+        return cleaned
+
+
 class ProductColorGalleryInline(TabularInline):
     """Одна вкладка «Фото за кольорами»: кружечки зверху + поля завантаження."""
 
     model = ProductColorImage
+    form = ProductColorImageForm
     fk_name = 'product'
-    extra = 2
+    extra = 1
     fields = ('color', 'image', 'sort')
     ordering = ('sort', 'id')
     tab = True
@@ -134,17 +163,15 @@ class ProductColorGalleryInline(TabularInline):
     def get_formset(self, request, obj=None, **kwargs):
         self._parent_product = obj
         FormSet = super().get_formset(request, obj, **kwargs)
-        allowed = set()
         default_color_id = None
         if obj is not None:
-            color_ids = list(
+            default_color_id = (
                 ProductColor.objects
                 .filter(product_id=obj.pk)
                 .order_by('sort', 'id')
                 .values_list('color_id', flat=True)
+                .first()
             )
-            allowed = {cid for cid in color_ids if cid}
-            default_color_id = color_ids[0] if color_ids else None
 
         class ColorGalleryFormSet(FormSet):
             def __init__(self, *args, **kwargs):
@@ -157,6 +184,27 @@ class ProductColorGalleryInline(TabularInline):
 
             def clean(self):
                 super().clean()
+                # Кольори могли щойно додатись у цьому ж POST — перевіряємо свіжий стан + POST colors.
+                product_id = getattr(obj, 'pk', None)
+                allowed = set()
+                if product_id:
+                    allowed = set(
+                        ProductColor.objects
+                        .filter(product_id=product_id)
+                        .values_list('color_id', flat=True)
+                    )
+                # З інлайну «Кольори товару» в цьому ж збереженні
+                if self.data is not None:
+                    total = int(self.data.get('colors-TOTAL_FORMS') or 0)
+                    for i in range(total):
+                        if self.data.get(f'colors-{i}-DELETE'):
+                            continue
+                        cid = self.data.get(f'colors-{i}-color')
+                        if cid:
+                            try:
+                                allowed.add(int(cid))
+                            except (TypeError, ValueError):
+                                pass
                 if not allowed:
                     return
                 for form in self.forms:
@@ -164,8 +212,11 @@ class ProductColorGalleryInline(TabularInline):
                         continue
                     if form.cleaned_data.get('DELETE'):
                         continue
+                    if not form.has_changed():
+                        continue
                     color = form.cleaned_data.get('color')
                     if color is None:
+                        form.add_error('color', 'Оберіть колір кружечком зверху.')
                         continue
                     if color.pk not in allowed:
                         form.add_error(
@@ -178,18 +229,8 @@ class ProductColorGalleryInline(TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'color':
             kwargs['widget'] = forms.HiddenInput()
-            parent = getattr(self, '_parent_product', None)
-            if parent is not None and parent.pk:
-                ids = list(
-                    ProductColor.objects
-                    .filter(product_id=parent.pk)
-                    .values_list('color_id', flat=True)
-                )
-                kwargs['queryset'] = ProductColorOption.objects.filter(
-                    pk__in=[i for i in ids if i]
-                ).order_by('sort', 'id')
-            else:
-                kwargs['queryset'] = ProductColorOption.objects.none()
+            # Ширший queryset: новий колір у цьому ж POST ще не в ProductColor.
+            kwargs['queryset'] = ProductColorOption.objects.filter(is_active=True).order_by('sort', 'id')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
@@ -410,18 +451,11 @@ class ProductAdmin(ModelAdmin):
                 'badge',
                 'is_available',
                 'is_active',
-                'default_image',
                 'description_uk',
                 'care_uk',
                 'dims_uk',
                 'seo_title_uk',
                 'seo_description_uk',
-            ),
-            'description': (
-                'Основне фото — запасний варіант. '
-                'Галерея: вкладка «Кольори товару» → Зберегти → вкладка «Фото за кольорами»: '
-                'кружечки зверху (HEX зі стандартних кольорів), клік відкриває фото цього кольору. '
-                'Галерея є навіть при одному кольорі. Перше фото за порядком = головне.'
             ),
         }),
         ('Контент (ru)', {
@@ -481,7 +515,3 @@ class ProductAdmin(ModelAdmin):
         extra_context['product_color_swatches'] = swatches
         return super().changeform_view(request, object_id, form_url, extra_context)
 
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
-        if db_field.name == 'default_image':
-            kwargs['widget'] = CmsAdminImageWidget()
-        return super().formfield_for_dbfield(db_field, request, **kwargs)

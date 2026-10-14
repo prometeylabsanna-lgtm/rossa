@@ -122,6 +122,19 @@ class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
             if row.color_id == color_option_id
         ]
 
+    @property
+    def cover_image(self):
+        """Перше фото першого активного кольору (галерея → legacy color.image)."""
+        for color in self.colors.all():
+            if not color.is_active:
+                continue
+            for row in self.gallery_for_color(color.color_id):
+                if row.image:
+                    return row.image
+            if color.image:
+                return color.image
+        return None
+
     def preview_shades(self):
         """Кружечки на картці: кольори товару (ціна від кольору не залежить)."""
         seen = []
@@ -130,7 +143,7 @@ class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
                 continue
             gallery_rows = self.gallery_for_color(color.color_id)
             gallery = [row.image for row in gallery_rows if row.image]
-            image = gallery[0] if gallery else (color.image or self.default_image)
+            image = gallery[0] if gallery else color.image
             if not image:
                 continue
             if not gallery:
@@ -251,15 +264,13 @@ class ProductColor(TimeStampedModel):
         return self.color.slug
 
     def gallery_images(self):
-        """Список ImageField галереї; fallback — одиночне фото кольору / товару."""
+        """Список ImageField галереї; fallback — legacy одиночне фото кольору."""
         rows = self.product.gallery_for_color(self.color_id)
         images = [row.image for row in rows if row.image]
         if images:
             return images
         if self.image:
             return [self.image]
-        if self.product.default_image:
-            return [self.product.default_image]
         return []
 
     @property

@@ -207,9 +207,9 @@ def product_detail(request, slug):
         selected_color = colors[0] if colors else None
 
     price = product.price_for_fabric(selected_fabric) if selected_fabric else product.min_price
-    main_image = selected_color['image'] if selected_color else product.default_image
+    main_image = selected_color['image'] if selected_color else product.cover_image
     gallery = selected_color['gallery'] if selected_color else (
-        [product.default_image] if product.default_image else []
+        [main_image] if main_image else []
     )
 
     related_qs = related_products(product, limit=3)

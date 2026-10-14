@@ -10,31 +10,40 @@
     }
   }
 
-  function setRowColor(row, colorId) {
-    var input = row.querySelector(
+  function colorInput(row) {
+    return row.querySelector(
       'input[name*="color_images-"][name$="-color"], select[name*="color_images-"][name$="-color"]'
     );
+  }
+
+  function setRowColor(row, colorId) {
+    var input = colorInput(row);
     if (input) input.value = String(colorId);
     row.setAttribute("data-rs-color-id", String(colorId));
+  }
+
+  function clearRowColor(row) {
+    var input = colorInput(row);
+    if (input) input.value = "";
+    row.removeAttribute("data-rs-color-id");
   }
 
   function rowHasImage(row) {
     var fileInput = row.querySelector('input[type="file"]');
     if (fileInput && fileInput.files && fileInput.files.length) return true;
-    if (row.querySelector(".field-image a[href], .field-image img[src]")) return true;
+    if (row.querySelector(".field-image a[href], .field-image img[src]:not([hidden])")) {
+      return true;
+    }
     return false;
   }
 
   function initGallery(root) {
     if (!root || root.getAttribute("data-rs-bound") === "1") return;
 
-    // json_script може з’явитись пізніше за Media JS — чекаємо
     if (!document.getElementById("rs-product-color-swatches")) return;
 
     var swatches = readSwatches();
     var swatchesEl = root.querySelector("[data-rs-color-swatches]");
-    var hintEl = root.querySelector("[data-rs-color-hint]");
-    var activeLabel = root.querySelector("[data-rs-color-active-label]");
     var group =
       document.getElementById("color_images-group") ||
       root.closest("[data-rs-color-gallery-group]") ||
@@ -45,6 +54,7 @@
 
     var table = group.querySelector("table");
     var addRow = group.querySelector(".add-row");
+    var form = group.closest("form");
 
     function rows() {
       return Array.prototype.slice.call(
@@ -55,32 +65,17 @@
     function applyFilter(activeId) {
       group.setAttribute("data-active-color", String(activeId));
 
-      var current = null;
-      for (var i = 0; i < swatches.length; i++) {
-        if (String(swatches[i].id) === String(activeId)) {
-          current = swatches[i];
-          break;
-        }
-      }
-      if (activeLabel) {
-        activeLabel.hidden = !current;
-        activeLabel.textContent = current
-          ? "Фото для кольору: " + current.name + " — можна додати кілька слайдів"
-          : "";
-      }
-
       rows().forEach(function (row) {
         var isEmpty = row.classList.contains("empty-form");
         var isOriginal = row.classList.contains("original");
         var cid = String(row.getAttribute("data-rs-color-id") || "");
 
-        // empty-form — шаблон для клону; лишаємо прихованим, лише проставляємо color
         if (isEmpty) {
           setRowColor(row, activeId);
           return;
         }
 
-        // Порожній плейсхолдер (без збереженого фото) — завжди під активний колір
+        // Порожній плейсхолдер — під активний колір
         if (!isOriginal && !rowHasImage(row)) {
           setRowColor(row, activeId);
           row.hidden = false;
@@ -100,26 +95,49 @@
         row.style.display = show ? "" : "none";
       });
 
-      // Заголовок колонки color
       group.querySelectorAll("th.column-color, td.field-color").forEach(function (el) {
         el.style.display = "none";
       });
     }
 
+    function syncBeforeSubmit() {
+      var activeId = group.getAttribute("data-active-color") || "";
+      rows().forEach(function (row) {
+        if (row.classList.contains("empty-form")) {
+          clearRowColor(row);
+          return;
+        }
+        if (row.classList.contains("original")) {
+          return;
+        }
+        if (!rowHasImage(row)) {
+          // Порожній extra-рядок з проставленим color ламає збереження (image required).
+          clearRowColor(row);
+          return;
+        }
+        var cid = row.getAttribute("data-rs-color-id") || activeId;
+        if (!row.hidden && !row.classList.contains("rs-color-row-hidden") && activeId) {
+          cid = activeId;
+        }
+        if (cid) setRowColor(row, cid);
+      });
+    }
+
     if (!swatches.length) {
-      if (hintEl) hintEl.hidden = false;
       if (table) table.style.display = "none";
       if (addRow) addRow.style.display = "none";
       swatchesEl.innerHTML = "";
-      if (activeLabel) activeLabel.hidden = true;
       return;
     }
 
-    if (hintEl) hintEl.hidden = true;
     if (table) table.style.display = "";
     if (addRow) addRow.style.display = "";
 
     var activeId = String(swatches[0].id);
+    var hash = (window.location.hash || "").replace(/^#/, "");
+    if (hash.indexOf("color_images") === 0) {
+      // лишаємо перший колір; користувач клікає кружечок
+    }
     swatchesEl.innerHTML = "";
 
     swatches.forEach(function (item, index) {
@@ -145,7 +163,6 @@
       swatchesEl.appendChild(btn);
     });
 
-    // Після «Додати ще» Django клонує empty-form — оновлюємо фільтр
     group.addEventListener("click", function (event) {
       if (!event.target.closest(".add-row a, a.add-row, .inline-add")) return;
       window.setTimeout(function () {
@@ -164,6 +181,11 @@
       observer.observe(table, { childList: true, subtree: false });
     }
 
+    if (form && form.getAttribute("data-rs-gallery-submit") !== "1") {
+      form.setAttribute("data-rs-gallery-submit", "1");
+      form.addEventListener("submit", syncBeforeSubmit);
+    }
+
     applyFilter(activeId);
   }
 
@@ -176,7 +198,6 @@
   } else {
     boot();
   }
-  // json_script / Unfold-вкладка можуть з’явитись пізніше
   window.setTimeout(boot, 200);
   window.setTimeout(boot, 800);
 })();

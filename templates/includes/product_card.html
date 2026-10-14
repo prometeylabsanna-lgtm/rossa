@@ -37,11 +37,11 @@
             {% endif %}
           </div>
         {% endfor %}
-      {% elif product.default_image %}
+      {% elif product.cover_image %}
         <img
           data-card-image
-          src="{{ product.default_image.url|img_variant:960 }}"
-          srcset="{{ product.default_image.url|img_srcset }}"
+          src="{{ product.cover_image.url|img_variant:960 }}"
+          srcset="{{ product.cover_image.url|img_srcset }}"
           sizes="(max-width:767px) 100vw, (max-width:1023px) 50vw, 33vw"
           alt="{{ product.name }}"
           width="640"
