@@ -36,6 +36,25 @@
     {% for color in colors %}
       {% if color.gallery|length > 1 %}
         <div
+          class="pdp__dots"
+          data-pdp-dots
+          data-pdp-dots-color="{{ color.id }}"
+          role="tablist"
+          aria-label="{% trans 'Слайди галереї' %}"
+          {% if not selected_color or color.id != selected_color.id %}hidden{% endif %}
+        >
+          {% for image in color.gallery %}
+            <button
+              type="button"
+              class="pdp__dot{% if forloop.first %} is-active{% endif %}"
+              data-pdp-dot-slide="{{ forloop.counter0 }}"
+              role="tab"
+              aria-label="{% trans 'Фото' %} {{ forloop.counter }}"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            ></button>
+          {% endfor %}
+        </div>
+        <div
           class="thumbs"
           data-pdp-thumbs
           data-pdp-thumbs-color="{{ color.id }}"

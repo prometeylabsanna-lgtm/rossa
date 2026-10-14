@@ -99,8 +99,23 @@
       img.hidden = !(sameColor && sameSlide);
     });
     pdp.querySelectorAll(`[data-pdp-thumbs-color="${id}"] [data-pdp-thumb-slide]`).forEach((thumb) => {
-      thumb.classList.toggle("is-active", Number(thumb.dataset.pdpThumbSlide) === next);
+      const on = Number(thumb.dataset.pdpThumbSlide) === next;
+      thumb.classList.toggle("is-active", on);
+      if (on && typeof thumb.scrollIntoView === "function") {
+        try {
+          thumb.scrollIntoView({ inline: "nearest", block: "nearest", behavior: "smooth" });
+        } catch (_err) {
+          thumb.scrollIntoView(false);
+        }
+      }
     });
+    pdp.querySelectorAll(`[data-pdp-dots-color="${id}"] [data-pdp-dot-slide]`).forEach((dot) => {
+      const on = Number(dot.dataset.pdpDotSlide) === next;
+      dot.classList.toggle("is-active", on);
+      dot.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    const stage = pdp.querySelector("[data-pdp-stage]");
+    if (stage) stage.classList.toggle("has-slides", slides.length > 1);
     pdp.dataset.slideIndex = String(next);
   }
 
@@ -113,6 +128,9 @@
     });
     pdp.querySelectorAll("[data-pdp-thumbs]").forEach((thumbs) => {
       thumbs.hidden = thumbs.dataset.pdpThumbsColor !== id;
+    });
+    pdp.querySelectorAll("[data-pdp-dots]").forEach((dots) => {
+      dots.hidden = dots.dataset.pdpDotsColor !== id;
     });
 
     showPdpSlide(pdp, id, 0);
@@ -131,6 +149,11 @@
     }
   }
 
+  function activePdpColorId(pdp) {
+    const activeSwatch = pdp.querySelector("[data-pdp-swatch].is-active");
+    return activeSwatch ? activeSwatch.dataset.pdpSwatch : null;
+  }
+
   function bindPdpSwipe(pdp) {
     const stage = pdp.querySelector("[data-pdp-stage]");
     if (!stage || stage.dataset.swipeBound === "1") return;
@@ -139,39 +162,69 @@
     let startX = 0;
     let startY = 0;
     let tracking = false;
+    let pointerId = null;
+    let dragged = false;
+    let lastPointerType = "mouse";
 
-    stage.addEventListener(
-      "touchstart",
-      (event) => {
-        if (event.touches.length !== 1) return;
-        const touch = event.touches[0];
-        startX = touch.clientX;
-        startY = touch.clientY;
-        tracking = true;
-      },
-      { passive: true }
-    );
+    function slideBy(delta) {
+      const colorId = activePdpColorId(pdp);
+      if (!colorId) return;
+      const slides = pdp.querySelectorAll(`[data-pdp-image="${colorId}"]`);
+      if (slides.length < 2) return;
+      const current = Number(pdp.dataset.slideIndex || 0);
+      showPdpSlide(pdp, colorId, current + delta);
+    }
 
-    stage.addEventListener(
-      "touchend",
-      (event) => {
-        if (!tracking) return;
-        tracking = false;
-        const touch = event.changedTouches[0];
-        if (!touch) return;
-        const dx = touch.clientX - startX;
-        const dy = touch.clientY - startY;
-        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-        const activeSwatch = pdp.querySelector("[data-pdp-swatch].is-active");
-        const colorId = activeSwatch ? activeSwatch.dataset.pdpSwatch : null;
-        if (!colorId) return;
-        const slides = pdp.querySelectorAll(`[data-pdp-image="${colorId}"]`);
-        if (slides.length < 2) return;
-        const current = Number(pdp.dataset.slideIndex || 0);
-        showPdpSlide(pdp, colorId, current + (dx < 0 ? 1 : -1));
-      },
-      { passive: true }
-    );
+    stage.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      lastPointerType = event.pointerType || "mouse";
+      startX = event.clientX;
+      startY = event.clientY;
+      tracking = true;
+      dragged = false;
+      pointerId = event.pointerId;
+      try {
+        stage.setPointerCapture(event.pointerId);
+      } catch (_err) {
+        /* ignore */
+      }
+      if (lastPointerType === "mouse") stage.classList.add("is-dragging");
+    });
+
+    stage.addEventListener("pointermove", (event) => {
+      if (!tracking || event.pointerId !== pointerId) return;
+      if (Math.abs(event.clientX - startX) > 8) dragged = true;
+    });
+
+    function endPointer(event) {
+      if (!tracking || event.pointerId !== pointerId) return;
+      tracking = false;
+      pointerId = null;
+      stage.classList.remove("is-dragging");
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      slideBy(dx < 0 ? 1 : -1);
+    }
+
+    stage.addEventListener("pointerup", endPointer);
+    stage.addEventListener("pointercancel", () => {
+      tracking = false;
+      pointerId = null;
+      stage.classList.remove("is-dragging");
+    });
+
+    // Десктоп: клік ліва/права половина (без драгу); мобільний — лише свайп + точечки/мініатюри
+    stage.addEventListener("click", (event) => {
+      if (dragged || lastPointerType === "touch") return;
+      const colorId = activePdpColorId(pdp);
+      if (!colorId) return;
+      const slides = pdp.querySelectorAll(`[data-pdp-image="${colorId}"]`);
+      if (slides.length < 2) return;
+      const rect = stage.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      slideBy(x < rect.width / 2 ? -1 : 1);
+    });
   }
 
   function bindPdpColors(root) {
@@ -187,12 +240,25 @@
       pdp.dataset.slideIndex = "0";
       bindPdpSwipe(pdp);
 
+      const initialColor = activePdpColorId(pdp);
+      if (initialColor) showPdpSlide(pdp, initialColor, 0);
+
       pdp.addEventListener("click", (event) => {
         const swatch = event.target.closest("[data-pdp-swatch]");
         const thumb = event.target.closest("[data-pdp-thumb-slide]");
+        const dot = event.target.closest("[data-pdp-dot-slide]");
         if (swatch && pdp.contains(swatch)) {
           event.preventDefault();
           selectPdpColor(pdp, swatch.dataset.pdpSwatch, swatch.dataset.shadeName || "");
+          return;
+        }
+        if (dot && pdp.contains(dot)) {
+          event.preventDefault();
+          event.stopPropagation();
+          const dots = dot.closest("[data-pdp-dots]");
+          const colorId = dots ? dots.dataset.pdpDotsColor : null;
+          if (!colorId) return;
+          showPdpSlide(pdp, colorId, Number(dot.dataset.pdpDotSlide || 0));
           return;
         }
         if (thumb && pdp.contains(thumb)) {

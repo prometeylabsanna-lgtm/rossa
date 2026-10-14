@@ -204,6 +204,14 @@
   user-select: none;
 }
 
+.pdp__stage.has-slides {
+  cursor: grab;
+}
+
+.pdp__stage.has-slides.is-dragging {
+  cursor: grabbing;
+}
+
 .pdp__stage img {
   position: absolute;
   inset: 0;
@@ -218,6 +226,57 @@
   display: none;
 }
 
+.pdp__dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  min-height: 12px;
+}
+
+.pdp__dots[hidden] {
+  display: none;
+}
+
+.pdp__dot {
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(43, 41, 40, 0.28);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.pdp__dot:hover {
+  background: rgba(43, 41, 40, 0.5);
+}
+
+.pdp__dot:focus-visible {
+  outline: 2px solid rgba(152, 96, 48, 0.45);
+  outline-offset: 2px;
+}
+
+.pdp__dot.is-active {
+  background: #986030;
+  transform: scale(1.15);
+}
+
+@media (min-width: 1024px) {
+  .pdp__dot {
+    width: 9px;
+    height: 9px;
+    min-width: 9px;
+  }
+}
+
 .thumbs {
   display: flex;
   gap: 10px;
@@ -226,6 +285,7 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
+  touch-action: pan-x;
 }
 
 .thumbs::-webkit-scrollbar {
