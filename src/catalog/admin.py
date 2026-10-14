@@ -133,10 +133,9 @@ class ProductColorImageForm(forms.ModelForm):
 
     def clean(self):
         cleaned = super().clean()
+        # Лише новий upload без color — не чіпаємо вже збережені інстанси
         uploaded = self.files.get(self.add_prefix('image')) if self.is_bound else None
-        has_image = bool(uploaded) or bool(cleaned.get('image')) or bool(self.instance.pk and self.instance.image)
-        if has_image and not cleaned.get('color'):
-            # color — HiddenInput, показуємо помилку біля фото
+        if uploaded and not cleaned.get('color') and not self.instance.pk:
             self.add_error(
                 'image',
                 'Оберіть кружечок кольору зверху, потім знову завантажте фото.',
@@ -163,28 +162,10 @@ class ProductColorGalleryInline(TabularInline):
     def get_formset(self, request, obj=None, **kwargs):
         self._parent_product = obj
         FormSet = super().get_formset(request, obj, **kwargs)
-        default_color_id = None
-        if obj is not None:
-            default_color_id = (
-                ProductColor.objects
-                .filter(product_id=obj.pk)
-                .order_by('sort', 'id')
-                .values_list('color_id', flat=True)
-                .first()
-            )
 
         class ColorGalleryFormSet(FormSet):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                for form in self.forms:
-                    if default_color_id and not form.initial.get('color') and not (
-                        form.instance and form.instance.pk
-                    ):
-                        form.fields['color'].initial = default_color_id
-
             def clean(self):
                 super().clean()
-                # Кольори могли щойно додатись у цьому ж POST — перевіряємо свіжий стан + POST colors.
                 product_id = getattr(obj, 'pk', None)
                 allowed = set()
                 if product_id:
@@ -193,7 +174,6 @@ class ProductColorGalleryInline(TabularInline):
                         .filter(product_id=product_id)
                         .values_list('color_id', flat=True)
                     )
-                # З інлайну «Кольори товару» в цьому ж збереженні
                 if self.data is not None:
                     total = int(self.data.get('colors-TOTAL_FORMS') or 0)
                     for i in range(total):
@@ -216,12 +196,15 @@ class ProductColorGalleryInline(TabularInline):
                         continue
                     color = form.cleaned_data.get('color')
                     if color is None:
-                        form.add_error('color', 'Оберіть колір кружечком зверху.')
+                        form.add_error(
+                            'image',
+                            'Оберіть кружечок кольору зверху, потім знову завантажте фото.',
+                        )
                         continue
                     if color.pk not in allowed:
                         form.add_error(
-                            'color',
-                            'Спочатку додайте цей колір на вкладці «Кольори товару».',
+                            'image',
+                            'Спочатку додайте цей колір на вкладці «Кольори товару» і збережіть.',
                         )
 
         return ColorGalleryFormSet
