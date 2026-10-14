@@ -121,13 +121,14 @@ class ProductColorGalleryInline(TabularInline):
 
     model = ProductColorImage
     fk_name = 'product'
-    extra = 1
+    extra = 2
     fields = ('color', 'image', 'sort')
     ordering = ('sort', 'id')
     tab = True
     show_title = False
     verbose_name = 'Фото'
     verbose_name_plural = 'Фото за кольорами'
+    template = 'admin/catalog/product/color_gallery_tabular.html'
     template_before = 'admin/catalog/product/color_gallery_swatches.html'
 
     def get_formset(self, request, obj=None, **kwargs):

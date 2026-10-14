@@ -1,0 +1,46 @@
+{% load i18n %}
+{# Один рядок галереї з data-rs-color-id (pk стандартного кольору) для фільтра кружечків #}
+<tbody
+  class="form-group relative group/parent {% if forloop.revcounter == 2 and inline_admin_formset.has_add_permission %}last{% endif %} {% if inline_admin_form.original or inline_admin_form.show_url %}original{% else %}template{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form{% endif %}"
+  data-rs-color-id="{% if inline_admin_form.form.instance.color_id %}{{ inline_admin_form.form.instance.color_id }}{% elif inline_admin_form.form.color.value %}{{ inline_admin_form.form.color.value }}{% endif %}"
+  {% if inline_admin_formset.opts.ordering_field %}x-sort:item{% endif %}
+>
+  {% include "unfold/helpers/edit_inline/tabular_error.html" %}
+  {% include "unfold/helpers/edit_inline/tabular_title.html" %}
+
+  <tr class="form-row has-[.delete:checked]:[&+.form-delete]:table-row ">
+    {% spaceless %}
+      {% for fieldset in inline_admin_form %}
+        {% for line in fieldset %}
+          {% for field in line %}
+            {% if not field.is_readonly and field.field.is_hidden %}
+              {{ field.field }}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+    {% endspaceless %}
+
+    {% for fieldset in inline_admin_form %}
+      {% for line in fieldset %}
+        {% for field in line %}
+          {% if field.is_readonly or not field.field.is_hidden %}
+            <td{% if field.field.name %} class="min-h-[62.5px] align-middle border-b max-md:border-b border-base-200 {% if not inline_admin_form.form.nested_formsets %}lg:group-[.last]/parent:border-b-0{% endif %} dark:border-base-800 field-{{ field.field.name }} group field-tabular {% if field.field.errors|length > 0 %} errors{% endif %}{% if inline_admin_form.original %} p-3 lg:py-3{% else %} py-3{% endif %} font-normal px-1.5 first:pl-3 last:pr-3 text-left {% if field.field.is_hidden %} hidden!{% endif %}"{% endif %}>
+              {% include "unfold/helpers/edit_inline/tabular_field.html" %}
+            </td>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+
+    {% include "unfold/helpers/edit_inline/tabular_delete.html" %}
+  </tr>
+
+  {% if inline_admin_form.original %}
+    <tr class="hidden form-delete">
+      <td colspan="100%">
+        {% include "unfold/helpers/edit_inline/inline_delete_undo.html" %}
+      </td>
+    </tr>
+  {% endif %}
+</tbody>

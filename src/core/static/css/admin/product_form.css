@@ -115,8 +115,9 @@ select.rs-admin-btn-select:focus {
   display: none;
 }
 
-/* Рядки інших кольорів — ховаємо цілим tbody/блоком */
+/* Рядки інших кольорів — ховаємо цілим tbody */
 #color_images-group tbody.rs-color-row-hidden,
+#color_images-group tbody[hidden],
 #color_images-group .rs-color-row-hidden {
   display: none;
 }
