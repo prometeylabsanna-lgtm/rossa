@@ -3,31 +3,4 @@
 {% block extrahead %}
   {{ block.super }}
   {{ product_color_swatches|json_script:"rs-product-color-swatches" }}
-  <script>
-    document.addEventListener("alpine:init", function () {
-      var id = "";
-      var el = document.getElementById("rs-product-color-swatches");
-      if (el) {
-        try {
-          var data = JSON.parse(el.textContent || "[]");
-          if (Array.isArray(data) && data.length) {
-            id = String(data[0].id);
-            var saved = "";
-            try {
-              saved = window.sessionStorage.getItem("rossa.galleryActiveColor") || "";
-            } catch (err) {}
-            if (
-              saved &&
-              data.some(function (row) {
-                return String(row.id) === String(saved);
-              })
-            ) {
-              id = String(saved);
-            }
-          }
-        } catch (err) {}
-      }
-      window.Alpine.store("rsGallery", { id: id });
-    });
-  </script>
 {% endblock %}

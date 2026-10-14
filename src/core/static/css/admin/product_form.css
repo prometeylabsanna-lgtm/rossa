@@ -95,11 +95,29 @@ select.rs-admin-btn-select:focus {
   box-shadow: 0 0 0 2px rgba(152, 96, 48, 0.28);
 }
 
+.rs-color-gallery__active {
+  margin: 0.65rem 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #504e4c;
+}
+
+.rs-color-gallery__active[hidden] {
+  display: none;
+}
+
 /* Заголовки окремих formset кольорів не потрібні — одна вкладка «Фото» */
 [data-rs-gallery-panel] .inline-heading,
 [data-rs-gallery-panel] > .inline-related > fieldset > h2 {
   display: none;
 }
 
-/* Кружечки лише на першій панелі; коли вона схована Alpine — тримаємо бар видимим окремо не потрібно:
-   перший колір у списку завжди є; store завжди вказує на один із кольорів. */
+/* Підсилення до JS: неактивний колір не в потоці (коли немає inline від Alpine). */
+[data-rs-gallery-panel]:not(.rs-gallery-on) {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}

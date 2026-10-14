@@ -1,19 +1,17 @@
 {% load i18n %}
-{# Кружечки — окремо (завжди на вкладці Фото). Таблиця — лише для активного кольору. #}
+{# Кружечки поза панеллю. Панель: вкладка Фото (Alpine) + клас rs-gallery-on (JS). #}
 {% if inline_admin_formset.opts.template_before %}
-<div
-  class="rs-color-gallery-bar-wrap"
-  x-show="activeTab == 'color_images'"
->
+<div class="rs-color-gallery-bar-wrap" x-show="activeTab == 'color_images'">
   {% include inline_admin_formset.opts.template_before %}
 </div>
 {% endif %}
 
 <div
   id="{{ inline_admin_formset.formset.prefix }}-group"
+  class="rs-gallery-panel"
   data-inline-type="tabular"
   data-rs-gallery-panel="{{ inline_admin_formset.opts.gallery_color_id }}"
-  x-show="activeTab == 'color_images' && $store.rsGallery && String($store.rsGallery.id) === '{{ inline_admin_formset.opts.gallery_color_id }}'"
+  x-show="activeTab == 'color_images'"
 >
   <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
     <fieldset class="module relative {{ inline_admin_formset.classes }} min-w-0" aria-labelledby="{{ inline_admin_formset.formset.prefix }}-heading">
