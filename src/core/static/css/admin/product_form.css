@@ -95,18 +95,13 @@ select.rs-admin-btn-select:focus {
   box-shadow: 0 0 0 2px rgba(152, 96, 48, 0.28);
 }
 
-/* Колонку color ховаємо (значення ставить кружечок) */
-#color_images-group th.column-color,
-#color_images-group td.field-color,
-#color_images-group th.column-color_id,
-#color_images-group td.field-color_id,
-#color_images-group .rs-color-col-hidden {
+/* Панелі кольорів у вкладці Фото — таблицю ховає JS за кружечком */
+[data-rs-gallery-table][hidden] {
   display: none;
 }
 
-/* Рядки інших кольорів — ховаємо цілим tbody */
-#color_images-group tbody.rs-color-row-hidden,
-#color_images-group tbody[hidden],
-#color_images-group .rs-color-row-hidden {
+/* Заголовки окремих formset кольорів не потрібні — одна вкладка «Фото» */
+[data-rs-gallery-panel] > .inline-related > fieldset > h2,
+[data-rs-gallery-panel] .inline-heading {
   display: none;
 }
