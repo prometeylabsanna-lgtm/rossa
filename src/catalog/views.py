@@ -180,10 +180,16 @@ def product_detail(request, slug):
     )
     fabric_id = request.GET.get('fabric')
     color_id = request.GET.get('color') or request.GET.get('shade')
-    fabrics = [fp.fabric for fp in product.fabric_prices.all() if fp.fabric.is_active]
+    # Порядок = Fabric.sort (1→7), не порядок додавання цін у адмінці
+    fabric_prices = (
+        product.fabric_prices
+        .select_related('fabric')
+        .order_by('fabric__sort', 'fabric_id')
+    )
+    fabrics = [fp.fabric for fp in fabric_prices if fp.fabric.is_active]
     if not fabrics:
         from catalog.models import Fabric
-        fabrics = list(Fabric.objects.filter(is_active=True))
+        fabrics = list(Fabric.objects.filter(is_active=True).order_by('sort', 'id'))
     selected_fabric = next((f for f in fabrics if str(f.id) == str(fabric_id)), None) or (fabrics[0] if fabrics else None)
 
     colors_qs = [c for c in product.colors.all() if c.is_active]
