@@ -11,9 +11,3 @@ dependencies = [
   "Pillow==11.3.0",
   "django-csp==4.0",
 ]
-
-[tool.vercel]
-entrypoint = "config.wsgi:application"
-
-[tool.vercel.scripts]
-build = "bash scripts/build_vercel.sh"

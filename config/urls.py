@@ -47,7 +47,7 @@ urlpatterns += i18n_patterns(
 
 handler404 = 'core.views.page_not_found'
 
-# django.conf.urls.static.static() ігнорує все при DEBUG=False — для Vercel реєструємо вручну.
+# django.conf.urls.static.static() ігнорує MEDIA при DEBUG=False.
 if getattr(settings, 'SERVE_MEDIA', False):
     urlpatterns += [
         re_path(r'^media/(?P<path>.*)$', serve_media),

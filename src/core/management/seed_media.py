@@ -50,7 +50,7 @@ def _write(field, relative: str, dest_name: str | None = None) -> None:
 
 
 def attach(field, relative: str, dest_name: str | None = None):
-    """Записати файл, якщо поля порожнє АБО канонічний файл відсутній (Vercel seed)."""
+    """Записати файл, якщо поле порожнє АБО канонічний файл відсутній на диску."""
     src = STATIC_IMAGES / relative
     if not src.exists():
         return

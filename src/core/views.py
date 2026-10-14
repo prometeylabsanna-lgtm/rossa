@@ -1,5 +1,3 @@
-import os
-
 from catalog.models import Category
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -23,17 +21,8 @@ def _seo(request, title, description, image=None):
 
 @require_GET
 def healthz(request):
-    """Liveness + на Vercel підліковує /tmp SQLite."""
-    details = ['ok']
-    if os.environ.get('VERCEL') and not os.environ.get('VERCEL_BUILD'):
-        try:
-            from core.middleware_vercel import ensure_vercel_db
-
-            healthy = ensure_vercel_db()
-            details.append('db=ok' if healthy else 'db=fail')
-        except Exception as exc:
-            details.append(f'db=error:{exc.__class__.__name__}')
-    return HttpResponse(' '.join(details))
+    """Liveness probe."""
+    return HttpResponse('ok')
 
 
 @require_GET

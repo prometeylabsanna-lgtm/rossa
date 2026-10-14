@@ -4,16 +4,8 @@ import sys
 from pathlib import Path
 
 
-def _default_settings_module() -> str:
-    if os.environ.get('VERCEL'):
-        return 'config.settings.vercel'
-    return 'config.settings.develop'
-
-
 def main():
-    # Порожній DJANGO_SETTINGS_MODULE на Vercel ламає discovery — не використовуємо setdefault.
-    if not os.environ.get('DJANGO_SETTINGS_MODULE'):
-        os.environ['DJANGO_SETTINGS_MODULE'] = _default_settings_module()
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.develop')
 
     base_dir = Path(__file__).resolve().parent
     src = str(base_dir / 'src')

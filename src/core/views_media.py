@@ -1,4 +1,4 @@
-"""Роздача /media/ з кількох коренів (Vercel: /tmp + media_demo)."""
+"""Роздача /media/ з MEDIA_ROOT (+ опційний MEDIA_PACKAGED_ROOT)."""
 from __future__ import annotations
 
 import mimetypes

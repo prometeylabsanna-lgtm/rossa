@@ -1,4 +1,4 @@
-"""Аудит CSP: enforce на vercel-профілі."""
+"""Аудит CSP: enforce-режим."""
 
 from django.test import TestCase, override_settings
 from django.urls import reverse

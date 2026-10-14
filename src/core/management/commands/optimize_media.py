@@ -25,7 +25,7 @@ _VARIANT_STEM = re.compile(r'.*_w\d+$')
 
 
 class Command(BaseCommand):
-    help = 'Оптимізує jpg/png/webp у MEDIA_ROOT / media_demo: resize + variants.'
+    help = 'Оптимізує jpg/png/webp у MEDIA_ROOT: resize + variants.'
 
     def add_arguments(self, parser):
         parser.add_argument('--dry-run', action='store_true')

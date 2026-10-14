@@ -1,7 +1,8 @@
 (function () {
   var IMAGE_NAME_RE = /\.(jpe?g|png|gif|webp|avif|svg)$/i;
-  // Один файл: запас під інші поля форми в межах ліміту Vercel ≈ 4.5 МБ.
-  var MAX_FILE_BYTES = 2.5 * 1024 * 1024;
+  // DigitalOcean / nginx: client_max_body_size 20M; у гайді — 8 МБ на файл.
+  var MAX_FILE_BYTES = 8 * 1024 * 1024;
+  var COMPRESS_ABOVE_BYTES = 2.5 * 1024 * 1024;
   var MAX_EDGE = 1600;
 
   function snapshotTextFields(root) {
@@ -53,7 +54,8 @@
   }
 
   function compressImage(file) {
-    if (!file || file.size <= MAX_FILE_BYTES) {
+    // Стискаємо лише великі файли; менші лишаємо як є.
+    if (!file || file.size <= COMPRESS_ABOVE_BYTES) {
       return Promise.resolve(file);
     }
     if (!file.type || file.type.indexOf("image/") !== 0 || file.type === "image/svg+xml") {
@@ -144,7 +146,7 @@
           window.alert(
             "Фото занадто велике (" +
               (next.size / (1024 * 1024)).toFixed(1) +
-              " МБ). Стисніть до ≈2.5 МБ — інакше збереження на Vercel впаде з 413."
+              " МБ). Максимум 8 МБ на файл — стисніть зображення і спробуйте знову."
           );
           input.value = "";
           return;
