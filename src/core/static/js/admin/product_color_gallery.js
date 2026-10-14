@@ -1,4 +1,6 @@
 (function () {
+  var STORAGE_KEY = "rossa.galleryActiveColor";
+
   function readSwatches() {
     var el = document.getElementById("rs-product-color-swatches");
     if (!el) return [];
@@ -10,21 +12,21 @@
     }
   }
 
-  function colorInput(row) {
+  function colorIdInput(row) {
     return row.querySelector(
-      'input[name*="color_images-"][name$="-color"], select[name*="color_images-"][name$="-color"]'
+      'input[name*="color_images-"][name$="-color_id"], input[name*="-color_id"]'
     );
   }
 
   function setRowColor(row, colorId) {
     if (!colorId) return;
-    var input = colorInput(row);
+    var input = colorIdInput(row);
     if (input) input.value = String(colorId);
     row.setAttribute("data-rs-color-id", String(colorId));
   }
 
   function clearRowColor(row) {
-    var input = colorInput(row);
+    var input = colorIdInput(row);
     if (input) input.value = "";
     row.removeAttribute("data-rs-color-id");
   }
@@ -32,7 +34,7 @@
   function rowColorId(row) {
     var fromAttr = row.getAttribute("data-rs-color-id");
     if (fromAttr) return String(fromAttr);
-    var input = colorInput(row);
+    var input = colorIdInput(row);
     if (input && input.value) return String(input.value);
     return "";
   }
@@ -48,12 +50,34 @@
     row.style.display = show ? "" : "none";
   }
 
+  function rememberColor(colorId) {
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, String(colorId));
+    } catch (err) {}
+  }
+
+  function recalledColor(swatches) {
+    var saved = "";
+    try {
+      saved = window.sessionStorage.getItem(STORAGE_KEY) || "";
+    } catch (err) {
+      saved = "";
+    }
+    if (saved && swatches.some(function (s) { return String(s.id) === String(saved); })) {
+      return String(saved);
+    }
+    return swatches.length ? String(swatches[0].id) : "";
+  }
+
   function initGallery(root) {
     if (!root || root.getAttribute("data-rs-bound") === "1") return;
     if (!document.getElementById("rs-product-color-swatches")) return;
 
     var swatches = readSwatches();
     var swatchesEl = root.querySelector("[data-rs-color-swatches]");
+    var activeInput =
+      root.querySelector("[data-rs-active-color-input]") ||
+      document.getElementById("rs-gallery-active-color");
     var group =
       document.getElementById("color_images-group") ||
       root.closest("[data-rs-color-gallery-group]") ||
@@ -65,7 +89,7 @@
     var table = group.querySelector("table");
     var addRow = group.querySelector(".add-row");
     var form = group.closest("form");
-    var activeId = swatches.length ? String(swatches[0].id) : "";
+    var activeId = recalledColor(swatches);
 
     function rows() {
       return Array.prototype.slice.call(
@@ -73,9 +97,15 @@
       );
     }
 
+    function setActiveInput(colorId) {
+      if (activeInput) activeInput.value = String(colorId || "");
+      group.setAttribute("data-active-color", String(colorId || ""));
+      rememberColor(colorId || "");
+    }
+
     function applyFilter(nextId) {
-      activeId = String(nextId);
-      group.setAttribute("data-active-color", activeId);
+      activeId = String(nextId || "");
+      setActiveInput(activeId);
 
       rows().forEach(function (row) {
         var isEmpty = row.classList.contains("empty-form");
@@ -86,7 +116,6 @@
           return;
         }
 
-        // Збережені рядки: лише показати/сховати, колір НЕ міняти
         if (isOriginal) {
           var ocid = rowColorId(row);
           if (ocid) row.setAttribute("data-rs-color-id", ocid);
@@ -94,7 +123,6 @@
           return;
         }
 
-        // Новий рядок з вибраним файлом: колір уже «запечатаний», лише фільтр
         if (rowHasNewFile(row)) {
           var ncid = rowColorId(row) || activeId;
           setRowColor(row, ncid);
@@ -102,14 +130,17 @@
           return;
         }
 
-        // Порожній плейсхолдер — під активний кружечок
         setRowColor(row, activeId);
         setRowVisible(row, true);
       });
 
-      group.querySelectorAll("th.column-color, td.field-color").forEach(function (el) {
-        el.style.display = "none";
-      });
+      group
+        .querySelectorAll(
+          "th.column-color, td.field-color, th.column-color_id, td.field-color_id"
+        )
+        .forEach(function (el) {
+          el.style.display = "none";
+        });
     }
 
     function stampFileRow(fileInput) {
@@ -117,26 +148,25 @@
       if (!row || row.classList.contains("original") || row.classList.contains("empty-form")) {
         return;
       }
-      var cid = group.getAttribute("data-active-color") || activeId;
+      var cid = activeId || (activeInput && activeInput.value) || "";
       if (cid) setRowColor(row, cid);
     }
 
     function syncBeforeSubmit() {
+      setActiveInput(activeId);
       rows().forEach(function (row) {
         if (row.classList.contains("empty-form")) {
           clearRowColor(row);
           return;
         }
-        // Збережені фото — не чіпати color у POST
         if (row.classList.contains("original")) {
           return;
         }
         if (rowHasNewFile(row)) {
-          var cid = rowColorId(row) || group.getAttribute("data-active-color") || activeId;
+          var cid = rowColorId(row) || activeId;
           if (cid) setRowColor(row, cid);
           return;
         }
-        // Порожній extra без файлу — прибрати color, щоб Django його ігнорував
         clearRowColor(row);
       });
     }
@@ -145,6 +175,7 @@
       if (table) table.style.display = "none";
       if (addRow) addRow.style.display = "none";
       swatchesEl.innerHTML = "";
+      setActiveInput("");
       return;
     }
 
@@ -152,19 +183,21 @@
     if (addRow) addRow.style.display = "";
 
     swatchesEl.innerHTML = "";
-    swatches.forEach(function (item, index) {
+    swatches.forEach(function (item) {
+      var id = String(item.id);
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "rs-color-gallery__swatch" + (index === 0 ? " is-active" : "");
+      btn.className =
+        "rs-color-gallery__swatch" + (id === activeId ? " is-active" : "");
       btn.setAttribute("role", "tab");
-      btn.setAttribute("data-color-id", String(item.id));
+      btn.setAttribute("data-color-id", id);
       btn.setAttribute("title", item.name || "");
-      btn.setAttribute("aria-label", item.name || String(item.id));
-      btn.setAttribute("aria-selected", index === 0 ? "true" : "false");
+      btn.setAttribute("aria-label", item.name || id);
+      btn.setAttribute("aria-selected", id === activeId ? "true" : "false");
       btn.style.backgroundColor = item.hex || "#ccc";
       btn.addEventListener("click", function (event) {
         event.preventDefault();
-        activeId = String(item.id);
+        activeId = id;
         swatchesEl.querySelectorAll(".rs-color-gallery__swatch").forEach(function (el) {
           var on = el.getAttribute("data-color-id") === activeId;
           el.classList.toggle("is-active", on);
@@ -175,7 +208,6 @@
       swatchesEl.appendChild(btn);
     });
 
-    // Одразу при виборі файлу — прив’язати активний колір
     group.addEventListener("change", function (event) {
       var t = event.target;
       if (!t || t.type !== "file") return;

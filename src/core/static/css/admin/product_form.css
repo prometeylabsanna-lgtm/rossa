@@ -98,6 +98,8 @@ select.rs-admin-btn-select:focus {
 /* Колонку color ховаємо (значення ставить кружечок) */
 #color_images-group th.column-color,
 #color_images-group td.field-color,
+#color_images-group th.column-color_id,
+#color_images-group td.field-color_id,
 #color_images-group .rs-color-col-hidden {
   display: none;
 }

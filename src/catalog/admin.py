@@ -117,11 +117,18 @@ class ProductColorInline(TabularInline):
 
 
 class ProductColorImageForm(forms.ModelForm):
-    """Нові рядки без файлу ігноруються (не валимо збереження через порожній extra)."""
+    """color_id — hidden з кружечка; нові рядки без файлу ігноруються."""
+
+    color_id = forms.IntegerField(required=False, widget=forms.HiddenInput())
 
     class Meta:
         model = ProductColorImage
         fields = ('image', 'sort')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.color_id:
+            self.fields['color_id'].initial = self.instance.color_id
 
     def has_changed(self):
         if self.instance.pk:
@@ -131,51 +138,96 @@ class ProductColorImageForm(forms.ModelForm):
         return bool(self.files.get(self.add_prefix('image')))
 
 
-def _color_gallery_inline(color_option_id: int, title: str):
-    """Окрема вкладка галереї для одного кольору; color_id ставить сервер."""
-    cid = int(color_option_id)
-    tab_title = f'Галерея · {title}'
+class ProductColorGalleryInline(TabularInline):
+    """Одна вкладка «Фото»: кружечки кольорів зверху + рядки фото."""
 
-    class ColorGalleryInline(TabularInline):
-        model = ProductColorImage
-        form = ProductColorImageForm
-        fk_name = 'product'
-        extra = 1
-        fields = ('image', 'sort')
-        ordering = ('sort', 'id')
-        tab = True
-        verbose_name = 'Фото'
-        verbose_name_plural = tab_title
+    model = ProductColorImage
+    form = ProductColorImageForm
+    fk_name = 'product'
+    extra = 1
+    fields = ('color_id', 'image', 'sort')
+    ordering = ('sort', 'id')
+    tab = True
+    show_title = False
+    verbose_name = 'Фото'
+    verbose_name_plural = 'Фото'
+    template = 'admin/catalog/product/color_gallery_tabular.html'
+    template_before = 'admin/catalog/product/color_gallery_swatches.html'
 
-        def get_queryset(self, request):
-            return super().get_queryset(request).filter(color_id=cid)
+    def get_formset(self, request, obj=None, **kwargs):
+        FormSet = super().get_formset(request, obj, **kwargs)
+        allowed = set()
+        if obj is not None:
+            allowed = set(
+                ProductColor.objects
+                .filter(product_id=obj.pk)
+                .values_list('color_id', flat=True)
+            )
 
-        def get_formset(self, request, obj=None, **kwargs):
-            FormSet = super().get_formset(request, obj, **kwargs)
+        class ColorGalleryFormSet(FormSet):
+            def clean(self):
+                super().clean()
+                active = None
+                if self.data is not None:
+                    raw = self.data.get('rs_gallery_active_color')
+                    try:
+                        active = int(raw) if raw else None
+                    except (TypeError, ValueError):
+                        active = None
+                    total = int(self.data.get('colors-TOTAL_FORMS') or 0)
+                    for i in range(total):
+                        if self.data.get(f'colors-{i}-DELETE'):
+                            continue
+                        cid = self.data.get(f'colors-{i}-color')
+                        if cid:
+                            try:
+                                allowed.add(int(cid))
+                            except (TypeError, ValueError):
+                                pass
+                for form in self.forms:
+                    if not hasattr(form, 'cleaned_data') or not form.cleaned_data:
+                        continue
+                    if form.cleaned_data.get('DELETE'):
+                        continue
+                    if not form.has_changed():
+                        continue
+                    if form.instance.pk:
+                        continue
+                    cid = form.cleaned_data.get('color_id') or active
+                    if not cid:
+                        form.add_error(
+                            'image',
+                            'Оберіть кружечок кольору зверху, потім знову завантажте фото.',
+                        )
+                        continue
+                    if allowed and int(cid) not in allowed:
+                        form.add_error(
+                            'image',
+                            'Спочатку додайте цей колір на вкладці «Кольори товару» і збережіть.',
+                        )
 
-            class ColorBoundFormSet(FormSet):
-                def save_new(self, form, commit=True):
-                    instance = super().save_new(form, commit=False)
-                    instance.color_id = cid
-                    if commit:
-                        instance.save()
-                        form.save_m2m()
-                    return instance
+            def save_new(self, form, commit=True):
+                instance = super().save_new(form, commit=False)
+                cid = form.cleaned_data.get('color_id')
+                if not cid and self.data is not None:
+                    raw = self.data.get('rs_gallery_active_color')
+                    try:
+                        cid = int(raw) if raw else None
+                    except (TypeError, ValueError):
+                        cid = None
+                if cid:
+                    instance.color_id = int(cid)
+                if commit:
+                    instance.save()
+                    form.save_m2m()
+                return instance
 
-                def save_existing(self, form, instance, commit=True):
-                    instance.color_id = cid
-                    return super().save_existing(form, instance, commit)
+        return ColorGalleryFormSet
 
-            return ColorBoundFormSet
-
-        def formfield_for_dbfield(self, db_field, request, **kwargs):
-            if db_field.name == 'image':
-                kwargs['widget'] = CmsAdminImageWidget()
-            return super().formfield_for_dbfield(db_field, request, **kwargs)
-
-    ColorGalleryInline.__name__ = f'ColorGalleryInline_{cid}'
-    ColorGalleryInline.__qualname__ = f'ColorGalleryInline_{cid}'
-    return ColorGalleryInline
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'image':
+            kwargs['widget'] = CmsAdminImageWidget()
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 class ProductCharacteristicInline(TabularInline):
@@ -371,7 +423,12 @@ class ProductAdmin(ModelAdmin):
     list_filter = ('category', 'badge', 'is_available', 'is_active')
     search_fields = ('name_uk', 'name_ru', 'sku')
     readonly_fields = ('slug', 'type_ru')
-    inlines = [FabricPriceInline, ProductColorInline, ProductCharacteristicInline]
+    inlines = [
+        FabricPriceInline,
+        ProductColorInline,
+        ProductColorGalleryInline,
+        ProductCharacteristicInline,
+    ]
     fieldsets = (
         ('Контент (ukr)', {
             'classes': ('tab',),
@@ -406,26 +463,45 @@ class ProductAdmin(ModelAdmin):
         }),
     )
 
+    change_form_template = 'admin/catalog/product/change_form.html'
+
     @property
     def media(self):
         return super().media + forms.Media(
             css={'all': ('css/admin/product_form.css',)},
+            js=('js/admin/product_color_gallery.js',),
         )
 
     def get_inlines(self, request, obj=None):
-        inlines = [FabricPriceInline, ProductColorInline]
-        if obj is not None:
+        return [
+            FabricPriceInline,
+            ProductColorInline,
+            ProductColorGalleryInline,
+            ProductCharacteristicInline,
+        ]
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        swatches = []
+        if object_id:
             rows = (
                 ProductColor.objects
-                .filter(product_id=obj.pk)
+                .filter(product_id=object_id)
                 .select_related('color')
                 .order_by('sort', 'id')
             )
             for row in rows:
-                if not row.color_id:
+                opt = row.color
+                if not opt:
                     continue
-                name = row.color.name_uk if row.color_id else f'#{row.pk}'
-                inlines.append(_color_gallery_inline(row.color_id, name))
-        inlines.append(ProductCharacteristicInline)
-        return inlines
+                hex_color = (opt.hex_color or '').strip() or '#ccc'
+                if not re.fullmatch(r'#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?', hex_color):
+                    hex_color = '#ccc'
+                swatches.append({
+                    'id': opt.pk,
+                    'name': opt.name_uk,
+                    'hex': hex_color,
+                })
+        extra_context['product_color_swatches'] = swatches
+        return super().changeform_view(request, object_id, form_url, extra_context)
 

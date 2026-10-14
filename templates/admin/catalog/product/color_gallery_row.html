@@ -2,7 +2,7 @@
 {# Один рядок галереї з data-rs-color-id (pk стандартного кольору) для фільтра кружечків #}
 <tbody
   class="form-group relative group/parent {% if forloop.revcounter == 2 and inline_admin_formset.has_add_permission %}last{% endif %} {% if inline_admin_form.original or inline_admin_form.show_url %}original{% else %}template{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form{% endif %}"
-  data-rs-color-id="{% if inline_admin_form.form.instance.color_id %}{{ inline_admin_form.form.instance.color_id }}{% elif inline_admin_form.form.color.value %}{{ inline_admin_form.form.color.value }}{% endif %}"
+  data-rs-color-id="{% if inline_admin_form.form.instance.color_id %}{{ inline_admin_form.form.instance.color_id }}{% elif inline_admin_form.form.color_id.value %}{{ inline_admin_form.form.color_id.value }}{% endif %}"
   {% if inline_admin_formset.opts.ordering_field %}x-sort:item{% endif %}
 >
   {% include "unfold/helpers/edit_inline/tabular_error.html" %}
