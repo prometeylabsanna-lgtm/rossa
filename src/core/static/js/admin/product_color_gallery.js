@@ -92,6 +92,7 @@
     var swatches = readSwatches();
     var swatchesEl = root.querySelector("[data-rs-color-swatches]");
     var labelEl = root.querySelector("[data-rs-color-active-label]");
+    var hintEl = root.querySelector("[data-rs-color-hint]");
     if (!swatchesEl) return;
 
     root.setAttribute("data-rs-bound", "1");
@@ -102,9 +103,13 @@
         labelEl.hidden = true;
         labelEl.textContent = "";
       }
-      applyFilter("");
+      if (hintEl) hintEl.hidden = false;
+      // Порожня панель (add / без кольорів) — gallery_color_id=0
+      applyFilter("0");
       return;
     }
+
+    if (hintEl) hintEl.hidden = true;
 
     activeId = recalledColor(swatches);
     swatchesEl.innerHTML = "";

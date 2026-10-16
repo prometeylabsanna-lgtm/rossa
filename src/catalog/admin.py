@@ -131,6 +131,45 @@ class ProductColorImageForm(forms.ModelForm):
         return bool(self.files.get(self.add_prefix('image')))
 
 
+class EmptyColorGalleryInline(TabularInline):
+    """
+    Вкладка «Фото» на add / поки немає кольорів.
+    Лише підказка — завантажувати фото ще нікуди (потрібен color_id).
+    """
+
+    model = ProductColorImage
+    form = ProductColorImageForm
+    fk_name = 'product'
+    extra = 0
+    max_num = 0
+    can_delete = False
+    fields = ('image', 'sort')
+    tab = True
+    show_title = False
+    verbose_name = 'Фото'
+    verbose_name_plural = 'Фото'
+    gallery_color_id = 0
+    gallery_color_name = ''
+    template = 'admin/catalog/product/color_gallery_tabular.html'
+    template_before = 'admin/catalog/product/color_gallery_swatches.html'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).none()
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        FormSet = super().get_formset(request, obj, **kwargs)
+
+        class EmptyGalleryFormSet(FormSet):
+            @classmethod
+            def get_default_prefix(cls):
+                return 'color_images'
+
+        return EmptyGalleryFormSet
+
+
 def _color_gallery_inline(color_option_id: int, title: str, *, is_primary: bool = False):
     """
     Окремий formset на колір — color_id ставить СЕРВЕР (як у 569b534).
@@ -434,6 +473,7 @@ class ProductAdmin(ModelAdmin):
 
     def get_inlines(self, request, obj=None):
         inlines = [FabricPriceInline, ProductColorInline]
+        rows = []
         if obj is not None:
             rows = list(
                 ProductColor.objects
@@ -441,17 +481,22 @@ class ProductAdmin(ModelAdmin):
                 .select_related('color')
                 .order_by('sort', 'id')
             )
-            for index, row in enumerate(rows):
-                if not row.color_id:
-                    continue
-                name = row.color.name_uk if row.color_id else f'#{row.pk}'
-                inlines.append(
-                    _color_gallery_inline(
-                        row.color_id,
-                        name,
-                        is_primary=(index == 0),
-                    )
+        gallery_added = False
+        for index, row in enumerate(rows):
+            if not row.color_id:
+                continue
+            name = row.color.name_uk if row.color_id else f'#{row.pk}'
+            inlines.append(
+                _color_gallery_inline(
+                    row.color_id,
+                    name,
+                    is_primary=(index == 0),
                 )
+            )
+            gallery_added = True
+        # Add / товар без кольорів — вкладка «Фото» з підказкою
+        if not gallery_added:
+            inlines.append(EmptyColorGalleryInline)
         inlines.append(ProductCharacteristicInline)
         return inlines
 

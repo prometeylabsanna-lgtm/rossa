@@ -95,14 +95,21 @@ select.rs-admin-btn-select:focus {
   box-shadow: 0 0 0 2px rgba(152, 96, 48, 0.28);
 }
 
-.rs-color-gallery__active {
+.rs-color-gallery__active,
+.rs-color-gallery__hint {
   margin: 0.65rem 0 0;
   font-size: 13px;
   line-height: 1.4;
   color: #504e4c;
 }
 
-.rs-color-gallery__active[hidden] {
+.rs-color-gallery__active[hidden],
+.rs-color-gallery__hint[hidden] {
+  display: none;
+}
+
+/* Порожня вкладка Фото (немає кольорів) — ховаємо пусту таблицю */
+[data-rs-gallery-panel="0"] [data-rs-gallery-table] {
   display: none;
 }
 
