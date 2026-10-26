@@ -7,6 +7,7 @@ from django.http import Http404
 from django.urls import include, path, re_path
 from django.views.i18n import set_language
 
+from catalog.google_feed import google_merchant_feed
 from core.admin_upload import cms_upload
 from core.sitemaps import sitemaps
 from core.views import healthz, llms_txt, robots_txt
@@ -35,6 +36,11 @@ urlpatterns = [
         sitemap,
         {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap',
+    ),
+    path(
+        'feeds/google-merchant.xml',
+        google_merchant_feed,
+        name='google_merchant_feed',
     ),
 ]
 
