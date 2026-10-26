@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from decouple import Csv, config
@@ -60,6 +61,7 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
                 'core.context_processors.site_globals',
+                'core.context_processors.gtm',
             ],
         },
     },
@@ -117,20 +119,45 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
+# Порожній GTM_ID вимикає сніпет у публічному base.html.
+GTM_ID = os.environ.get('GTM_ID', 'GTM-NZN8FDT7')
+
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'default-src': ("'self'",),
         # unsafe-eval потрібен для Alpine.js у django-unfold (x-show / x-data).
         # unsafe-inline: inline CSS-змінні в base.html + TinyMCE/Unfold.
-        'script-src': ("'self'", "'unsafe-inline'", "'unsafe-eval'"),
+        'script-src': (
+            "'self'",
+            "'unsafe-inline'",
+            "'unsafe-eval'",
+            'https://www.googletagmanager.com',
+        ),
         'style-src': ("'self'", "'unsafe-inline'"),
         'font-src': ("'self'", 'data:'),
-        'img-src': ("'self'", 'data:', 'blob:'),
+        'img-src': (
+            "'self'",
+            'data:',
+            'blob:',
+            'https://www.googletagmanager.com',
+            'https://www.google-analytics.com',
+            'https://*.google-analytics.com',
+        ),
         'media-src': ("'self'",),
-        'connect-src': ("'self'",),
+        'connect-src': (
+            "'self'",
+            'https://www.googletagmanager.com',
+            'https://www.google-analytics.com',
+            'https://*.google-analytics.com',
+        ),
         'object-src': ("'none'",),
-        # Google Maps embed на /contacts/
-        'frame-src': ("'self'", 'https://www.google.com', 'https://maps.google.com'),
+        # Google Maps embed на /contacts/ + GTM noscript iframe.
+        'frame-src': (
+            "'self'",
+            'https://www.google.com',
+            'https://maps.google.com',
+            'https://www.googletagmanager.com',
+        ),
         'frame-ancestors': ("'none'",),
         'base-uri': ("'self'",),
         'form-action': ("'self'",),

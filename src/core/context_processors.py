@@ -1,6 +1,8 @@
+import re
 from pathlib import Path
 
 from catalog.models import Category
+from csp.constants import NONCE
 from django.conf import settings as django_settings
 from django.db.models import Prefetch
 from django.urls import translate_url
@@ -9,6 +11,7 @@ from core.models import SiteSettings
 from core.page_styles import get_chrome_style_vars, get_page_style_vars
 
 _STATIC_ROOT = Path(__file__).resolve().parent / 'static'
+_GTM_ID_RE = re.compile(r'^GTM-[A-Z0-9]+$')
 
 
 def _language_switch_urls(request) -> dict[str, str]:
@@ -22,6 +25,44 @@ def _language_switch_urls(request) -> dict[str, str]:
         else:
             urls[code] = translate_url(full_path, code)
     return urls
+
+
+def _contains_csp_nonce(value) -> bool:
+    if value is NONCE:
+        return True
+    if isinstance(value, (str, bytes)) or value is None:
+        return False
+    try:
+        return any(item is NONCE for item in value)
+    except TypeError:
+        return False
+
+
+def _policy_uses_script_nonce(policy) -> bool:
+    if not isinstance(policy, dict):
+        return False
+    directives = policy.get('DIRECTIVES') or {}
+    return any(
+        _contains_csp_nonce(directives.get(name))
+        for name in ('script-src', 'script-src-elem')
+    )
+
+
+def gtm(_request):
+    """GTM_ID для публічного base.html. Nonce лише якщо CSP його вимагає."""
+    raw = getattr(django_settings, 'GTM_ID', '') or ''
+    gtm_id = raw.strip() if isinstance(raw, str) else ''
+    if not _GTM_ID_RE.fullmatch(gtm_id):
+        gtm_id = ''
+    uses_nonce = _policy_uses_script_nonce(
+        getattr(django_settings, 'CONTENT_SECURITY_POLICY', None),
+    ) or _policy_uses_script_nonce(
+        getattr(django_settings, 'CONTENT_SECURITY_POLICY_REPORT_ONLY', None),
+    )
+    return {
+        'GTM_ID': gtm_id,
+        'GTM_USE_NONCE': uses_nonce,
+    }
 
 
 def site_globals(request):
