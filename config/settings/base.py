@@ -100,6 +100,9 @@ STATICFILES_DIRS = []
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Публічний origin абсолютних URL (фід Merchant не бере хост запиту).
+SITE_URL = config('SITE_URL', default='https://rossamebel.com.ua').strip().rstrip('/')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Секретний префікс адмінки (без слешів з боків). Старий /admin → 404.
@@ -276,3 +279,5 @@ LOGGING = {
 }
 
 CATALOG_PAGE_SIZE = 9
+
+TEST_RUNNER = 'config.runners.RossaDiscoverRunner'

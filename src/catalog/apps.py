@@ -7,9 +7,16 @@ class CatalogConfig(AppConfig):
     verbose_name = 'Каталог'
 
     def ready(self):
-        from django.db.models.signals import post_delete
+        from django.db.models.signals import post_delete, post_save
 
-        from catalog.models import ProductColor, ProductColorImage
+        from catalog.google_feed import invalidate_google_merchant_feed_cache
+        from catalog.models import (
+            Category,
+            Product,
+            ProductColor,
+            ProductColorImage,
+            ProductFabricPrice,
+        )
 
         def _cleanup_color_gallery(sender, instance, **kwargs):
             ProductColorImage.objects.filter(
@@ -22,3 +29,26 @@ class CatalogConfig(AppConfig):
             sender=ProductColor,
             dispatch_uid='product_color_gallery_cleanup',
         )
+
+        # Ціна, фото кольору, галерея й категорія входять у XML фіда.
+        feed_senders = (
+            Product,
+            ProductFabricPrice,
+            ProductColor,
+            ProductColorImage,
+            Category,
+        )
+        for model in feed_senders:
+            label = model._meta.label_lower
+            post_save.connect(
+                invalidate_google_merchant_feed_cache,
+                sender=model,
+                dispatch_uid=f'google_feed_save:{label}',
+                weak=False,
+            )
+            post_delete.connect(
+                invalidate_google_merchant_feed_cache,
+                sender=model,
+                dispatch_uid=f'google_feed_delete:{label}',
+                weak=False,
+            )

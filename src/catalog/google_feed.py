@@ -4,11 +4,14 @@ from __future__ import annotations
 import html
 import re
 import xml.etree.ElementTree as ET
+from decimal import ROUND_HALF_UP, Decimal
+from urllib.parse import urljoin
 
+from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import translation
-from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
 
 from catalog.selectors import visible_products
@@ -20,7 +23,23 @@ BRAND_FALLBACK = 'Rossa'
 MAX_ADDITIONAL_IMAGES = 10
 DESCRIPTION_LIMIT = 5000
 TITLE_LIMIT = 150
-ID_LIMIT = 50
+_PRICE_STEP = Decimal('0.01')
+
+FEED_CACHE_KEY = 'catalog:google_merchant_feed:v1'
+FEED_CACHE_TIMEOUT = 30 * 60
+
+# Таксономія Google Product Category: ID за slug. Далі піднімаємось до батьків.
+GOOGLE_PRODUCT_CATEGORY_BY_SLUG = {
+    'divany': '460',  # Furniture > Sofas
+    'modulni': '460',  # Furniture > Sofas
+    'kutovi': '460',  # Furniture > Sofas
+    'pryami': '460',  # Furniture > Sofas
+    'yevroknyzhky': '460',  # Furniture > Sofas
+    'lizhka': '505764',  # Furniture > Beds & Accessories > Beds & Bed Frames
+    'pufy': '458',  # Furniture > Ottomans
+}
+# Жоден slug у ланцюжку категорій не збігся.
+DEFAULT_GOOGLE_PRODUCT_CATEGORY = '436'  # Furniture
 
 _SCRIPT_RE = re.compile(
     r'<(script|style)\b[^>]*>.*?</\1>',
@@ -54,6 +73,35 @@ def cap_image_urls(urls: list[str]) -> tuple[str | None, list[str]]:
     return unique[0], unique[1:1 + MAX_ADDITIONAL_IMAGES]
 
 
+def absolute_url(path: str) -> str:
+    """Абсолютний URL від settings.SITE_URL. Уже абсолютний path лишається як є."""
+    base = f"{(settings.SITE_URL or '').strip().rstrip('/')}/"
+    return urljoin(base, path or '')
+
+
+def format_price_uah(amount) -> str:
+    """Сума з рівно двома знаками після коми та кодом UAH."""
+    quantized = _quantized_price(amount)
+    return f'{quantized} UAH'
+
+
+def google_product_category_id(category) -> str:
+    """ID категорії Google: slug вузла, потім батьки, інакше Furniture."""
+    seen: set[int] = set()
+    node = category
+    while node is not None and node.pk not in seen:
+        seen.add(node.pk)
+        mapped = GOOGLE_PRODUCT_CATEGORY_BY_SLUG.get(node.slug)
+        if mapped:
+            return mapped
+        node = node.parent
+    return DEFAULT_GOOGLE_PRODUCT_CATEGORY
+
+
+def invalidate_google_merchant_feed_cache(sender=None, **kwargs) -> None:
+    cache.delete(FEED_CACHE_KEY)
+
+
 def _g(tag: str) -> str:
     return f'{{{G_NS}}}{tag}'
 
@@ -64,10 +112,12 @@ def _add(parent: ET.Element, tag: str, value: str) -> None:
 
 
 def _feed_id(product) -> str:
-    sku = (getattr(product, 'sku', '') or '').strip()
-    if sku:
-        return sku[:ID_LIMIT]
-    return str(product.pk)
+    return f'rossa-{product.pk}'
+
+
+def _quantized_price(amount) -> Decimal:
+    # Грошовий формат: рівно 2 знаки, ROUND_HALF_UP.
+    return Decimal(str(amount)).quantize(_PRICE_STEP, rounding=ROUND_HALF_UP)
 
 
 def _brand(product) -> str:
@@ -97,19 +147,21 @@ def _product_type(category) -> str:
     return ' > '.join(names)
 
 
-def _absolute_image(request, image) -> str:
+def _absolute_media(image) -> str:
     if not image:
         return ''
     try:
         url = image.url
     except ValueError:
         return ''
-    return request.build_absolute_uri(url)
+    if not url:
+        return ''
+    return absolute_url(url)
 
 
-def _product_image_urls(request, product) -> list[str]:
+def _product_image_urls(product) -> list[str]:
     urls: list[str] = []
-    main = _absolute_image(request, product.default_image)
+    main = _absolute_media(product.default_image)
     if main:
         urls.append(main)
     for color in product.colors.all():
@@ -122,18 +174,20 @@ def _product_image_urls(request, product) -> list[str]:
         ]
         images = gallery or ([color.image] if color.image else [])
         for image in images:
-            url = _absolute_image(request, image)
+            url = _absolute_media(image)
             if url:
                 urls.append(url)
     return urls
 
 
-def _price_uah(product) -> str:
-    # Та сама «ціна від», що в каталозі: мінімум цін тканин або базова.
-    return f'{int(product.min_price):.2f} UAH'
-
-
-def _append_item(channel: ET.Element, request, product) -> None:
+def _append_item(channel: ET.Element, product) -> None:
+    image_link, extra = cap_image_urls(_product_image_urls(product))
+    raw_price = product.min_price
+    if not image_link or raw_price is None:
+        return
+    price = _quantized_price(raw_price)
+    if price <= 0:
+        return
     item = ET.SubElement(channel, 'item')
     _add(item, _g('id'), _feed_id(product))
     title = plain_text(product.name_uk, limit=TITLE_LIMIT) or str(product.pk)
@@ -142,16 +196,12 @@ def _append_item(channel: ET.Element, request, product) -> None:
     _add(
         item,
         'link',
-        request.build_absolute_uri(
-            reverse('catalog:product', kwargs={'slug': product.slug}),
-        ),
+        absolute_url(reverse('catalog:product', kwargs={'slug': product.slug})),
     )
-    image_link, extra = cap_image_urls(_product_image_urls(request, product))
-    if image_link:
-        _add(item, _g('image_link'), image_link)
+    _add(item, _g('image_link'), image_link)
     for url in extra:
         _add(item, _g('additional_image_link'), url)
-    _add(item, _g('price'), _price_uah(product))
+    _add(item, _g('price'), format_price_uah(price))
     _add(
         item,
         _g('availability'),
@@ -159,23 +209,31 @@ def _append_item(channel: ET.Element, request, product) -> None:
     )
     _add(item, _g('condition'), 'new')
     _add(item, _g('brand'), _brand(product))
+    sku = (getattr(product, 'sku', '') or '').strip()
+    if sku:
+        _add(item, _g('mpn'), sku)
+    else:
+        _add(item, _g('identifier_exists'), 'no')
     _add(item, _g('product_type'), _product_type(product.category))
+    _add(item, _g('google_product_category'), google_product_category_id(product.category))
 
 
-def render_google_merchant_xml(request) -> bytes:
-    rss = ET.Element('rss', version='2.0')
-    channel = ET.SubElement(rss, 'channel')
-    _add(channel, 'title', 'ROSSA')
-    _add(channel, 'link', request.build_absolute_uri('/'))
-    _add(channel, 'description', 'Каталог меблів ROSSA')
-    for product in visible_products().order_by('pk'):
-        _append_item(channel, request, product)
-    return ET.tostring(rss, encoding='utf-8', xml_declaration=True)
+def render_google_merchant_xml() -> bytes:
+    with translation.override('uk'):
+        rss = ET.Element('rss', version='2.0')
+        channel = ET.SubElement(rss, 'channel')
+        _add(channel, 'title', 'ROSSA')
+        _add(channel, 'link', absolute_url('/'))
+        _add(channel, 'description', 'Каталог меблів ROSSA')
+        for product in visible_products().order_by('pk'):
+            _append_item(channel, product)
+        return ET.tostring(rss, encoding='utf-8', xml_declaration=True)
 
 
-@cache_page(60 * 30)
 @require_GET
 def google_merchant_feed(request):
-    with translation.override('uk'):
-        body = render_google_merchant_xml(request)
+    body = cache.get(FEED_CACHE_KEY)
+    if body is None:
+        body = render_google_merchant_xml()
+        cache.set(FEED_CACHE_KEY, body, FEED_CACHE_TIMEOUT)
     return HttpResponse(body, content_type='application/xml; charset=utf-8')
