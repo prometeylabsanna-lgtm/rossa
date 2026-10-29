@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static seo_tags %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'uk' }}">
 <head>
@@ -6,17 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% if seo_title %}{{ seo_title }}{% else %}ROSSA{% endif %}</title>
   <meta name="description" content="{% if seo_description %}{{ seo_description }}{% endif %}">
-  {% if noindex %}<meta name="robots" content="noindex,follow">{% endif %}
-  <link rel="canonical" href="{{ canonical_url|default:request.build_absolute_uri }}">
+  {% if noindex or seo_robots %}<meta name="robots" content="{{ seo_robots|default:'noindex,follow' }}">{% endif %}
+  <link rel="canonical" href="{{ canonical_url }}">
+  {% for link in hreflang_links %}
+  <link rel="alternate" hreflang="{{ link.code }}" href="{{ link.href }}">
+  {% endfor %}
   <link rel="icon" href="{% static 'images/favicon/favicon.ico' %}" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32.png' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16.png' %}">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
   <meta property="og:title" content="{% if seo_title %}{{ seo_title }}{% else %}ROSSA{% endif %}">
   <meta property="og:description" content="{% if seo_description %}{{ seo_description }}{% endif %}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ canonical_url|default:request.build_absolute_uri }}">
-  {% if og_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_image }}">{% endif %}
+  <meta property="og:type" content="{{ og_type|default:'website' }}">
+  <meta property="og:locale" content="{{ og_locale|default:'uk_UA' }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+  {% structured_data %}
   <link rel="preload" href="{% static 'fonts/montserrat-400-normal-cyrillic.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{% static 'fonts/montserrat-400-normal-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{% static 'fonts/cormorant-600-normal-cyrillic.woff2' %}" as="font" type="font/woff2" crossorigin>

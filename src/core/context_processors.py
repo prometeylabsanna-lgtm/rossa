@@ -66,6 +66,8 @@ def gtm(_request):
 
 
 def site_globals(request):
+    from core.seo import page_seo
+
     settings = SiteSettings.load()
     active_children = Prefetch(
         'children',
@@ -84,6 +86,8 @@ def site_globals(request):
             if p.suffix in {'.css', '.js', '.woff2', '.webp'}
         ]
         static_v = max(mtimes, default=0)
+    # Базовий SEO-head; view може перевизначити через page_seo / _seo.
+    seo_defaults = page_seo(request, 'ROSSA', '')
     return {
         'site_settings': settings,
         'nav_categories': nav_categories,
@@ -92,4 +96,5 @@ def site_globals(request):
         'static_v': static_v,
         'page_style': get_page_style_vars(request),
         'chrome_style': get_chrome_style_vars(),
+        **seo_defaults,
     }

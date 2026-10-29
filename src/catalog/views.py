@@ -15,6 +15,8 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET
 from leads.forms import OrderForm
 
+from core.seo import category_meta_description, page_seo, plain_text, product_meta_description
+
 
 def _breadcrumbs(items):
     out = []
@@ -117,17 +119,19 @@ def _render_listing(request, category, crumbs, seo_title=None, seo_description=N
 
     if category:
         page_title = category.name
-        page_seo_title = (
-            (category.seo_title if category.seo_title else category.name) + ' — ROSSA'
-        )
-        page_seo_description = category.seo_description or ''
+        raw_title = category.seo_title or category.name
+        page_seo_title = raw_title if 'ROSSA' in raw_title.upper() else f'{raw_title} — ROSSA'
+        page_seo_description = category_meta_description(category)
         page_intro = intro
     else:
         page_title = _('Каталог')
         page_seo_title = seo_title or (_('Каталог') + ' — ROSSA')
-        page_seo_description = seo_description or _('Каталог ROSSA')
+        page_seo_description = seo_description or _(
+            'Дивани, ліжка та пуфи власного виробництва ROSSA.'
+        )
         page_intro = intro
 
+    seo = page_seo(request, page_seo_title, page_seo_description)
     ctx = {
         'category': category,
         'products': products,
@@ -147,9 +151,7 @@ def _render_listing(request, category, crumbs, seo_title=None, seo_description=N
         'page_title': page_title,
         'page_intro': page_intro,
         'breadcrumbs': crumbs,
-        'seo_title': page_seo_title,
-        'seo_description': page_seo_description,
-        'canonical_url': request.build_absolute_uri(request.path),
+        **seo,
     }
     template = 'partials/product_more.html' if request.htmx else 'catalog/category.html'
     return render(request, template, ctx)
@@ -256,14 +258,23 @@ def product_detail(request, slug):
             'price': price,
         }),
         'breadcrumbs': _breadcrumbs(crumbs),
-        'seo_title': (product.seo_title or product.name) + ' — ROSSA',
-        'seo_description': product.seo_description or (product.description or '')[:160],
-        'canonical_url': request.build_absolute_uri(product.get_absolute_url()),
-        'og_image': main_image.url if main_image else None,
+        **page_seo(
+            request,
+            _product_seo_title(product),
+            product_meta_description(product),
+            image=main_image.url if main_image else None,
+        ),
     }
     if request.htmx:
         return render(request, 'partials/product_config.html', ctx)
     return render(request, 'catalog/product.html', ctx)
+
+
+def _product_seo_title(product) -> str:
+    raw = plain_text(product.seo_title or product.name)
+    if 'ROSSA' in raw.upper():
+        return raw
+    return f'{raw} — ROSSA'
 
 
 @require_GET
@@ -274,9 +285,12 @@ def search(request):
         'q': q,
         'products': products,
         'breadcrumbs': _breadcrumbs([(_('Головна'), reverse('core:home')), (_('Пошук'), None)]),
-        'seo_title': _('Пошук — ROSSA'),
-        'seo_description': _('Пошук моделей ROSSA за назвою або артикулом.'),
-        'canonical_url': request.build_absolute_uri(),
+        **page_seo(
+            request,
+            _('Пошук — ROSSA'),
+            _('Пошук моделей ROSSA за назвою або артикулом.'),
+            noindex=True,
+        ),
     }
     if request.htmx:
         return render(request, 'partials/search_results.html', ctx)
