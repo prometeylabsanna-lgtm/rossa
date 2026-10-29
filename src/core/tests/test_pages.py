@@ -106,6 +106,6 @@ class PagesSmokeTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('text/plain', response['Content-Type'])
         body = response.content.decode('utf-8')
-        self.assertIn('# Rossa', body)
+        self.assertIn('# ROSSA', body)
         self.assertIn('/katalog/', body)
         self.assertIn('/kontakty/', body)
