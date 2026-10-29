@@ -1,0 +1,28 @@
+{% load i18n %}
+<aside
+  id="cookie-banner"
+  class="cookie-banner"
+  data-cookie-banner
+  data-gtm-id="{{ GTM_ID|default:'' }}"
+  hidden
+  role="dialog"
+  aria-live="polite"
+  aria-label="{% trans 'Згода на cookies' %}"
+>
+  <div class="cookie-banner__inner">
+    <p class="cookie-banner__text">
+      {% blocktrans trimmed %}
+        Ми використовуємо файли cookie для роботи сайту та аналітики.
+      {% endblocktrans %}
+      <a class="cookie-banner__link" href="{% url 'core:cookies' %}">{% trans "Політика Cookies" %}</a>
+    </p>
+    <div class="cookie-banner__actions">
+      <button type="button" class="btn btn--outline cookie-banner__btn" data-cookie-necessary>
+        {% trans "Лише необхідні" %}
+      </button>
+      <button type="button" class="btn btn--solid cookie-banner__btn" data-cookie-accept>
+        {% trans "Прийняти" %}
+      </button>
+    </div>
+  </div>
+</aside>

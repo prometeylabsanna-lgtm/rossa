@@ -2336,6 +2336,113 @@ body.is-nav-open {
   }
 }
 
+/* --- components/cookie-banner.css --- */
+/* Cookie consent — fixed bottom bar (iOS safe-area) */
+
+.cookie-banner {
+  position: fixed;
+  z-index: 60;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px var(--pad-x) calc(14px + env(safe-area-inset-bottom, 0px));
+  background: rgba(248, 248, 248, 0.96);
+  color: var(--color-ink);
+  border-top: 1px solid var(--color-line);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -8px 28px rgba(26, 24, 23, 0.08);
+}
+
+.cookie-banner[hidden] {
+  display: none;
+}
+
+.cookie-banner__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.cookie-banner__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.cookie-banner__link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-banner__link:hover {
+  color: var(--color-ink);
+}
+
+.cookie-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cookie-banner__btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 12px 18px;
+  font-size: 13px;
+}
+
+@media (min-width: 768px) {
+  .cookie-banner {
+    padding: 16px var(--pad-x) calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .cookie-banner__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .cookie-banner__text {
+    font-size: 14px;
+    max-width: 640px;
+  }
+
+  .cookie-banner__actions {
+    flex-shrink: 0;
+  }
+
+  .cookie-banner__btn {
+    flex: 0 0 auto;
+    padding: 12px 22px;
+  }
+}
+
+/* Підняти «Наверх», коли банер видимий */
+body.has-cookie-banner .scroll-top {
+  bottom: max(92px, calc(88px + env(safe-area-inset-bottom, 0px)));
+}
+
+@media (min-width: 768px) {
+  body.has-cookie-banner .scroll-top {
+    bottom: max(100px, calc(96px + env(safe-area-inset-bottom, 0px)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-banner {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 /* --- animations.css --- */
 /* ---- REVEAL BASE ---- */
 .reveal {
