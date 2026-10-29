@@ -69,7 +69,7 @@ class Command(BaseCommand):
         obj.save()
 
     def _home(self):
-        obj, _ = HomePage.objects.get_or_create(pk=1, defaults={
+        home_fields = {
             'section_categories_uk': 'Категорії',
             'section_categories_ru': 'Категории',
             'section_bestsellers_uk': 'Популярні моделі',
@@ -92,9 +92,6 @@ class Command(BaseCommand):
             'seo_title_ru': 'ROSSA — мягкая мебель собственного производства',
             'seo_description_uk': 'Дивани, ліжка та пуфи. Індивідуальний пошив тканини, самовивіз з Харкова.',
             'seo_description_ru': 'Диваны, кровати и пуфы. Индивидуальный пошив ткани, самовывоз из Харькова.',
-        })
-        attach(obj.craft_image, 'craft.jpg')
-        about_defaults = {
             'about_title_uk': 'Rossa. Твій стиль. Твій комфорт.',
             'about_title_ru': 'Rossa. Твой стиль. Твой комфорт.',
             'about_body_uk': ensure_cms_html(
@@ -108,9 +105,10 @@ class Command(BaseCommand):
                 'чтобы каждая модель гармонично жила в вашем пространстве.'
             ),
         }
-        for key, value in about_defaults.items():
-            if getattr(obj, key, None) != value:
-                setattr(obj, key, value)
+        obj, _ = HomePage.objects.get_or_create(pk=1, defaults=home_fields)
+        for key, value in home_fields.items():
+            setattr(obj, key, value)
+        attach(obj.craft_image, 'craft.jpg')
         obj.save()
         self._hero_slides(obj)
 
