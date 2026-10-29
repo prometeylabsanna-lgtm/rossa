@@ -7,8 +7,13 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from PIL import Image
 
-from core.images_webp import convert_bytes_to_webp, convert_upload_to_webp, needs_webp_convert
-from core.models import HeroSlide, HomePage
+from core.images_webp import (
+    convert_bytes_to_webp,
+    convert_upload_to_webp,
+    ensure_webp_beside,
+    needs_webp_convert,
+)
+from core.models import AboutPage, HeroSlide, HomePage
 
 
 def _png_bytes(size=(40, 30), color=(200, 40, 40)) -> bytes:
@@ -95,3 +100,50 @@ class CmsUploadWebPTests(TestCase):
         payload = response.json()
         self.assertTrue(payload['path'].endswith('.webp'))
         self.assertTrue(Path(payload['path']).suffix.lower() == '.webp')
+
+
+class AboutGalleryWebPTests(TestCase):
+    def test_json_gallery_serves_webp_picture_keeps_original(self):
+        from django.core.files.storage import default_storage
+
+        png_name = 'about/gallery-keep-original.png'
+        if default_storage.exists(png_name):
+            default_storage.delete(png_name)
+        webp_name = 'about/gallery-keep-original.webp'
+        if default_storage.exists(webp_name):
+            default_storage.delete(webp_name)
+
+        default_storage.save(png_name, ContentFile(_png_bytes((80, 60)), name='gallery-keep-original.png'))
+        media_url = f'/media/{png_name}'
+
+        page = AboutPage.load()
+        page.title_uk = 'Про нас'
+        page.body_uk = 'Текст'
+        page.craft_images = [
+            {'image': media_url, 'label_uk': 'Цех', 'label_ru': 'Цех'},
+        ]
+        page.logo_images = []
+        page.evolution_images = []
+        page.milestones = []
+        page.save()
+
+        client = Client()
+        response = client.get(reverse('core:about'))
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode('utf-8')
+        self.assertIn('type="image/webp"', body)
+        self.assertIn('gallery-keep-original.webp', body)
+        self.assertIn('gallery-keep-original.png', body)
+        self.assertIn('width="1024"', body)
+        self.assertIn('height="682"', body)
+        self.assertTrue(default_storage.exists(png_name))
+        self.assertTrue(default_storage.exists(webp_name))
+
+        webp_url = ensure_webp_beside(media_url)
+        self.assertTrue(webp_url.endswith('.webp'))
+        # Повторний виклик не чіпає оригінал.
+        with default_storage.open(png_name, 'rb') as fh:
+            original = fh.read()
+        ensure_webp_beside(media_url)
+        with default_storage.open(png_name, 'rb') as fh:
+            self.assertEqual(fh.read(), original)

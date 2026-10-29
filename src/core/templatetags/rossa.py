@@ -1,13 +1,13 @@
 import re
 
 from django import template
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 
 from core.cms_sanitize import sanitize_cms_html
 from core.cms_text import ensure_cms_html
-from core.images_webp import srcset_from_url, variant_url
+from core.images_webp import ensure_webp_beside, image_size, srcset_from_url, variant_url
 
 register = template.Library()
 
@@ -65,3 +65,54 @@ def img_variant(url, width=960):
 def img_srcset(url):
     """srcset для 640/960/1600w."""
     return srcset_from_url(url or '')
+
+
+@register.simple_tag
+def cms_picture(
+    url,
+    alt='',
+    width=None,
+    height=None,
+    loading='lazy',
+    decoding='async',
+    fetchpriority=None,
+    img_class='',
+):
+    """
+    <picture> для JSON-шляхів CMS: WebP sibling + fallback на оригінал.
+    Оригінал не змінює. width/height — з аргументів або з файлу.
+    """
+    src = (url or '').strip()
+    if not src:
+        return ''
+    webp = ensure_webp_beside(src)
+    w, h = width, height
+    if not w or not h:
+        size = image_size(src) or (image_size(webp) if webp else None)
+        if size:
+            w = w or size[0]
+            h = h or size[1]
+    attrs = []
+    if img_class:
+        attrs.append(format_html(' class="{}"', img_class))
+    if w:
+        attrs.append(format_html(' width="{}"', w))
+    if h:
+        attrs.append(format_html(' height="{}"', h))
+    if loading:
+        attrs.append(format_html(' loading="{}"', loading))
+    if decoding:
+        attrs.append(format_html(' decoding="{}"', decoding))
+    if fetchpriority:
+        attrs.append(format_html(' fetchpriority="{}"', fetchpriority))
+    extra = mark_safe(''.join(attrs))
+    alt_text = alt or ''
+    if webp and webp != src:
+        return format_html(
+            '<picture><source type="image/webp" srcset="{}"><img src="{}" alt="{}"{}></picture>',
+            webp,
+            src,
+            alt_text,
+            extra,
+        )
+    return format_html('<img src="{}" alt="{}"{}>', src, alt_text, extra)

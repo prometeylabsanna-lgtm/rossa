@@ -247,3 +247,72 @@ def is_optimizable_media_name(name: str | None) -> bool:
     if ext in _SKIP_EXT:
         return False
     return ext in _IMAGE_EXT
+
+
+def media_url_for_name(name: str, *, like: str = '') -> str:
+    """Будує /media/... URL зі storage-імені, зберігаючи стиль `like` якщо можливо."""
+    clean = (name or '').lstrip('/')
+    media_url = settings.MEDIA_URL or '/media/'
+    if not media_url.endswith('/'):
+        media_url = f'{media_url}/'
+    built = f'{media_url}{clean}'
+    sample = (like or '').strip()
+    if sample.startswith(('http://', 'https://')) and '://' in sample:
+        # Absolute sample → keep absolute origin if SITE/request unknown: relative media.
+        return built
+    return built
+
+
+def ensure_webp_beside(ref: str) -> str | None:
+    """
+    Гарантує sibling .webp поруч із оригіналом (jpg/png/…).
+    Оригінал не змінює і не видаляє. Повертає URL webp або None.
+    Якщо ref уже .webp — повертає його як є.
+    """
+    value = (ref or '').strip()
+    if not value:
+        return None
+    name = media_storage_name(value)
+    if not name:
+        return None
+    path = Path(name)
+    ext = path.suffix.lower()
+    if ext == '.webp':
+        return value
+    if ext in _SKIP_EXT or ext not in _IMAGE_EXT:
+        return None
+
+    from django.core.files.storage import default_storage
+
+    webp_name = str(path.with_suffix('.webp'))
+    if not default_storage.exists(webp_name):
+        if not default_storage.exists(name):
+            return None
+        try:
+            with default_storage.open(name, 'rb') as fh:
+                data = fh.read()
+        except Exception:
+            return None
+        webp_data = convert_bytes_to_webp(data, source_name=name, force=True)
+        if not webp_data:
+            return None
+        default_storage.save(webp_name, ContentFile(webp_data, name=Path(webp_name).name))
+    return media_url_for_name(webp_name, like=value)
+
+
+def image_size(ref: str) -> tuple[int, int] | None:
+    """Ширина/висота з media-файлу або None."""
+    name = media_storage_name(ref)
+    if not name:
+        return None
+    from django.core.files.storage import default_storage
+
+    if not default_storage.exists(name):
+        return None
+    try:
+        with default_storage.open(name, 'rb') as fh:
+            img = Image.open(fh)
+            img.load()
+            return img.width, img.height
+    except Exception:
+        return None

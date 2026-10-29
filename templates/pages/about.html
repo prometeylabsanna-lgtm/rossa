@@ -27,13 +27,11 @@
         <div class="craft-mosaic">
           {% for ci in page.craft_images %}
             <div class="craft-mosaic__item">
-              <img
-                src="{{ ci.image }}"
-                alt="{{ ci|loc:'label' }}"
-                width="1024"
-                height="682"
-                {% if forloop.first %}fetchpriority="high" decoding="async"{% else %}loading="lazy" decoding="async"{% endif %}
-              >
+              {% if forloop.first %}
+                {% cms_picture ci.image alt=ci|loc:'label' width=1024 height=682 loading='' decoding='async' fetchpriority='high' %}
+              {% else %}
+                {% cms_picture ci.image alt=ci|loc:'label' width=1024 height=682 %}
+              {% endif %}
             </div>
           {% endfor %}
         </div>
@@ -50,15 +48,11 @@
             <div class="about-history__row reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}20">
               {% if row.logo %}
                 <figure class="about-history__logo">
-                  <img
-                    class="about-history__logo-img{% if row.year == '2025' %} about-history__logo-img--dark{% endif %}"
-                    src="{{ row.logo.image }}"
-                    alt="{{ row.logo|loc:'label' }}"
-                    width="480"
-                    height="270"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  {% if row.year == '2025' %}
+                    {% cms_picture row.logo.image alt=row.logo|loc:'label' width=480 height=270 img_class='about-history__logo-img about-history__logo-img--dark' %}
+                  {% else %}
+                    {% cms_picture row.logo.image alt=row.logo|loc:'label' width=480 height=270 img_class='about-history__logo-img' %}
+                  {% endif %}
                 </figure>
               {% endif %}
               <div class="milestone">
@@ -80,14 +74,7 @@
         <div class="evolution-gallery" data-evolution-gallery>
           {% for item in page.evolution_images %}
             <figure class="evolution-gallery__item reveal reveal--up" data-reveal-delay="{{ forloop.counter0 }}40">
-              <img
-                src="{{ item.image }}"
-                alt="{{ page.evolution_title }}"
-                width="600"
-                height="400"
-                loading="lazy"
-                decoding="async"
-              >
+              {% cms_picture item.image alt=page.evolution_title width=600 height=400 %}
             </figure>
           {% endfor %}
         </div>
