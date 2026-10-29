@@ -6,7 +6,6 @@ from leads.catalog_sync import resolve_order_catalog_snapshot
 from leads.idempotency import new_idempotency_key
 from leads.models import ContactLead, Fulfillment, OrderRequest, PartnershipLead
 from leads.validators import (
-    MSG_EMAIL_INVALID,
     MSG_REQUIRED,
     validate_person_name,
     validate_ua_phone,
@@ -48,6 +47,12 @@ class UaPhoneField(forms.CharField):
         if value in (None, ''):
             return value
         return validate_ua_phone(value)
+
+
+class CityField(forms.CharField):
+    default_error_messages = {
+        'required': MSG_REQUIRED,
+    }
 
 
 class LeadFormMixin:
@@ -115,53 +120,41 @@ class HoneypotMixin:
         return bool((self.cleaned_data.get(HONEYPOT_FIELD) or '').strip())
 
 
+def _name_phone_city_fields():
+    return {
+        'name': PersonNameField(label=_('Ім’я'), max_length=128, widget=forms.TextInput(attrs=_attrs(
+            placeholder=_('Ім’я'),
+            autocomplete='name',
+            required=True,
+            **{'data-validate': 'name'},
+        ))),
+        'phone': UaPhoneField(label=_('Телефон'), max_length=32, widget=forms.TextInput(attrs=_attrs(
+            placeholder=PHONE_PLACEHOLDER,
+            type='tel',
+            inputmode='tel',
+            autocomplete='tel',
+            required=True,
+            **{'data-validate': 'phone'},
+        ))),
+        'city': CityField(label=_('Місто'), max_length=128, widget=forms.TextInput(attrs=_attrs(
+            placeholder=_('Місто'),
+            autocomplete='address-level2',
+            required=True,
+            **{'data-validate': 'required'},
+        ))),
+    }
+
+
 class OrderForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.ModelForm):
-    name = PersonNameField(label=_('ПІБ'), max_length=128, widget=forms.TextInput(attrs=_attrs(
-        placeholder=_('ПІБ'),
-        autocomplete='name',
-        required=True,
-        **{'data-validate': 'name'},
-    )))
-    phone = UaPhoneField(label=_('Телефон'), max_length=32, widget=forms.TextInput(attrs=_attrs(
-        placeholder=PHONE_PLACEHOLDER,
-        type='tel',
-        inputmode='tel',
-        autocomplete='tel',
-        required=True,
-        **{'data-validate': 'phone'},
-    )))
-    email = forms.EmailField(
-        label=_('E-mail'),
-        required=False,
-        error_messages={'invalid': MSG_EMAIL_INVALID},
-        widget=forms.EmailInput(attrs=_attrs(
-            placeholder=_('E-mail'),
-            autocomplete='email',
-            **{'data-validate': 'email'},
-        )),
-    )
-    comment = forms.CharField(label=_('Коментар'), required=False, widget=forms.Textarea(attrs=_attrs(
-        placeholder=_('Коментар'),
-        rows=2,
-    )))
-    fulfillment = forms.ChoiceField(
-        label=_('Спосіб отримання'),
-        choices=Fulfillment.choices,
-        widget=forms.RadioSelect,
-        error_messages={'required': MSG_REQUIRED},
-    )
-    consent = forms.BooleanField(
-        label=_('Згода на обробку персональних даних'),
-        required=True,
-        error_messages={'required': MSG_REQUIRED},
-    )
+    name = _name_phone_city_fields()['name']
+    phone = _name_phone_city_fields()['phone']
+    city = _name_phone_city_fields()['city']
 
     class Meta:
         model = OrderRequest
         fields = [
             'product_name', 'product_slug', 'fabric_name', 'shade_name',
-            'sku', 'price', 'name', 'phone', 'email', 'comment',
-            'fulfillment', 'consent',
+            'sku', 'price', 'name', 'phone', 'city',
         ]
         widgets = {
             'product_name': forms.HiddenInput(),
@@ -186,6 +179,16 @@ class OrderForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.ModelFo
         cleaned.update(snapshot)
         return cleaned
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.fulfillment = Fulfillment.PICKUP
+        instance.consent = True
+        instance.email = instance.email or ''
+        instance.comment = instance.comment or ''
+        if commit:
+            instance.save()
+        return instance
+
 
 class PartnershipForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.ModelForm):
     name = PersonNameField(label=_('Ім’я'), max_length=128, widget=forms.TextInput(attrs=_attrs(
@@ -202,38 +205,16 @@ class PartnershipForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.M
         autocomplete='tel',
         **{'data-validate': 'phone'},
     )))
-    email = forms.EmailField(
-        label=_('Електронна адреса'),
-        error_messages={
-            'required': MSG_REQUIRED,
-            'invalid': MSG_EMAIL_INVALID,
-        },
-        widget=forms.EmailInput(attrs=_attrs(
-            placeholder=_('введіть електронну адресу'),
-            required=True,
-            autocomplete='email',
-            **{'data-validate': 'email'},
-        )),
-    )
-    city = forms.CharField(
-        label=_('Місто'),
-        max_length=128,
-        error_messages={'required': MSG_REQUIRED},
-        widget=forms.TextInput(attrs=_attrs(
-            placeholder=_('введіть місто'),
-            required=True,
-            autocomplete='address-level2',
-            **{'data-validate': 'required'},
-        )),
-    )
-    message = forms.CharField(label=_('Повідомлення'), required=False, widget=forms.Textarea(attrs=_attrs(
-        placeholder=_('введіть повідомлення'),
-        rows=4,
+    city = CityField(label=_('Місто'), max_length=128, widget=forms.TextInput(attrs=_attrs(
+        placeholder=_('введіть місто'),
+        required=True,
+        autocomplete='address-level2',
+        **{'data-validate': 'required'},
     )))
 
     class Meta:
         model = PartnershipLead
-        fields = ['name', 'phone', 'email', 'city', 'message']
+        fields = ['name', 'phone', 'city']
 
     def __init__(self, *args, page=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -242,7 +223,7 @@ class PartnershipForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.M
         if page is None:
             return
         self.submit_label = getattr(page, 'form_submit_label', None) or self.submit_label
-        for key in ('name', 'phone', 'email', 'city', 'message'):
+        for key in ('name', 'phone', 'city'):
             copy = page.field_copy(key) if hasattr(page, 'field_copy') else {}
             label = (copy.get('label') or '').strip()
             placeholder = (copy.get('placeholder') or '').strip()
@@ -254,6 +235,8 @@ class PartnershipForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.M
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.company = instance.company or instance.name
+        instance.email = instance.email or ''
+        instance.message = instance.message or ''
         instance.consent = True
         if commit:
             instance.save()
@@ -261,37 +244,18 @@ class PartnershipForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.M
 
 
 class ContactForm(HoneypotMixin, IdempotencyKeyMixin, LeadFormMixin, forms.ModelForm):
-    name = PersonNameField(label=_('Ім’я'), max_length=128, widget=forms.TextInput(attrs=_attrs(
-        placeholder=_('Ім’я'),
-        required=True,
-        autocomplete='name',
-        **{'data-validate': 'name'},
-    )))
-    phone = UaPhoneField(label=_('Телефон'), max_length=32, widget=forms.TextInput(attrs=_attrs(
-        placeholder=PHONE_PLACEHOLDER,
-        type='tel',
-        inputmode='tel',
-        required=True,
-        autocomplete='tel',
-        **{'data-validate': 'phone'},
-    )))
-    message = forms.CharField(
-        label=_('Повідомлення'),
-        error_messages={'required': MSG_REQUIRED},
-        widget=forms.Textarea(attrs=_attrs(
-            placeholder=_('Повідомлення'),
-            rows=4,
-            required=True,
-            **{'data-validate': 'required'},
-        )),
-    )
-    consent = forms.BooleanField(
-        label=_('Згода на обробку персональних даних'),
-        required=True,
-        error_messages={'required': MSG_REQUIRED},
-    )
+    name = _name_phone_city_fields()['name']
+    phone = _name_phone_city_fields()['phone']
+    city = _name_phone_city_fields()['city']
 
     class Meta:
         model = ContactLead
-        fields = ['name', 'phone', 'message', 'consent']
+        fields = ['name', 'phone', 'city']
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.consent = True
+        instance.message = instance.message or ''
+        if commit:
+            instance.save()
+        return instance

@@ -17,7 +17,10 @@
       shade_name: source.dataset.shadeName || "",
       sku: source.dataset.sku || "",
       price: source.dataset.price || "",
+      regular_price: source.dataset.regularPrice || source.dataset.price || "",
+      on_sale: source.dataset.onSale === "1",
       price_label: source.dataset.priceLabel || formatPrice(source.dataset.price || ""),
+      regular_label: source.dataset.regularLabel || formatPrice(source.dataset.regularPrice || ""),
     };
   }
 
@@ -47,7 +50,15 @@
     setField(form, "price", data.price);
 
     setText(form, "[data-order-title]", data.product_name);
-    setText(form, "[data-order-price-view]", data.price_label || formatPrice(data.price));
+    const priceLabel = data.price_label || formatPrice(data.price);
+    const regularLabel = data.regular_label || formatPrice(data.regular_price);
+    setText(form, "[data-order-price-view]", priceLabel);
+    setText(form, "[data-order-plain-view]", priceLabel);
+    setText(form, "[data-order-regular-view]", regularLabel);
+    const saleWrap = form.querySelector("[data-order-sale-wrap]");
+    const plainWrap = form.querySelector("[data-order-plain-wrap]");
+    if (saleWrap) saleWrap.hidden = !data.on_sale;
+    if (plainWrap) plainWrap.hidden = !!data.on_sale;
     setText(form, "[data-order-fabric-view]", data.fabric_name, "—");
     setText(form, "[data-order-shade-view]", data.shade_name, "—");
     return true;

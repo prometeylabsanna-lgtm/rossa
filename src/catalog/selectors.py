@@ -5,7 +5,7 @@ from catalog.models import (
     ProductColorImage,
     ProductFabricPrice,
 )
-from django.db.models import Case, IntegerField, Min, Prefetch, Q, When
+from django.db.models import Case, F, IntegerField, Min, Prefetch, Q, When
 from django.db.models.functions import Coalesce
 
 
@@ -33,14 +33,38 @@ def visible_products():
                 ).order_by('characteristic__sort', 'sort', 'id'),
             ),
         )
-        .annotate(min_fabric_price=Min('fabric_prices__price'))
+        .annotate(
+            min_fabric_price=Min('fabric_prices__price'),
+            min_fabric_sale_price=Min('fabric_prices__sale_price'),
+        )
     )
 
 
 def with_effective_price(qs):
     if 'effective_price' in getattr(qs.query, 'annotations', {}):
         return qs
-    return qs.annotate(effective_price=Coalesce('min_fabric_price', 'base_price'))
+    annotations = getattr(qs.query, 'annotations', {})
+    if 'min_fabric_sale_price' not in annotations:
+        qs = qs.annotate(min_fabric_sale_price=Min('fabric_prices__sale_price'))
+    if 'min_fabric_price' not in annotations:
+        qs = qs.annotate(min_fabric_price=Min('fabric_prices__price'))
+    return qs.annotate(
+        effective_price=Case(
+            When(
+                is_on_sale=True,
+                min_fabric_sale_price__isnull=False,
+                then=F('min_fabric_sale_price'),
+            ),
+            When(
+                is_on_sale=True,
+                sale_price__isnull=False,
+                min_fabric_price__isnull=True,
+                then=F('sale_price'),
+            ),
+            default=Coalesce('min_fabric_price', 'base_price'),
+            output_field=IntegerField(),
+        ),
+    )
 
 
 def home_featured():

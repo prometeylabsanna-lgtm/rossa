@@ -19,8 +19,7 @@ def _order_data(**overrides):
         'price': 1,
         'name': 'Іван Петренко',
         'phone': '+380441234567',
-        'consent': 'on',
-        'fulfillment': 'pickup',
+        'city': 'Харків',
         'idempotency_key': new_idempotency_key(),
     }
     data.update(overrides)
@@ -103,24 +102,22 @@ class OrderLeadEdgeTests(TestCase):
         response = self.client.get(reverse('leads:order'))
         self.assertEqual(response.status_code, 405)
 
-    def test_contact_xss_message_persisted(self):
+    def test_contact_xss_city_persisted(self):
         payload = '<img src=x onerror=alert(1)>'
         response = self.client.post(reverse('leads:contact'), {
             'name': 'Олена',
             'phone': '+380501112233',
-            'message': payload,
-            'consent': 'on',
+            'city': payload,
             'idempotency_key': new_idempotency_key(),
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(ContactLead.objects.get().message, payload)
+        self.assertEqual(ContactLead.objects.get().city, payload)
 
     def test_contact_double_post_same_key_one_lead(self):
         data = {
             'name': 'Олена',
             'phone': '+380501112233',
-            'message': 'Питання',
-            'consent': 'on',
+            'city': 'Харків',
             'idempotency_key': new_idempotency_key(),
         }
         url = reverse('leads:contact')
@@ -132,9 +129,7 @@ class OrderLeadEdgeTests(TestCase):
         data = {
             'name': 'Олена',
             'phone': '+380671112233',
-            'email': 'partner@example.com',
             'city': 'Київ',
-            'message': 'Дилер',
             'idempotency_key': new_idempotency_key(),
         }
         url = reverse('leads:partnership')
@@ -151,8 +146,10 @@ class OrderLeadEdgeTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['HX-Redirect'], reverse('core:thanks'))
 
-    def test_xss_in_comment_stored(self):
-        payload = '<script>alert(1)</script>'
-        response = self.client.post(reverse('leads:order'), _order_data(comment=payload))
+    def test_order_always_saves_pickup(self):
+        response = self.client.post(
+            reverse('leads:order'),
+            _order_data(fulfillment='own_car'),
+        )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(OrderRequest.objects.get().comment, payload)
+        self.assertEqual(OrderRequest.objects.get().fulfillment, 'pickup')

@@ -28,8 +28,8 @@ class SiteSettings(TimeStampedModel):
     logo = WebPImageField('Логотип', upload_to='brand/', blank=True)
     guarantee_uk = models.CharField('Гарантія (ukr)', max_length=128, blank=True)
     guarantee_ru = models.CharField('Гарантія (ru)', max_length=128, blank=True)
-    delivery_label_uk = models.CharField('Доставка (ukr)', max_length=128, blank=True)
-    delivery_label_ru = models.CharField('Доставка (ru)', max_length=128, blank=True)
+    delivery_label_uk = models.CharField('Отримання (ukr)', max_length=128, blank=True)
+    delivery_label_ru = models.CharField('Отримання (ru)', max_length=128, blank=True)
 
     class Meta:
         verbose_name = 'Налаштування сайту'

@@ -91,7 +91,7 @@ class ChildCategoryInline(TabularInline):
 class FabricPriceInline(TabularInline):
     model = ProductFabricPrice
     extra = 0
-    fields = ('fabric', 'price', 'sku')
+    fields = ('fabric', 'price', 'sale_price', 'sku')
     autocomplete_fields = ('fabric',)
     ordering = ('fabric__sort', 'fabric_id')
     show_change_link = True
@@ -423,8 +423,12 @@ class ProductColorOptionAdmin(ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
     form = ProductAdminForm
-    list_display = ('name_uk', 'category', 'base_price', 'badge', 'is_available', 'is_active')
-    list_filter = ('category', 'badge', 'is_available', 'is_active')
+    list_display = (
+        'name_uk', 'category', 'base_price', 'is_on_sale', 'sale_price',
+        'badge', 'is_available', 'is_active',
+    )
+    list_filter = ('category', 'badge', 'is_on_sale', 'is_available', 'is_active')
+    list_editable = ('is_on_sale',)
     search_fields = ('name_uk', 'name_ru', 'sku')
     readonly_fields = ('slug', 'type_ru')
     inlines = [FabricPriceInline, ProductColorInline, ProductCharacteristicInline]
@@ -438,6 +442,8 @@ class ProductAdmin(ModelAdmin):
                 'category',
                 'type_subcategory',
                 'base_price',
+                'is_on_sale',
+                'sale_price',
                 'badge',
                 'is_available',
                 'is_active',

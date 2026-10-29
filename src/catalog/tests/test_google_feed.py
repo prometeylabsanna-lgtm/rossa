@@ -218,6 +218,15 @@ class GoogleMerchantFeedTests(TestCase):
         self.assertEqual(_g(self._by_product(items, self.active), 'price'), '1234.00 UAH')
         self.assertEqual(_g(self._by_product(items, self.unavailable), 'price'), '2500.00 UAH')
 
+    def test_sale_price_when_on_sale(self):
+        self.active.is_on_sale = True
+        self.active.sale_price = 999
+        self.active.save(update_fields=['is_on_sale', 'sale_price'])
+        _, items = self._items(self._response())
+        item = self._by_product(items, self.active)
+        self.assertEqual(_g(item, 'price'), '1234.00 UAH')
+        self.assertEqual(_g(item, 'sale_price'), '999.00 UAH')
+
     def test_inactive_products_excluded(self):
         response = self._response()
         _, items = self._items(response)

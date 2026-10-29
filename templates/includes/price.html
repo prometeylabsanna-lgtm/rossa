@@ -1,0 +1,12 @@
+{% load i18n rossa %}
+{% if on_sale and regular %}
+  <div class="price price--sale{% if class %} {{ class }}{% endif %}">
+    {% if prefix %}<span class="price__prefix">{{ prefix }}</span>{% endif %}
+    <span class="price__old">{{ regular|uah }} {% trans "грн" %}</span>
+    <span class="price__new">{{ current|uah }} {% trans "грн" %}</span>
+  </div>
+{% else %}
+  <div class="price{% if class %} {{ class }}{% endif %}">
+    {% if prefix %}<span class="price__prefix">{{ prefix }}</span> {% endif %}{{ current|uah }} {% trans "грн" %}
+  </div>
+{% endif %}

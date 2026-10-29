@@ -19,8 +19,7 @@ def _order_data(**overrides):
         'price': 1,
         'name': 'Іван Петренко',
         'phone': '+380441234567',
-        'consent': 'on',
-        'fulfillment': 'pickup',
+        'city': 'Харків',
         'idempotency_key': new_idempotency_key(),
     }
     data.update(overrides)
@@ -61,16 +60,14 @@ class LeadSecurityAuditTests(TestCase):
             r = client.post(url, {
                 'name': 'Олена',
                 'phone': '+380501112233',
-                'message': 'тест',
-                'consent': 'on',
+                'city': 'Харків',
                 'idempotency_key': new_idempotency_key(),
             })
             self.assertIn(r.status_code, (302, 400))
         blocked = client.post(url, {
             'name': 'Олена',
             'phone': '+380501112233',
-            'message': 'тест',
-            'consent': 'on',
+            'city': 'Харків',
             'idempotency_key': new_idempotency_key(),
         })
         self.assertEqual(blocked.status_code, 429)

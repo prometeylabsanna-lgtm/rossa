@@ -212,7 +212,9 @@ def product_detail(request, slug):
     if not selected_color:
         selected_color = colors[0] if colors else None
 
-    price = product.price_for_fabric(selected_fabric) if selected_fabric else product.min_price
+    pricing = product.resolve_prices(selected_fabric) if selected_fabric else product.resolve_prices()
+    price = pricing['current']
+    price_prefix = '' if selected_fabric else str(_('Від'))
     main_image = selected_color['image'] if selected_color else product.cover_image
     gallery = selected_color['gallery'] if selected_color else (
         [main_image] if main_image else []
@@ -238,6 +240,8 @@ def product_detail(request, slug):
         'selected_color': selected_color,
         'selected_shade': selected_color,
         'price': price,
+        'pricing': pricing,
+        'price_prefix': price_prefix,
         'gallery': gallery,
         'main_image': main_image,
         'related': related_qs,

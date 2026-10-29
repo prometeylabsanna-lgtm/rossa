@@ -62,7 +62,10 @@
     <div class="card__stock{% if product.is_available %} card__stock--yes{% else %} card__stock--no{% endif %}">
       {% if product.is_available %}{% trans "В наявності" %}{% else %}{% trans "Немає в наявності" %}{% endif %}
     </div>
-    <div class="card__price">{% trans "Від" %} {{ product.min_price|uah }} {% trans "грн" %}</div>
+    {% trans "Від" as price_from %}
+    {% with pricing=product.listing_prices %}
+      {% include "includes/price.html" with current=pricing.current regular=pricing.regular on_sale=pricing.on_sale prefix=price_from class="card__price" %}
+    {% endwith %}
     <div class="swatches">
       {% for item in shades %}
         <button

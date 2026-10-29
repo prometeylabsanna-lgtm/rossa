@@ -1740,6 +1740,44 @@ body.is-nav-open {
   font-weight: 600;
 }
 
+.price {
+  line-height: 1.25;
+}
+
+.price__prefix {
+  font-weight: 500;
+}
+
+.price--sale {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.price--sale .price__prefix {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.price--sale .price__old {
+  font-size: 0.82em;
+  font-weight: 400;
+  color: #8a8a8a;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.price--sale .price__new {
+  font-size: 1.05em;
+  font-weight: 700;
+  color: #e53935;
+}
+
+.card__price.price--sale .price__new {
+  font-size: 15px;
+}
+
 .swatches {
   display: flex;
   gap: 9px;
@@ -2098,10 +2136,21 @@ body.is-nav-open {
 
 .modal__price {
   font-size: 13px;
-  opacity: 0.6;
   margin-top: 2px;
-  margin-bottom: 2px;
+  margin-bottom: 8px;
   color: var(--color-text);
+}
+
+.modal__price .price--sale .price__old {
+  font-size: 13px;
+}
+
+.modal__price .price--sale .price__new {
+  font-size: 18px;
+}
+
+.modal__price [data-order-plain-wrap] {
+  opacity: 0.7;
 }
 
 .modal__selection {

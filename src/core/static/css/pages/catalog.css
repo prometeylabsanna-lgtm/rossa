@@ -349,11 +349,42 @@
 .pdp__price {
   font-size: 28px;
   margin-top: 22px;
+  font-weight: 600;
+}
+
+.pdp__price.price--sale .price__old {
+  font-size: 18px;
+}
+
+.pdp__price.price--sale .price__new {
+  font-size: 28px;
 }
 
 @media (min-width: 768px) {
   .pdp__price {
     font-size: 32px;
+  }
+
+  .pdp__price.price--sale .price__old {
+    font-size: 20px;
+  }
+
+  .pdp__price.price--sale .price__new {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 767px) {
+  .pdp__price {
+    font-size: 24px;
+  }
+
+  .pdp__price.price--sale .price__old {
+    font-size: 16px;
+  }
+
+  .pdp__price.price--sale .price__new {
+    font-size: 24px;
   }
 }
 

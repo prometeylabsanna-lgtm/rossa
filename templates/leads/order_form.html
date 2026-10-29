@@ -12,10 +12,16 @@
   {% csrf_token %}
   {% include "leads/_honeypot.html" %}
   <h2 class="modal__title" data-order-title>{{ product.name }}</h2>
-  <p class="modal__price">
-    <span data-order-price-view>{% if price %}{{ price|uah }}{% else %}{{ price }}{% endif %}</span>
-    {% trans "грн" %}
-  </p>
+  <div class="modal__price">
+    <div class="price price--sale" data-order-sale-wrap{% if not pricing.on_sale %} hidden{% endif %}>
+      <span class="price__old"><span data-order-regular-view>{% if pricing.regular %}{{ pricing.regular|uah }}{% endif %}</span> {% trans "грн" %}</span>
+      <span class="price__new"><span data-order-price-view>{% if pricing.current %}{{ pricing.current|uah }}{% elif price %}{{ price|uah }}{% else %}{{ price }}{% endif %}</span> {% trans "грн" %}</span>
+    </div>
+    <div data-order-plain-wrap{% if pricing.on_sale %} hidden{% endif %}>
+      <span data-order-plain-view>{% if pricing.current %}{{ pricing.current|uah }}{% elif price %}{{ price|uah }}{% else %}{{ price }}{% endif %}</span>
+      {% trans "грн" %}
+    </div>
+  </div>
   <ul class="modal__selection" data-order-selection>
     <li>
       <span class="modal__selection-label">{% trans "Категорія тканини" %}</span>
@@ -42,28 +48,9 @@
   </div>
 
   <div class="form__field">
-    <label class="visually-hidden" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-    {{ form.email }}
-    {% if form.email.errors %}<p class="form__error" data-field-error>{{ form.email.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
-  </div>
-
-  <div class="form__field">
-    <label class="visually-hidden" for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
-    {{ form.comment }}
-  </div>
-
-  <fieldset class="radios">
-    <legend>{{ form.fulfillment.label }}</legend>
-    {{ form.fulfillment }}
-    {% if form.fulfillment.errors %}<p class="form__error">{{ form.fulfillment.errors|striptags }}</p>{% endif %}
-  </fieldset>
-
-  <div class="form__field">
-    <label class="form__check">
-      {{ form.consent }}
-      <span>{{ form.consent.label }}</span>
-    </label>
-    {% if form.consent.errors %}<p class="form__error" data-field-error>{{ form.consent.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
+    <label class="visually-hidden" for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+    {{ form.city }}
+    {% if form.city.errors %}<p class="form__error" data-field-error>{{ form.city.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
   </div>
 
   <button class="btn btn--solid" type="submit">{% trans "Надіслати замовлення" %}</button>

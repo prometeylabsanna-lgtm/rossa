@@ -79,7 +79,7 @@
     <h1>{{ product.name }}</h1>
     <div class="pdp__type">{{ product.type_label }}{% if sku %} · {{ sku }}{% endif %}</div>
     {% if not product.is_available %}<div class="pdp__type">{% trans "Немає в наявності" %}</div>{% endif %}
-    <div class="pdp__price">{% if selected_fabric %}{{ price|uah }}{% else %}{% trans "Від" %} {{ price|uah }}{% endif %} {% trans "грн" %}</div>
+    {% include "includes/price.html" with current=pricing.current regular=pricing.regular on_sale=pricing.on_sale prefix=price_prefix class="pdp__price" %}
     <p class="pdp__meta">{% if selected_fabric %}{% trans "ціна для обраної тканини" %}{% else %}{% trans "ціна залежить від тканини" %}{% endif %}</p>
 
     {% if fabrics %}
@@ -197,8 +197,11 @@
       data-fabric-name="{% if selected_fabric %}{{ selected_fabric.name }}{% endif %}"
       data-shade-name="{% if selected_color %}{{ selected_color.name }}{% endif %}"
       data-sku="{{ sku }}"
-      data-price="{{ price }}"
-      data-price-label="{{ price|uah }}"
+      data-price="{{ pricing.current }}"
+      data-regular-price="{{ pricing.regular }}"
+      data-on-sale="{% if pricing.on_sale %}1{% else %}0{% endif %}"
+      data-price-label="{{ pricing.current|uah }}"
+      data-regular-label="{{ pricing.regular|uah }}"
     ></div>
   </div>
 </div>

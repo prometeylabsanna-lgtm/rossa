@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from leads.forms import ContactForm, OrderForm
 from leads.idempotency import new_idempotency_key
-from leads.models import ContactLead, OrderRequest, PartnershipLead
+from leads.models import ContactLead, Fulfillment, OrderRequest, PartnershipLead
 from leads.validators import normalize_ua_phone, validate_person_name, validate_ua_phone
 
 
@@ -17,8 +17,7 @@ def _order_data(**overrides):
         'sku': 'hacked',
         'name': 'Іван Петренко',
         'phone': '+380441234567',
-        'consent': 'on',
-        'fulfillment': 'pickup',
+        'city': 'Харків',
         'idempotency_key': new_idempotency_key(),
     }
     data.update(overrides)
@@ -74,24 +73,28 @@ class LeadFormTests(TestCase):
         self.assertEqual(lead.phone, '+380441234567')
         self.assertEqual(lead.price, 42900)
         self.assertEqual(lead.sku, 'MILAN-1')
+        self.assertEqual(lead.city, 'Харків')
+        self.assertEqual(lead.fulfillment, Fulfillment.PICKUP)
+        self.assertTrue(lead.consent)
 
     def test_contact_ok(self):
         response = self.client.post(reverse('leads:contact'), {
             'name': 'Олена',
             'phone': '+380501112233',
-            'message': 'Питання по дивану',
-            'consent': 'on',
+            'city': 'Харків',
             'idempotency_key': new_idempotency_key(),
         })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ContactLead.objects.count(), 1)
+        lead = ContactLead.objects.get()
+        self.assertEqual(lead.city, 'Харків')
+        self.assertTrue(lead.consent)
 
     def test_contact_form_normalizes_phone(self):
         form = ContactForm({
             'name': 'Олена',
             'phone': '0501112233',
-            'message': 'Питання',
-            'consent': 'on',
+            'city': 'Київ',
             'idempotency_key': new_idempotency_key(),
         })
         self.assertTrue(form.is_valid(), form.errors)
@@ -101,9 +104,7 @@ class LeadFormTests(TestCase):
         response = self.client.post(reverse('leads:partnership'), {
             'name': 'Олена',
             'phone': '+380671112233',
-            'email': 'partner@example.com',
             'city': 'Київ',
-            'message': 'Хочу стати дилером',
             'idempotency_key': new_idempotency_key(),
         })
         self.assertEqual(response.status_code, 302)
@@ -111,4 +112,5 @@ class LeadFormTests(TestCase):
         lead = PartnershipLead.objects.get()
         self.assertEqual(lead.name, 'Олена')
         self.assertEqual(lead.company, 'Олена')
+        self.assertEqual(lead.city, 'Київ')
         self.assertTrue(lead.consent)

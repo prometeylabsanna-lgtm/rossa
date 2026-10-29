@@ -56,17 +56,22 @@ def order_submit(request):
                 f'Відтінок: {obj.shade_name}\n'
                 f'Ціна: {obj.price} грн\n'
                 f'Артикул: {obj.sku}\n'
-                f'ПІБ: {obj.name}\n'
+                f'Ім’я: {obj.name}\n'
                 f'Телефон: {obj.phone}\n'
-                f'E-mail: {obj.email}\n'
+                f'Місто: {obj.city}\n'
                 f'Отримання: {obj.get_fulfillment_display()}\n'
-                f'Коментар: {obj.comment}\n'
             ),
         )
+    raw_price = form.data.get('price', '')
     return render(request, 'leads/order_form.html', {
         'form': form,
         'product': type('P', (), {'name': form.data.get('product_name', '')})(),
-        'price': form.data.get('price', ''),
+        'price': raw_price,
+        'pricing': {
+            'current': raw_price,
+            'regular': raw_price,
+            'on_sale': False,
+        },
     }, status=400)
 
 
@@ -86,9 +91,7 @@ def partnership_submit(request):
             notify_body=lambda obj: (
                 f'Ім’я: {obj.name}\n'
                 f'Телефон: {obj.phone}\n'
-                f'E-mail: {obj.email}\n'
                 f'Місто: {obj.city}\n'
-                f'Повідомлення: {obj.message}\n'
             ),
         )
     return render(request, 'leads/partnership_form.html', {
@@ -108,7 +111,7 @@ def contact_submit(request):
             form,
             notify_subject=lambda obj: f'ROSSA контакти: {obj.name}',
             notify_body=lambda obj: (
-                f'Ім’я: {obj.name}\nТелефон: {obj.phone}\nПовідомлення: {obj.message}\n'
+                f'Ім’я: {obj.name}\nТелефон: {obj.phone}\nМісто: {obj.city}\n'
             ),
         )
     return render(request, 'leads/contact_form.html', {'form': form}, status=400)

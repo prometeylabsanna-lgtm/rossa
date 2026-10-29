@@ -26,21 +26,9 @@
   </label>
 
   <label class="form__field">
-    <span class="form__label">{{ form.email.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
-    {{ form.email }}
-    {% if form.email.errors %}<p class="form__error" data-field-error>{{ form.email.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
-  </label>
-
-  <label class="form__field">
     <span class="form__label">{{ form.city.label }}<abbr title="{% trans 'обов’язкове поле' %}">*</abbr></span>
     {{ form.city }}
     {% if form.city.errors %}<p class="form__error" data-field-error>{{ form.city.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
-  </label>
-
-  <label class="form__field">
-    <span class="form__label">{{ form.message.label }}</span>
-    {{ form.message }}
-    {% if form.message.errors %}<p class="form__error" data-field-error>{{ form.message.errors|striptags }}</p>{% else %}<p class="form__error" data-field-error hidden></p>{% endif %}
   </label>
 
   <button class="btn btn--solid" type="submit">{% if form.submit_label %}{{ form.submit_label }}{% else %}{% trans "Надіслати" %}{% endif %}</button>

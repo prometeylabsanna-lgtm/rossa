@@ -7,14 +7,12 @@ from typing import Any
 
 from django.utils.translation import get_language
 
-FORM_FIELD_KEYS = ('name', 'phone', 'email', 'city', 'message', 'submit')
+FORM_FIELD_KEYS = ('name', 'phone', 'city', 'submit')
 
 FORM_FIELD_TITLES = {
     'name': 'Ім’я',
     'phone': 'Телефон',
-    'email': 'Електронна адреса',
     'city': 'Місто',
-    'message': 'Повідомлення',
     'submit': 'Кнопка «Надіслати»',
 }
 
@@ -31,23 +29,11 @@ DEFAULT_COLLAB_FORM_COPY: dict[str, dict[str, str]] = {
         'placeholder_uk': '50 123 4567',
         'placeholder_ru': '50 123 4567',
     },
-    'email': {
-        'label_uk': 'Електронна адреса',
-        'label_ru': 'Электронная почта',
-        'placeholder_uk': 'введіть електронну адресу',
-        'placeholder_ru': 'введите электронную почту',
-    },
     'city': {
         'label_uk': 'Місто',
         'label_ru': 'Город',
         'placeholder_uk': 'введіть місто',
         'placeholder_ru': 'введите город',
-    },
-    'message': {
-        'label_uk': 'Повідомлення',
-        'label_ru': 'Сообщение',
-        'placeholder_uk': 'введіть повідомлення',
-        'placeholder_ru': 'введите сообщение',
     },
     'submit': {
         'label_uk': 'Надіслати',

@@ -182,12 +182,14 @@ def _product_image_urls(product) -> list[str]:
 
 def _append_item(channel: ET.Element, product) -> None:
     image_link, extra = cap_image_urls(_product_image_urls(product))
-    raw_price = product.min_price
-    if not image_link or raw_price is None:
+    pricing = product.resolve_prices()
+    raw_current = pricing.get('current')
+    if not image_link or raw_current is None:
         return
-    price = _quantized_price(raw_price)
-    if price <= 0:
+    current = _quantized_price(raw_current)
+    if current <= 0:
         return
+    regular = _quantized_price(pricing.get('regular') or raw_current)
     item = ET.SubElement(channel, 'item')
     _add(item, _g('id'), _feed_id(product))
     title = plain_text(product.name_uk, limit=TITLE_LIMIT) or str(product.pk)
@@ -201,7 +203,11 @@ def _append_item(channel: ET.Element, product) -> None:
     _add(item, _g('image_link'), image_link)
     for url in extra:
         _add(item, _g('additional_image_link'), url)
-    _add(item, _g('price'), format_price_uah(price))
+    if pricing.get('on_sale') and regular > current:
+        _add(item, _g('price'), format_price_uah(regular))
+        _add(item, _g('sale_price'), format_price_uah(current))
+    else:
+        _add(item, _g('price'), format_price_uah(current))
     _add(
         item,
         _g('availability'),

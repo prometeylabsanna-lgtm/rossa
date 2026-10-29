@@ -58,8 +58,8 @@ class Command(BaseCommand):
             'footer_tagline_ru': 'Мягкая мебель премиум-класса собственного производства.',
             'guarantee_uk': 'Гарантія: 18 місяців',
             'guarantee_ru': 'Гарантия: 18 месяцев',
-            'delivery_label_uk': 'Доставка: від 3 тижнів',
-            'delivery_label_ru': 'Доставка: от 3 недель',
+            'delivery_label_uk': 'Самовивіз з Харкова',
+            'delivery_label_ru': 'Самовывоз из Харькова',
         }
         obj, _ = SiteSettings.objects.get_or_create(pk=1, defaults=fields)
         for key, value in fields.items():
@@ -90,8 +90,8 @@ class Command(BaseCommand):
             'cta_banner_title_ru': 'Не можете выбрать модель? Мы поможем подобрать мебель под ваш интерьер.',
             'seo_title_uk': 'ROSSA — м’які меблі власного виробництва',
             'seo_title_ru': 'ROSSA — мягкая мебель собственного производства',
-            'seo_description_uk': 'Дивани, ліжка та пуфи. Індивідуальний пошив тканини, доставка по Україні.',
-            'seo_description_ru': 'Диваны, кровати и пуфы. Индивидуальный пошив ткани, доставка по Украине.',
+            'seo_description_uk': 'Дивани, ліжка та пуфи. Індивідуальний пошив тканини, самовивіз з Харкова.',
+            'seo_description_ru': 'Диваны, кровати и пуфы. Индивидуальный пошив ткани, самовывоз из Харькова.',
         })
         attach(obj.craft_image, 'craft.jpg')
         about_defaults = {

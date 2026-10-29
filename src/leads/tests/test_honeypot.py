@@ -27,8 +27,7 @@ class HoneypotTests(TestCase):
             'price': 1,
             'name': 'Іван Петренко',
             'phone': '+380441234567',
-            'consent': 'on',
-            'fulfillment': 'pickup',
+            'city': 'Харків',
             'idempotency_key': new_idempotency_key(),
             HONEYPOT_FIELD: 'https://spam.example',
         })
@@ -39,8 +38,7 @@ class HoneypotTests(TestCase):
         response = self.client.post(reverse('leads:contact'), {
             'name': 'Олена',
             'phone': '+380501112233',
-            'message': 'спам',
-            'consent': 'on',
+            'city': 'Харків',
             'idempotency_key': new_idempotency_key(),
             HONEYPOT_FIELD: 'bot',
         })
@@ -57,8 +55,7 @@ class HoneypotTests(TestCase):
             'price': 1,
             'name': 'Іван Петренко',
             'phone': '+380441234567',
-            'consent': 'on',
-            'fulfillment': 'pickup',
+            'city': 'Харків',
             'idempotency_key': new_idempotency_key(),
             HONEYPOT_FIELD: '',
         })

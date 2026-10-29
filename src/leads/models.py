@@ -29,8 +29,9 @@ class OrderRequest(AutoSlugMixin, TimeStampedModel):
     shade_name = models.CharField('Відтінок', max_length=128, blank=True)
     sku = models.CharField('Артикул', max_length=64, blank=True)
     price = models.PositiveIntegerField('Ціна на момент заявки')
-    name = models.CharField('ПІБ', max_length=128)
+    name = models.CharField('Ім’я', max_length=128)
     phone = models.CharField('Телефон', max_length=32)
+    city = models.CharField('Місто', max_length=128, blank=True, default='')
     email = models.EmailField('E-mail', blank=True)
     comment = models.TextField('Коментар', blank=True)
     fulfillment = models.CharField(
@@ -39,7 +40,10 @@ class OrderRequest(AutoSlugMixin, TimeStampedModel):
         choices=Fulfillment.choices,
         default=Fulfillment.PICKUP,
     )
-    consent = models.BooleanField('Згода на обробку персональних даних')
+    consent = models.BooleanField(
+        'Згода на обробку персональних даних',
+        default=True,
+    )
     language = models.CharField('Мова', max_length=2, default='uk')
 
     class Meta:
@@ -66,7 +70,7 @@ class PartnershipLead(TimeStampedModel):
     company = models.CharField('Компанія / ПІБ', max_length=255, blank=True)
     name = models.CharField('Контактна особа', max_length=128)
     phone = models.CharField('Телефон', max_length=32)
-    email = models.EmailField('E-mail')
+    email = models.EmailField('E-mail', blank=True, default='')
     city = models.CharField('Місто', max_length=128)
     collab_type = models.CharField('Тип співпраці', max_length=20, choices=CollabType.choices, blank=True)
     message = models.TextField('Повідомлення', blank=True)
@@ -86,8 +90,12 @@ class ContactLead(TimeStampedModel):
     status = models.CharField('Статус', max_length=20, choices=LeadStatus.choices, default=LeadStatus.NEW)
     name = models.CharField('Ім’я', max_length=128)
     phone = models.CharField('Телефон', max_length=32)
-    message = models.TextField('Повідомлення')
-    consent = models.BooleanField('Згода на обробку персональних даних')
+    city = models.CharField('Місто', max_length=128, blank=True, default='')
+    message = models.TextField('Повідомлення', blank=True, default='')
+    consent = models.BooleanField(
+        'Згода на обробку персональних даних',
+        default=True,
+    )
     language = models.CharField('Мова', max_length=2, default='uk')
 
     class Meta:

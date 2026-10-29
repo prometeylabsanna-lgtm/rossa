@@ -32,6 +32,17 @@ class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
         related_name='products',
     )
     base_price = models.PositiveIntegerField('Базова ціна, грн')
+    sale_price = models.PositiveIntegerField(
+        'Акційна ціна, грн',
+        null=True,
+        blank=True,
+        help_text='Якщо немає цін по тканинах — нова ціна при увімкненій акції.',
+    )
+    is_on_sale = models.BooleanField(
+        'Акція',
+        default=False,
+        help_text='Показати перекреслену стару ціну та нову червоним.',
+    )
     badge = models.CharField('Бейдж', max_length=8, choices=Badge.choices, blank=True)
     is_available = models.BooleanField('В наявності', default=True)
     is_active = models.BooleanField('Видимий', default=True)
@@ -102,18 +113,73 @@ class Product(AutoSlugMixin, SeoFieldsMixin, TimeStampedModel):
     def get_absolute_url(self):
         return reverse('catalog:product', kwargs={'slug': self.slug})
 
+    def resolve_prices(self, fabric=None):
+        """Поточна / регулярна ціна та прапорець акції для UI і фіду."""
+        if fabric is not None:
+            match = next(
+                (fp for fp in self.fabric_prices.all() if fp.fabric_id == fabric.id),
+                None,
+            )
+            if match:
+                regular = match.price
+                if self.is_on_sale and match.sale_price:
+                    return {
+                        'current': match.sale_price,
+                        'regular': regular,
+                        'on_sale': True,
+                    }
+                return {'current': regular, 'regular': regular, 'on_sale': False}
+            regular = self.base_price + (fabric.surcharge or 0)
+            if self.is_on_sale and self.sale_price:
+                return {
+                    'current': self.sale_price,
+                    'regular': regular,
+                    'on_sale': True,
+                }
+            return {'current': regular, 'regular': regular, 'on_sale': False}
+
+        fabric_rows = list(self.fabric_prices.all())
+        if fabric_rows:
+            regulars = [fp.price for fp in fabric_rows]
+            regular = min(regulars)
+            if self.is_on_sale:
+                sales = [fp.sale_price for fp in fabric_rows if fp.sale_price]
+                if sales:
+                    return {
+                        'current': min(sales),
+                        'regular': regular,
+                        'on_sale': True,
+                    }
+            return {'current': regular, 'regular': regular, 'on_sale': False}
+
+        regular = self.base_price
+        if self.is_on_sale and self.sale_price:
+            return {
+                'current': self.sale_price,
+                'regular': regular,
+                'on_sale': True,
+            }
+        return {'current': regular, 'regular': regular, 'on_sale': False}
+
+    @property
+    def listing_prices(self):
+        """Ціни для карток каталогу (мін. по тканинам)."""
+        return self.resolve_prices()
+
     @property
     def min_price(self):
-        prices = [fp.price for fp in self.fabric_prices.all()]
-        if prices:
-            return min(prices)
-        return self.base_price
+        return self.listing_prices['current']
+
+    @property
+    def min_regular_price(self):
+        return self.listing_prices['regular']
+
+    @property
+    def is_sale_display(self):
+        return self.listing_prices['on_sale']
 
     def price_for_fabric(self, fabric):
-        match = next((fp for fp in self.fabric_prices.all() if fp.fabric_id == fabric.id), None)
-        if match:
-            return match.price
-        return self.base_price + (fabric.surcharge or 0)
+        return self.resolve_prices(fabric)['current']
 
     def gallery_for_color(self, color_option_id):
         """Галерея фото для кольору (потребує prefetch color_images)."""
@@ -173,6 +239,12 @@ class ProductFabricPrice(TimeStampedModel):
         related_name='product_prices',
     )
     price = models.PositiveIntegerField('Ціна, грн')
+    sale_price = models.PositiveIntegerField(
+        'Акційна ціна, грн',
+        null=True,
+        blank=True,
+        help_text='Нова ціна (червона), якщо на товарі увімкнено «Акція».',
+    )
     sku = models.CharField('Артикул варіанта', max_length=64, blank=True)
 
     class Meta:
