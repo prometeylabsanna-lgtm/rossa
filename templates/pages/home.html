@@ -20,9 +20,7 @@
 {% endblock %}
 
 {% block content %}
-  {% with first_slide=hero_slides.0 %}
-    <h1 class="visually-hidden">{% if first_slide.image_alt %}{{ first_slide.image_alt }}{% else %}Rossa{% endif %}</h1>
-  {% endwith %}
+  <h1 class="visually-hidden">{{ home_h1|default:"ROSSA — м’які меблі" }}</h1>
   <section class="hero" data-hero-slider{% if hero_slides|length > 1 %} data-autoplay="6000"{% endif %}>
     <div class="hero__track" data-hero-track>
       {% for slide in hero_slides %}

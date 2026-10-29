@@ -23,6 +23,7 @@
                 width="640"
                 height="360"
                 loading="{% if forloop.parentloop.first and forloop.first %}eager{% else %}lazy{% endif %}"
+                {% if forloop.parentloop.first and forloop.first %}fetchpriority="high"{% endif %}
                 decoding="async"
                 data-card-slide
                 {% if not forloop.first %}hidden{% endif %}
@@ -46,7 +47,8 @@
           alt="{{ product.name }}"
           width="640"
           height="360"
-          loading="lazy"
+          loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+          {% if forloop.first %}fetchpriority="high"{% endif %}
           decoding="async"
         >
       {% endif %}
