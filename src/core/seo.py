@@ -14,9 +14,12 @@ TITLE_MAX = 60
 DESCRIPTION_MAX = 160
 ELLIPSIS = '…'
 BRAND = 'ROSSA'
+BRAND_SUFFIX = f' | {BRAND}'
 _HIDDEN_BLOCK = re.compile(r'<(script|style)\b[^>]*>.*?</\1>', re.IGNORECASE | re.DOTALL)
 _TAG = re.compile(r'<[^>]+>')
 _TRAILING = ' .,;:—-–'
+_BRAND_TRAIL = re.compile(r'\s*[|—–\-]\s*ROSSA\s*$', re.IGNORECASE)
+_BRAND_LEAD = re.compile(r'^ROSSA\s*[|—–\-]\s*', re.IGNORECASE)
 
 NOINDEX_URL_NAMES = frozenset({'thanks', 'search'})
 CATALOG_URL_NAMES = frozenset({'index', 'category'})
@@ -127,6 +130,38 @@ def clip_text(value, limit: int) -> str:
     if not trimmed:
         return ELLIPSIS
     return trimmed + ELLIPSIS
+
+
+def strip_brand(value) -> str:
+    """Прибирає провідний/кінцевий бренд із title (—, |, -)."""
+    text = plain_text(value)
+    if not text:
+        return ''
+    if text.upper() == BRAND:
+        return ''
+    text = _BRAND_TRAIL.sub('', text)
+    text = _BRAND_LEAD.sub('', text)
+    text = text.strip(_TRAILING + ' ')
+    if text.upper() == BRAND:
+        return ''
+    return text
+
+
+def branded_title(value) -> str:
+    """
+    Title з суфіксом « | ROSSA». Довжина ≤ TITLE_MAX за рахунок обрізання
+    основної частини; бренд ніколи не обрізається.
+    """
+    main = strip_brand(value)
+    if not main:
+        return BRAND
+    budget = TITLE_MAX - len(BRAND_SUFFIX)
+    if budget < 1:
+        return BRAND
+    main = clip_text(main, budget)
+    if not main:
+        return BRAND
+    return f'{main}{BRAND_SUFFIX}'
 
 
 def configured_origin() -> tuple[str, str] | None:
@@ -261,7 +296,7 @@ def page_seo(
         head['robots'] = 'noindex,follow'
         head['indexable'] = False
         head['alternates'] = []
-    title_text = clip_text(title, TITLE_MAX) or BRAND
+    title_text = branded_title(title)
     desc_text = clip_text(rewrite_nationwide_delivery(description), DESCRIPTION_MAX)
     og = image or ''
     if og and not og.startswith(('http://', 'https://')):
@@ -295,8 +330,7 @@ def robots_text(request=None) -> str:
             continue
         for prefix in PRIVATE_PREFIXES:
             disallow_lines.append(f'Disallow: /{code}{prefix}')
-    for key in catalog_filter_query_names():
-        disallow_lines.append(f'Disallow: /*?*{key}=')
+    # Фільтри каталогу (sort/price/…): noindex у HTML, без Disallow у robots.
     disallow_lines.append('Disallow: /*?*utm_')
 
     blocks: list[str] = []

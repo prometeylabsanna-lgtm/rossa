@@ -64,7 +64,7 @@ def catalog_index(request):
         request,
         category=None,
         crumbs=_breadcrumbs([(_('Головна'), reverse('core:home')), (_('Каталог'), None)]),
-        seo_title=_('Каталог — ROSSA'),
+        seo_title=_('Каталог'),
         seo_description=_('Дивани, ліжка та пуфи власного виробництва.'),
         intro=_('Дивани, ліжка та пуфи власного виробництва. Обирайте тканину та відтінок під ваш інтер’єр.'),
     )
@@ -119,13 +119,12 @@ def _render_listing(request, category, crumbs, seo_title=None, seo_description=N
 
     if category:
         page_title = category.name
-        raw_title = category.seo_title or category.name
-        page_seo_title = raw_title if 'ROSSA' in raw_title.upper() else f'{raw_title} — ROSSA'
+        page_seo_title = category.seo_title or category.name
         page_seo_description = category_meta_description(category)
         page_intro = intro
     else:
         page_title = _('Каталог')
-        page_seo_title = seo_title or (_('Каталог') + ' — ROSSA')
+        page_seo_title = seo_title or _('Каталог')
         page_seo_description = seo_description or _(
             'Дивани, ліжка та пуфи власного виробництва ROSSA.'
         )
@@ -271,10 +270,7 @@ def product_detail(request, slug):
 
 
 def _product_seo_title(product) -> str:
-    raw = plain_text(product.seo_title or product.name)
-    if 'ROSSA' in raw.upper():
-        return raw
-    return f'{raw} — ROSSA'
+    return plain_text(product.seo_title or product.name)
 
 
 @require_GET
@@ -287,7 +283,7 @@ def search(request):
         'breadcrumbs': _breadcrumbs([(_('Головна'), reverse('core:home')), (_('Пошук'), None)]),
         **page_seo(
             request,
-            _('Пошук — ROSSA'),
+            _('Пошук'),
             _('Пошук моделей ROSSA за назвою або артикулом.'),
             noindex=True,
         ),

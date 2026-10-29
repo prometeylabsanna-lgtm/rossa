@@ -41,7 +41,7 @@ def page_not_found(request, exception):
     request.seo_noindex = True
     ctx = _seo(
         request,
-        _('Сторінку не знайдено — ROSSA'),
+        _('Сторінку не знайдено'),
         _('Запитуваної сторінки не існує. Перейдіть на головну або до каталогу.'),
         noindex=True,
     )
@@ -63,7 +63,7 @@ def home(request):
         og = first_slide.image.url
     elif settings_obj.logo:
         og = settings_obj.logo.url
-    title = page.seo_title or 'ROSSA — м’які меблі власного виробництва'
+    title = page.seo_title or 'м’які меблі власного виробництва'
     description = page.seo_description or (
         'Дивани, ліжка та пуфи ROSSA. Власне виробництво в Україні, вибір тканин і індивідуальний підхід.'
     )
@@ -125,7 +125,7 @@ def contacts(request):
         ],
         **_seo(
             request,
-            page.seo_title or page.title or _('Контакти — ROSSA'),
+            page.seo_title or page.title or _('Контакти'),
             page.seo_description or fallback or _('Контакти салону ROSSA.'),
         ),
     })
@@ -135,7 +135,7 @@ def thanks(request):
     return render(request, 'pages/thanks.html', {
         **_seo(
             request,
-            _('Дякуємо за заявку — ROSSA'),
+            _('Дякуємо за заявку'),
             _('Менеджер зв’яжеться з вами найближчим часом.'),
             noindex=True,
         ),
