@@ -61,6 +61,50 @@ def plain_text(value) -> str:
     return ' '.join(unescape(raw).split())
 
 
+_NATIONWIDE_DELIVERY = (
+    (re.compile(r'доставка\s+по\s+всій\s+Україні', re.IGNORECASE), 'uk'),
+    (re.compile(r'доставка\s+по\s+всей\s+Украине', re.IGNORECASE), 'ru'),
+    (re.compile(r'доставка\s+по\s+Україні', re.IGNORECASE), 'uk'),
+    (re.compile(r'доставка\s+по\s+Украине', re.IGNORECASE), 'ru'),
+    (re.compile(r'delivery\s+across\s+Ukraine', re.IGNORECASE), 'uk'),
+)
+
+
+def pickup_phrase(*, lang: str | None = None) -> str:
+    """Текст самовивозу з SiteSettings.delivery_label або коротке «самовивіз»."""
+    code = (lang or get_language() or 'uk')[:2]
+    label = ''
+    try:
+        from django.db.utils import OperationalError, ProgrammingError
+
+        from core.models import SiteSettings
+
+        site = SiteSettings.load()
+        attr = 'delivery_label_ru' if code == 'ru' else 'delivery_label_uk'
+        label = ' '.join(str(getattr(site, attr, '') or '').split())
+        if not label:
+            label = ' '.join(str(getattr(site, 'delivery_label', '') or '').split())
+    except (OperationalError, ProgrammingError, AttributeError):
+        label = ''
+    if label:
+        return label
+    return 'самовывоз' if code == 'ru' else 'самовивіз'
+
+
+def rewrite_nationwide_delivery(value: str, *, lang: str | None = None) -> str:
+    """Замінює SEO-фрази про доставку по Україні на самовивіз (без вигаданої адреси)."""
+    text = str(value or '')
+    if not text:
+        return text
+    code = (lang or get_language() or 'uk')[:2]
+    pickup = pickup_phrase(lang=code)
+    mid = pickup[:1].lower() + pickup[1:] if pickup else pickup
+    updated = text
+    for pattern, _lang in _NATIONWIDE_DELIVERY:
+        updated = pattern.sub(mid, updated)
+    return updated
+
+
 def _splits_word(text: str, index: int) -> bool:
     if index <= 0 or index >= len(text):
         return False
@@ -218,7 +262,7 @@ def page_seo(
         head['indexable'] = False
         head['alternates'] = []
     title_text = clip_text(title, TITLE_MAX) or BRAND
-    desc_text = clip_text(description, DESCRIPTION_MAX)
+    desc_text = clip_text(rewrite_nationwide_delivery(description), DESCRIPTION_MAX)
     og = image or ''
     if og and not og.startswith(('http://', 'https://')):
         og = absolute_media(request, og)
@@ -328,7 +372,7 @@ def public_contacts() -> dict:
 def category_meta_description(category) -> str:
     custom = plain_text(getattr(category, 'seo_description', '') or '')
     if custom:
-        return custom
+        return rewrite_nationwide_delivery(custom)
     name = plain_text(getattr(category, 'name', '') or '')
     return clip_text(
         f'{name} — м’які меблі власного виробництва ROSSA. Обирайте тканину та відтінок.',
@@ -339,10 +383,10 @@ def category_meta_description(category) -> str:
 def product_meta_description(product) -> str:
     custom = plain_text(getattr(product, 'seo_description', '') or '')
     if custom:
-        return custom
+        return rewrite_nationwide_delivery(custom)
     desc = plain_text(getattr(product, 'description', '') or '')
     if desc:
-        return clip_text(desc, DESCRIPTION_MAX)
+        return clip_text(rewrite_nationwide_delivery(desc), DESCRIPTION_MAX)
     name = plain_text(getattr(product, 'name', '') or '')
     cat = ''
     if getattr(product, 'category_id', None):

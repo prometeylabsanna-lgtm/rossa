@@ -18,6 +18,7 @@ from core.seo import (
     plain_text,
     public_base,
     public_contacts,
+    rewrite_nationwide_delivery,
 )
 
 CONTENT_URL_NAMES = frozenset(
@@ -241,8 +242,10 @@ def _product_node(context, request):
     sku = plain_text(context.get('sku') or getattr(product, 'sku', '') or '')
     if sku:
         node['sku'] = sku
-    description = plain_text(
-        getattr(product, 'seo_description', '') or getattr(product, 'description', '') or ''
+    description = rewrite_nationwide_delivery(
+        plain_text(
+            getattr(product, 'seo_description', '') or getattr(product, 'description', '') or ''
+        )
     )
     if description:
         node['description'] = description

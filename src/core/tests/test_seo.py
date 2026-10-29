@@ -157,3 +157,27 @@ class SeoFoundationTests(TestCase):
         response = self.client.get(reverse('core:thanks'))
         self.assertContains(response, 'name="robots" content="noindex,follow"')
         self.assertNotContains(response, 'rel="alternate" hreflang=')
+
+    def test_home_meta_and_llms_have_pickup_not_ukraine_delivery(self):
+        from core.models import HomePage
+
+        page = HomePage.load()
+        page.seo_description_uk = (
+            'Дивани, ліжка та пуфи. Індивідуальний пошив тканини, доставка по Україні.'
+        )
+        page.seo_description_ru = (
+            'Диваны, кровати и пуфы. Индивидуальный пошив ткани, доставка по Украине.'
+        )
+        page.save(update_fields=['seo_description_uk', 'seo_description_ru'])
+
+        home = self.client.get('/')
+        self.assertEqual(home.status_code, 200)
+        body = home.content.decode('utf-8')
+        self.assertNotIn('доставка по Україні', body)
+        self.assertNotIn('доставка по Украине', body)
+        self.assertIn('самовивіз', body.lower())
+
+        llms = self.client.get('/llms.txt')
+        llms_body = llms.content.decode('utf-8')
+        self.assertNotIn('доставка по Україні', llms_body)
+        self.assertIn('самовивіз', llms_body.lower())

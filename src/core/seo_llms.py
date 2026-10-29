@@ -7,7 +7,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django.urls import reverse
 from django.utils.translation import gettext, override
 
-from core.seo import BRAND, clip_text, public_base, public_contacts
+from core.seo import BRAND, clip_text, public_base, public_contacts, rewrite_nationwide_delivery
 
 
 def llms_text(request) -> str:
@@ -114,7 +114,7 @@ def _shop_blurb() -> str:
             'Український бренд м’яких меблів власного виробництва. '
             'Rossa. Твій стиль. Твій комфорт.'
         )
-    return clip_text(text, 280)
+    return clip_text(rewrite_nationwide_delivery(text, lang='uk'), 280)
 
 
 def _shop_body() -> str:
@@ -134,7 +134,7 @@ def _shop_body() -> str:
             'і довговічності. Власне виробництво в Україні, індивідуальний підхід '
             'до клієнта, великий вибір тканин. Замовлення — через форму на сайті.'
         )
-    return clip_text(text, 500)
+    return clip_text(rewrite_nationwide_delivery(text, lang='uk'), 500)
 
 
 def _category_lines(request) -> list[str]:
