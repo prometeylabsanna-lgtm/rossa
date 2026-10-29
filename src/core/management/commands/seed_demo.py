@@ -68,6 +68,14 @@ class Command(BaseCommand):
         attach(obj.map_image, 'slots/contact-map.webp')
         obj.save()
 
+    # SEO головної: seed лише заповнює порожні поля, заповнені не перетирає.
+    _HOME_SEO_KEYS = (
+        'seo_title_uk',
+        'seo_title_ru',
+        'seo_description_uk',
+        'seo_description_ru',
+    )
+
     def _home(self):
         home_fields = {
             'section_categories_uk': 'Категорії',
@@ -107,6 +115,8 @@ class Command(BaseCommand):
         }
         obj, _ = HomePage.objects.get_or_create(pk=1, defaults=home_fields)
         for key, value in home_fields.items():
+            if key in self._HOME_SEO_KEYS and str(getattr(obj, key, '') or '').strip():
+                continue
             setattr(obj, key, value)
         attach(obj.craft_image, 'craft.jpg')
         obj.save()
