@@ -10,7 +10,7 @@ from django.views.i18n import set_language
 from catalog.google_feed import google_merchant_feed
 from core.admin_upload import cms_upload
 from core.sitemaps import sitemaps
-from core.views import healthz, llms_txt, robots_txt
+from core.views import healthz, llm_txt, llms_txt, robots_txt
 from core.views_media import serve_media
 
 
@@ -31,6 +31,7 @@ urlpatterns = [
     path('healthz/', healthz, name='healthz'),
     path('robots.txt', robots_txt, name='robots'),
     path('llms.txt', llms_txt, name='llms'),
+    path('llm.txt', llm_txt, name='llm'),
     path(
         'sitemap.xml',
         sitemap,
