@@ -56,9 +56,19 @@ class SeoFoundationTests(TestCase):
         self.assertIn('User-agent: *', body)
         self.assertIn('Disallow: /poshuk/', body)
         self.assertIn('Disallow: /dyakuyemo/', body)
-        self.assertIn('Disallow: /*?*sort=', body)
-        self.assertIn('Disallow: /*?*price_min=', body)
-        self.assertIn('Disallow: /*?*offset=', body)
+        self.assertIn('Disallow: /i18n/', body)
+        self.assertIn('Disallow: /tinymce/', body)
+        self.assertIn('Disallow: /healthz/', body)
+        self.assertIn('Disallow: /*?*utm_', body)
+        self.assertNotIn('Disallow: /*?*sort=', body)
+        self.assertNotIn('Disallow: /*?*price_min=', body)
+        self.assertNotIn('Disallow: /*?*price_max=', body)
+        self.assertNotIn('Disallow: /*?*available=', body)
+        self.assertNotIn('Disallow: /*?*cat=', body)
+        self.assertNotIn('Disallow: /*?*offset=', body)
+        self.assertNotIn('Disallow: /*?*q=', body)
+        self.assertNotIn('Disallow: /feeds/', body)
+        self.assertNotIn('google-merchant', body)
         self.assertIn(f'Sitemap: {SITE}/sitemap.xml', body)
         admin = settings.ADMIN_URL.strip('/')
         self.assertNotIn(f'Disallow: /{admin}/', body)
@@ -109,15 +119,93 @@ class SeoFoundationTests(TestCase):
         self.assertContains(filtered, 'name="robots" content="noindex,follow"')
         self.assertNotContains(filtered, f'hreflang="uk" href="{SITE}/katalog/?sort')
 
+        for params in (
+            'price_min=1000',
+            'price_max=50000',
+            'available=1',
+            'cat=divany',
+            'offset=12',
+            'q=milan',
+        ):
+            page = self.client.get(f'/katalog/?{params}')
+            self.assertContains(page, f'<link rel="canonical" href="{SITE}/katalog/">', msg_prefix=params)
+            self.assertContains(page, 'name="robots" content="noindex,follow"', msg_prefix=params)
+
         clean = self.client.get('/katalog/')
         self.assertContains(clean, f'<link rel="canonical" href="{SITE}/katalog/">')
         self.assertNotContains(clean, 'name="robots" content="noindex,follow"')
+
+    def test_product_variants_and_offset_are_noindex(self):
+        product = self.client.get('/tovar/milan/?fabric=1&color=1&shade=1')
+        self.assertEqual(product.status_code, 200)
+        self.assertContains(product, 'name="robots" content="noindex,follow"')
+        self.assertContains(product, f'<link rel="canonical" href="{SITE}/tovar/milan/">')
+
+        listing = self.client.get('/katalog/divany/?offset=12')
+        self.assertEqual(listing.status_code, 200)
+        self.assertContains(listing, 'name="robots" content="noindex,follow"')
+        self.assertContains(listing, f'<link rel="canonical" href="{SITE}/katalog/divany/">')
 
     def test_search_is_noindex(self):
         response = self.client.get('/poshuk/?q=milan')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'name="robots" content="noindex,follow"')
         self.assertContains(response, f'<link rel="canonical" href="{SITE}/poshuk/">')
+
+    def test_branded_title_suffix_and_limit(self):
+        from core.seo import BRAND, BRAND_SUFFIX, TITLE_MAX, branded_title
+
+        short = branded_title('Каталог')
+        self.assertEqual(short, f'Каталог{BRAND_SUFFIX}')
+        self.assertTrue(short.endswith(BRAND_SUFFIX))
+        self.assertLessEqual(len(short), TITLE_MAX)
+
+        long_main = 'Дуже довга назва категорії м’яких меблів для вітальні та спальні преміум'
+        limited = branded_title(long_main)
+        self.assertTrue(limited.endswith(BRAND_SUFFIX))
+        self.assertLessEqual(len(limited), TITLE_MAX)
+        self.assertIn(BRAND, limited[-len(BRAND_SUFFIX):])
+        self.assertNotEqual(limited, BRAND)
+
+        stripped = branded_title('Мілан — ROSSA')
+        self.assertEqual(stripped, f'Мілан{BRAND_SUFFIX}')
+
+        home = self.client.get('/')
+        title = re.search(r'<title>(.*?)</title>', home.content.decode('utf-8'), re.DOTALL)
+        self.assertIsNotNone(title)
+        text = title.group(1).strip()
+        self.assertLessEqual(len(text), TITLE_MAX)
+        self.assertTrue(text.endswith(BRAND_SUFFIX) or text == BRAND)
+
+    def test_seed_demo_keeps_filled_home_seo(self):
+        from django.core.management import call_command
+
+        from core.models import HomePage
+
+        page = HomePage.load()
+        page.seo_title_uk = 'Кастомний title головної'
+        page.seo_description_uk = 'Кастомний description головної сторінки.'
+        page.save(update_fields=['seo_title_uk', 'seo_description_uk'])
+
+        call_command('seed_demo', verbosity=0)
+        page.refresh_from_db()
+        self.assertEqual(page.seo_title_uk, 'Кастомний title головної')
+        self.assertEqual(page.seo_description_uk, 'Кастомний description головної сторінки.')
+        self.assertTrue(page.seo_title_ru)
+        self.assertTrue(page.seo_description_ru)
+
+    def test_empty_categories_excluded_from_sitemap(self):
+        from catalog.models import Category
+
+        empty = Category.objects.create(
+            slug='empty-seo-cat',
+            name_uk='Порожня',
+            name_ru='Пустая',
+            is_active=True,
+        )
+        response = self.client.get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, empty.slug)
 
     def test_product_json_ld(self):
         response = self.client.get('/tovar/milan/')
