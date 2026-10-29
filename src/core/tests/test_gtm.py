@@ -1,4 +1,4 @@
-"""Google Tag Manager на публічних сторінках."""
+"""Google Tag Manager: лише після згоди на cookies (client-side)."""
 
 import re
 
@@ -8,7 +8,6 @@ from django.urls import reverse
 
 GTM_ID = 'GTM-NZN8FDT7'
 GTM_JS = 'https://www.googletagmanager.com/gtm.js'
-GTM_NS = f'https://www.googletagmanager.com/ns.html?id={GTM_ID}'
 
 
 def _csp_header(response) -> str:
@@ -33,35 +32,38 @@ class GoogleTagManagerTests(TestCase):
         self.assertEqual(response.status_code, 200)
         return response, response.content.decode()
 
-    def test_head_script_and_noscript_after_body(self):
+    def test_gtm_not_autoinjected_without_consent(self):
         response, html = self._page()
-        head, _, after_head = html.partition('</head>')
-        head_inner = head.split('<head>', 1)[1].lstrip()
-        self.assertTrue(head_inner.startswith('<script'), head_inner[:120])
-        script = head_inner.split('</script>', 1)[0]
-        self.assertIn(GTM_JS, script)
-        self.assertIn(GTM_ID, script)
-        self.assertNotIn('ns.html', head)
-        self.assertRegex(
-            after_head,
-            r'<body\b[^>]*>\s*<noscript><iframe src="' + re.escape(GTM_NS),
-        )
-        self.assertContains(response, GTM_NS)
+        self.assertNotIn(GTM_JS, html)
+        self.assertNotIn('ns.html', html)
+        self.assertContains(response, 'data-cookie-banner')
+        self.assertContains(response, f'data-gtm-id="{GTM_ID}"')
+        self.assertContains(response, 'js/cookie-consent.js')
+
+    def test_cookie_banner_actions_present(self):
+        response, _html = self._page()
+        self.assertContains(response, 'data-cookie-accept')
+        self.assertContains(response, 'data-cookie-necessary')
+        self.assertContains(response, reverse('core:cookies'))
 
     @override_settings(GTM_ID="');alert(1);//")
     def test_absent_when_gtm_id_is_not_a_container_id(self):
         response = self.client.get(reverse('core:home'))
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'googletagmanager.com')
+        html = response.content.decode()
+        banner = re.search(r'data-gtm-id="([^"]*)"', html)
+        self.assertIsNotNone(banner)
+        self.assertEqual(banner.group(1), '')
         self.assertNotContains(response, 'alert(1)')
 
     @override_settings(GTM_ID='')
     def test_absent_when_gtm_id_empty(self):
         response = self.client.get(reverse('core:home'))
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'googletagmanager.com')
-        self.assertNotContains(response, 'gtm.js')
-        self.assertNotContains(response, 'ns.html')
+        html = response.content.decode()
+        self.assertIn('data-gtm-id=""', html)
+        self.assertNotIn(GTM_JS, html)
+        self.assertNotIn('ns.html', html)
 
     def test_csp_header_contains_googletagmanager(self):
         response, _html = self._page()
@@ -87,12 +89,9 @@ class GoogleTagManagerTests(TestCase):
         },
         CONTENT_SECURITY_POLICY_REPORT_ONLY=None,
     )
-    def test_script_nonce_when_csp_uses_nonces(self):
+    def test_cookie_consent_script_without_inline_gtm(self):
         response, html = self._page()
-        csp = response['Content-Security-Policy']
-        match = re.search(r"'nonce-([^']+)'", csp)
-        self.assertIsNotNone(match)
-        nonce = match.group(1)
-        head = html.split('</head>', 1)[0]
-        self.assertIn(f'<script nonce="{nonce}">', head)
-        self.assertIn(GTM_JS, head)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('js/cookie-consent.js', html)
+        self.assertNotIn(GTM_JS, html)
+        self.assertIn(f'data-gtm-id="{GTM_ID}"', html)

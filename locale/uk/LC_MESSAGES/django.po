@@ -375,3 +375,18 @@ msgstr "Адміністрування сайту"
 
 msgid "Thanks for spending some quality time with the web site today."
 msgstr "Дякуємо, що користуєтесь панеллю керування."
+
+msgid "Згода на cookies"
+msgstr "Згода на cookies"
+
+msgid "Ми використовуємо файли cookie для роботи сайту та аналітики."
+msgstr "Ми використовуємо файли cookie для роботи сайту та аналітики."
+
+msgid "Політика Cookies"
+msgstr "Політика Cookies"
+
+msgid "Лише необхідні"
+msgstr "Лише необхідні"
+
+msgid "Прийняти"
+msgstr "Прийняти"

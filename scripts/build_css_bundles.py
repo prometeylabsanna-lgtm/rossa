@@ -20,6 +20,7 @@ CORE_PARTS = [
     'components/cards.css',
     'components/forms.css',
     'components/scroll-top.css',
+    'components/cookie-banner.css',
     'animations.css',
 ]
 
