@@ -3,6 +3,13 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from leads.analytics import (
+    FORM_ID_CONTACT,
+    FORM_ID_ORDER,
+    FORM_ID_PARTNERSHIP,
+    attach_lead_success,
+    lead_event_payload,
+)
 from leads.forms import ContactForm, OrderForm, PartnershipForm
 from leads.idempotency import claim_idempotency_key, release_idempotency_key
 from leads.rate_limit import allow_lead_post
@@ -21,10 +28,10 @@ def _rate_limited(request):
     return HttpResponse('Too Many Requests', status=429, headers={'Retry-After': '60'})
 
 
-def _save_lead_once(request, form, *, notify_subject, notify_body):
+def _save_lead_once(request, form, *, form_id, notify_subject, notify_body):
     """Зберігає лід один раз на idempotency_key; дублікат → thanks без повторного save."""
     if getattr(form, 'honeypot_tripped', lambda: False)():
-        # Бот заповнив пастку — імітуємо успіх без запису в БД.
+        # Бот заповнив пастку — імітуємо успіх без запису в БД і без події GTM.
         return _ok_redirect(request, 'core:thanks')
     token = form.cleaned_data.get('idempotency_key', '')
     if not claim_idempotency_key(token):
@@ -37,7 +44,8 @@ def _save_lead_once(request, form, *, notify_subject, notify_body):
         release_idempotency_key(token)
         raise
     notify_manager(notify_subject(obj), notify_body(obj))
-    return _ok_redirect(request, 'core:thanks')
+    response = _ok_redirect(request, 'core:thanks')
+    return attach_lead_success(request, response, lead_event_payload(form, form_id))
 
 
 @require_POST
@@ -49,6 +57,7 @@ def order_submit(request):
         return _save_lead_once(
             request,
             form,
+            form_id=FORM_ID_ORDER,
             notify_subject=lambda obj: f'ROSSA замовлення: {obj.product_name}',
             notify_body=lambda obj: (
                 f'Модель: {obj.product_name}\n'
@@ -87,6 +96,7 @@ def partnership_submit(request):
         return _save_lead_once(
             request,
             form,
+            form_id=FORM_ID_PARTNERSHIP,
             notify_subject=lambda obj: f'ROSSA співпраця: {obj.name}',
             notify_body=lambda obj: (
                 f'Ім’я: {obj.name}\n'
@@ -109,6 +119,7 @@ def contact_submit(request):
         return _save_lead_once(
             request,
             form,
+            form_id=FORM_ID_CONTACT,
             notify_subject=lambda obj: f'ROSSA контакти: {obj.name}',
             notify_body=lambda obj: (
                 f'Ім’я: {obj.name}\nТелефон: {obj.phone}\nМісто: {obj.city}\n'

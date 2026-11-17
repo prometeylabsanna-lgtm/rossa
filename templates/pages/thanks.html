@@ -5,6 +5,13 @@
 {% endblock %}
 {% block site_js %}{% endblock %}
 {% block content %}
+  {% if lead_event %}
+  <div hidden
+       data-lead-event
+       data-form-id="{{ lead_event.form_id }}"
+       data-email="{{ lead_event.email }}"
+       data-phone="{{ lead_event.phone_number }}"></div>
+  {% endif %}
   <section class="thanks reveal reveal--up">
     <h1>{% trans "Дякуємо за заявку!" %}</h1>
     <p>{% trans "Наш менеджер зв’яжеться з вами найближчим часом." %}</p>

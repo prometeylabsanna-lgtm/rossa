@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET
+from leads.analytics import pop_lead_event
 from leads.forms import ContactForm, PartnershipForm
 
 from core.models import AboutPage, CollabPage, ContactsPage, HomePage, LegalPage, SiteSettings, ValueProp
@@ -132,7 +133,10 @@ def contacts(request):
 
 
 def thanks(request):
+    # Прапорець знімається одразу, щоб refresh не слав generate_lead вдруге.
+    lead_event = pop_lead_event(request)
     return render(request, 'pages/thanks.html', {
+        'lead_event': lead_event,
         **_seo(
             request,
             _('Дякуємо за заявку'),

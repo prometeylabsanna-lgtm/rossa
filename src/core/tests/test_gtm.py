@@ -80,6 +80,41 @@ class GoogleTagManagerTests(TestCase):
             self.assertIn('https://www.google-analytics.com', directive, name)
             self.assertIn('https://*.google-analytics.com', directive, name)
 
+    def test_csp_header_allows_gtm_ads_collect(self):
+        """connect-src (і суміжні) пропускають GTM / Google Ads collect."""
+        response, _html = self._page()
+        csp = _csp_header(response)
+        self.assertTrue(csp)
+        connect = _directive(csp, 'connect-src')
+        for host in (
+            'https://*.google-analytics.com',
+            'https://*.analytics.google.com',
+            'https://*.googletagmanager.com',
+            'https://*.google.com',
+            'https://google.com',
+            'https://*.doubleclick.net',
+            'https://www.googleadservices.com',
+        ):
+            self.assertIn(host, connect, host)
+        script = _directive(csp, 'script-src')
+        for host in (
+            'https://*.googletagmanager.com',
+            'https://www.googleadservices.com',
+            'https://www.google.com',
+            'https://www.google.com.ua',
+        ):
+            self.assertIn(host, script, host)
+        img = _directive(csp, 'img-src')
+        for host in (
+            'https://*.doubleclick.net',
+            'https://*.analytics.google.com',
+            'https://www.googleadservices.com',
+        ):
+            self.assertIn(host, img, host)
+        frame = _directive(csp, 'frame-src')
+        for host in ('https://*.doubleclick.net', 'https://*.googletagmanager.com'):
+            self.assertIn(host, frame, host)
+
     @override_settings(
         CONTENT_SECURITY_POLICY={
             'DIRECTIVES': {
